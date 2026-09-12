@@ -12,12 +12,15 @@
   "exports": {
     ".": "./src/index.js",
     "./html": "./src/html/index.js",
-    "./astro/Button": "./src/astro/Button.astro",
-    "./astro/Input": "./src/astro/Input.astro",
-    "./astro/Dialog": "./src/astro/Dialog.astro",
-    "./astro/Button.astro": "./src/astro/Button.astro",
-    "./astro/Input.astro": "./src/astro/Input.astro",
-    "./astro/Dialog.astro": "./src/astro/Dialog.astro"
+    "./types": {
+      "types": "./src/types.d.ts"
+    },
+    "./data/footer": {
+      "types": "./src/data/footer.d.ts",
+      "default": "./src/data/footer.js"
+    },
+    "./astro/*.astro": "./src/astro/*.astro",
+    "./astro/*": "./src/astro/*.astro"
   },
   "files": [
     "src",
