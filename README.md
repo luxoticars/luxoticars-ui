@@ -44,11 +44,9 @@ Use the SSH form and an SSH key that can read the repo:
 npm install git+ssh://git@github.com/luxoticars/luxoticars-ui.git
 ```
 
-In CI, a personal access token also works:
+In CI, a personal access token also works (prefer an environment variable so it isn’t written into shell history):
 
-```bash
-npm install git+https://<TOKEN>@github.com/luxoticars/luxoticars-ui.git
-```
+    npm install git+https://x-access-token:${GITHUB_TOKEN}@github.com/luxoticars/luxoticars-ui.git
 
 ## HTML API
 
