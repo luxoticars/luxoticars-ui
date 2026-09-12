@@ -7,7 +7,6 @@
   "exports": {
     ".": "./src/index.js",
     "./html": "./src/html/index.js",
-    "./astro": "./src/astro/index.js",
     "./astro/Button.astro": "./src/astro/Button.astro",
     "./astro/Input.astro": "./src/astro/Input.astro",
     "./astro/Dialog.astro": "./src/astro/Dialog.astro"
