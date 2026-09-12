@@ -19,5 +19,5 @@ export const createDialog = ({
     : "";
   const safeContent = escapeHtml(content);
 
-  return `<dialog id="${safeId}" role="dialog" aria-modal="true" aria-labelledby="${safeId}-title"${description ? ` aria-describedby="${descriptionId}"` : ""}${open ? " open" : ""} class="backdrop:bg-slate-900/40"><div class="${classes}"><h2 id="${safeId}-title" class="text-lg font-semibold text-slate-900">${escapeHtml(title)}</h2>${descriptionHtml}<div class="mt-4">${safeContent}</div></div></dialog>`;
+  return `<dialog id="${safeId}" role="dialog" aria-modal="true" aria-labelledby="${safeId}-title"${description ? ` aria-describedby="${descriptionId}"` : ""}${open ? " open" : ""} class="fixed inset-0 m-0 flex min-h-screen w-screen items-center justify-center p-4 backdrop:bg-slate-900/40"><div class="${classes}"><h2 id="${safeId}-title" class="text-lg font-semibold text-slate-900">${escapeHtml(title)}</h2>${descriptionHtml}<div class="mt-4">${safeContent}</div></div></dialog>`;
 };

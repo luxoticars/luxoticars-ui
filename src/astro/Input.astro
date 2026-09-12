@@ -1,6 +1,7 @@
 ---
 interface Props {
   id: string;
+  name?: string;
   label: string;
   type?: string;
   value?: string;
@@ -12,6 +13,7 @@ interface Props {
 
 const {
   id,
+  name = id,
   label,
   type = "text",
   value = "",
@@ -25,7 +27,7 @@ const {
 <label for={id} class="mb-2 block text-sm font-medium text-slate-900">{label}</label>
 <input
   id={id}
-  name={id}
+  name={name}
   type={type}
   value={value}
   placeholder={placeholder}

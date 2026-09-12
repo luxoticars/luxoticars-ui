@@ -34,4 +34,10 @@ import Dialog from "@luxoticars/ui/astro/Dialog.astro";
 </Dialog>
 ```
 
+You can also use extensionless Astro imports:
+
+```astro
+import Button from "@luxoticars/ui/astro/Button";
+```
+
 All components use accessibility-first defaults and Tailwind-friendly class names so they can be customized and extended.

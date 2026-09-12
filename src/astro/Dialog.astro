@@ -24,7 +24,7 @@ const descriptionId = `${id}-description`;
   aria-labelledby={`${id}-title`}
   aria-describedby={description ? descriptionId : undefined}
   open={open}
-  class="backdrop:bg-slate-900/40"
+  class="fixed inset-0 m-0 flex min-h-screen w-screen items-center justify-center p-4 backdrop:bg-slate-900/40"
 >
   <div class={`w-full max-w-lg rounded-lg bg-white p-6 shadow-xl focus-visible:outline-none ${className}`}>
     <h2 id={`${id}-title`} class="text-lg font-semibold text-slate-900">{title}</h2>
