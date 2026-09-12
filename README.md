@@ -162,6 +162,8 @@ there with bullet points and underlined links unless the component handles it.
 
 Every component has stories so a maintainer can eyeball it before release.
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development and testing guide.
+
 ```bash
 npm install
 npm run storybook        # dev server on http://localhost:6006
@@ -196,6 +198,17 @@ controls.
 Storybook is a development-only concern. It is not part of the published package:
 `files` limits the package to `src` and the README, and installing this package
 from Git pulls none of the Storybook dependencies.
+
+### Published Storybook
+
+`.github/workflows/storybook.yml` builds the Storybook and deploys it to GitHub
+Pages on every push to `main`, publishing to
+`https://luxoticars.github.io/luxoticars-ui/`.
+
+It uses the "GitHub Actions" Pages source rather than "Deploy from a branch", so
+the build output never has to be committed. Enable it once under
+**Settings → Pages → Build and deployment → Source: GitHub Actions**; until then
+the deploy job fails.
 
 ## Styling approach
 

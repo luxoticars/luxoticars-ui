@@ -1,0 +1,64 @@
+# Publishes the Storybook to GitHub Pages so maintainers can review components
+# in a browser without checking the repo out.
+#
+# This workflow does nothing until Pages is turned on for the repository:
+# Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
+# Until then the deploy job fails with a "Pages site not found" style error.
+#
+# The "GitHub Actions" source is used rather than "Deploy from a branch" so the
+# built Storybook never has to be committed. Branch deploys can only serve the
+# repo root or /docs, which would mean checking ~7 MB of build output into git
+# on every change.
+#
+# Forks: enable Pages the same way on your own fork to get your own preview at
+# https://<your-user>.github.io/luxoticars-ui/ without touching the upstream site.
+name: Storybook
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it, so Pages is never left
+# serving a half-published build.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      # Storybook emits relative asset paths, so the build works unchanged at
+      # the /luxoticars-ui/ project sub-path without a base URL setting.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: storybook-static
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
