@@ -4,8 +4,50 @@ Accessible Luxoticars components for HTML, Astro and Tailwind CSS.
 
 ## Installation
 
+This package is not published to npm. Install it straight from the Git repository:
+
 ```bash
-npm install @luxoticars/ui
+npm install github:luxoticars/luxoticars-ui
+# or
+pnpm add github:luxoticars/luxoticars-ui
+# or
+yarn add luxoticars/luxoticars-ui
+```
+
+This adds a dependency named `@luxoticars/ui` to your `package.json`, so all imports below work unchanged:
+
+```json
+{
+  "dependencies": {
+    "@luxoticars/ui": "github:luxoticars/luxoticars-ui"
+  }
+}
+```
+
+### Pinning a version
+
+Append a tag, branch or commit to lock the version you depend on:
+
+```bash
+npm install github:luxoticars/luxoticars-ui#v0.1.0
+npm install github:luxoticars/luxoticars-ui#main
+```
+
+Without a suffix the default branch is used and `npm update` will pick up new commits.
+
+### Private repository access
+
+If this repository is private, the machine running `npm install` needs Git access to it.
+Use the SSH form and an SSH key that can read the repo:
+
+```bash
+npm install git+ssh://git@github.com/luxoticars/luxoticars-ui.git
+```
+
+In CI, a personal access token also works:
+
+```bash
+npm install git+https://<TOKEN>@github.com/luxoticars/luxoticars-ui.git
 ```
 
 ## HTML API

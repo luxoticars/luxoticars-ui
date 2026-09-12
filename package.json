@@ -2,6 +2,11 @@
   "name": "@luxoticars/ui",
   "version": "0.1.0",
   "description": "Accessible components for HTML, Astro and Tailwind CSS.",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luxoticars/luxoticars-ui.git"
+  },
   "type": "module",
   "main": "./src/index.js",
   "exports": {
