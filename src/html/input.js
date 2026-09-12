@@ -15,10 +15,11 @@ export const createInput = ({
   className = ""
 } = {}) => {
   const safeId = escapeHtml(id);
+  const classes = joinClasses(inputClass, escapeHtml(className));
   const describedByAttr = describedBy
     ? ` aria-describedby="${escapeHtml(describedBy)}"`
     : "";
   const requiredAttr = required ? " required aria-required=\"true\"" : "";
 
-  return `<label for="${safeId}" class="${labelClass}">${escapeHtml(label)}</label><input id="${safeId}" name="${safeId}" type="${escapeHtml(type)}" value="${escapeHtml(value)}" placeholder="${escapeHtml(placeholder)}" class="${joinClasses(inputClass, className)}"${describedByAttr}${requiredAttr} />`;
+  return `<label for="${safeId}" class="${labelClass}">${escapeHtml(label)}</label><input id="${safeId}" name="${safeId}" type="${escapeHtml(type)}" value="${escapeHtml(value)}" placeholder="${escapeHtml(placeholder)}" class="${classes}"${describedByAttr}${requiredAttr} />`;
 };

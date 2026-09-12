@@ -13,6 +13,7 @@ export const createButton = ({
   const text = escapeHtml(label ?? "Button");
   const aria = ariaLabel ? ` aria-label="${escapeHtml(ariaLabel)}"` : "";
   const disabledAttr = disabled ? " disabled" : "";
+  const classes = joinClasses(baseClass, escapeHtml(className));
 
-  return `<button type="${escapeHtml(type)}" class="${joinClasses(baseClass, className)}"${aria}${disabledAttr}>${text}</button>`;
+  return `<button type="${escapeHtml(type)}" class="${classes}"${aria}${disabledAttr}>${text}</button>`;
 };
