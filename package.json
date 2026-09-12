@@ -1,0 +1,26 @@
+{
+  "name": "@luxoticars/ui",
+  "version": "0.1.0",
+  "description": "Accessible components for HTML, Astro and Tailwind CSS.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./html": "./src/html/index.js",
+    "./astro/Button.astro": "./src/astro/Button.astro",
+    "./astro/Input.astro": "./src/astro/Input.astro",
+    "./astro/Dialog.astro": "./src/astro/Dialog.astro"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "keywords": [
+    "accessibility",
+    "astro",
+    "tailwindcss",
+    "components",
+    "ui"
+  ],
+  "license": "MIT"
+}

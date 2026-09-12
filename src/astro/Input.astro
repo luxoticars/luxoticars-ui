@@ -1,0 +1,36 @@
+---
+interface Props {
+  id: string;
+  label: string;
+  type?: string;
+  value?: string;
+  placeholder?: string;
+  describedBy?: string;
+  required?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  label,
+  type = "text",
+  value = "",
+  placeholder = "",
+  describedBy,
+  required = false,
+  class: className = ""
+} = Astro.props as Props;
+---
+
+<label for={id} class="mb-2 block text-sm font-medium text-slate-900">{label}</label>
+<input
+  id={id}
+  name={id}
+  type={type}
+  value={value}
+  placeholder={placeholder}
+  class={`w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${className}`}
+  aria-describedby={describedBy}
+  aria-required={required}
+  required={required}
+/>
