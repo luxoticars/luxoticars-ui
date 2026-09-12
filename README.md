@@ -52,34 +52,25 @@ npm install git+https://<TOKEN>@github.com/luxoticars/luxoticars-ui.git
 
 ## HTML API
 
+String builders for contexts that render markup without Astro.
+
 ```js
-import { createButton, createInput, createDialog } from "@luxoticars/ui";
+import { createButton } from "@luxoticars/ui";
 
 const button = createButton({ label: "Continue" });
-const input = createInput({ id: "email", label: "Email" });
-const dialog = createDialog({ id: "confirm", title: "Confirm action" });
 ```
 
 ## Astro API
 
-```astro
----
-import Button from "@luxoticars/ui/astro/Button.astro";
-import Input from "@luxoticars/ui/astro/Input.astro";
-import Dialog from "@luxoticars/ui/astro/Dialog.astro";
----
-
-<Input id="email" label="Email" />
-<Button>Save</Button>
-<Dialog id="confirm" title="Confirm">
-  <p>Are you sure?</p>
-</Dialog>
-```
-
-You can also use extensionless Astro imports:
+Astro components are imported by subpath. Both the extensionless and `.astro`
+forms resolve to the same file:
 
 ```astro
-import Button from "@luxoticars/ui/astro/Button";
+---
+import Footer from "@luxoticars/ui/astro/Footer";
+// same component, if you prefer the explicit form:
+// import Footer from "@luxoticars/ui/astro/Footer.astro";
+---
 ```
 
 ## Footer
