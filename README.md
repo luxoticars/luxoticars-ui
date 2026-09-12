@@ -160,6 +160,45 @@ assuming the host provides a reset. `luxoticars-vi` loads Tailwind and gets that
 preflight; `luxoticars-homepage` ships no reset at all, and the same markup renders
 there with bullet points and underlined links unless the component handles it.
 
+## Storybook
+
+Every component has stories so a maintainer can eyeball it before release.
+
+```bash
+npm install
+npm run storybook        # dev server on http://localhost:6006
+npm run build-storybook  # static build in storybook-static/
+```
+
+Astro components have no browser runtime, and their scoped CSS is emitted by
+Astro's build rather than inlined into the rendered markup, so a `.astro` file
+cannot render inside a story on its own. The Vite plugin in
+`.storybook/astro-stories.ts` bridges that: it runs Astro's own pipeline in Node,
+renders each variant with the Container API, pulls the matching scoped CSS out of
+Astro's virtual style module, and hands both to the story. What you see in
+Storybook is the real compiled markup with its real styles.
+
+The consequence is that Astro stories are driven by a fixed list of variants
+rather than live Storybook controls. To add one, edit the component's variants
+file:
+
+```ts
+// stories/Footer.variants.ts
+const variants: Record<string, Variant> = {
+  Default: {},
+  Minimal: { props: { socials: [], tagline: "" } },
+  CustomLogo: { slots: { logo: '<a href="/">ACME</a>' } },
+};
+```
+
+Then export a story for it in `stories/Footer.stories.ts`. Plain JavaScript
+builders like `createButton` have no such constraint and use normal Storybook
+controls.
+
+Storybook is a development-only concern. It is not part of the published package:
+`files` limits the package to `src` and the README, and installing this package
+from Git pulls none of the Storybook dependencies.
+
 ## Styling approach
 
 Components carry their own scoped CSS and CSS custom properties rather than Tailwind
