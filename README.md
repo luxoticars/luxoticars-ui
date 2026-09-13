@@ -66,101 +66,59 @@ forms resolve to the same file:
 ```astro
 ---
 import Footer from "@luxoticars/ui/astro/Footer";
+import Button from "@luxoticars/ui/astro/ui/Button";
 // same component, if you prefer the explicit form:
 // import Footer from "@luxoticars/ui/astro/Footer.astro";
 ---
 ```
 
-## Footer
+**Per-component props, slots and examples are not documented here.** They live in
+Storybook, generated from each component's own types and JSDoc, so they cannot
+drift from the code the way a hand-written table in this file does. Run
+`npm run storybook`, or read the published build.
 
-The site footer shared by `luxoticars-homepage` and `luxoticars-vi`. It renders the
-full masthead, brand/company/enquiries columns and legal bar with no configuration:
+## Design tokens
 
-```astro
----
-import Footer from "@luxoticars/ui/astro/Footer";
----
+Colour comes from one shared token table, `@luxoticars/ui/styles/tokens.css`. The
+names are daisyUI's (`primary` / `primary-content`, `base-100..300`, `base-content`,
+`error`, `success`, `warning`, `info`, `accent`, `neutral`) and the values are copied
+from luxoticars-dash's `randomshark` themes, so a component renders identically in the
+dash and on luxoticars.cc.
 
-<Footer />
+**In a Tailwind app without daisyUI** (luxoticars-web), import the tokens and point
+Tailwind at the package. The `@source` line is not optional: Tailwind v4 does not scan
+`node_modules`, so without it every class in this package is treated as unused and
+purged, and components render as unstyled text.
+
+```css
+/* src/styles/global.css */
+@import "tailwindcss";
+@import "@luxoticars/ui/styles/tokens.css";
+@source "../../node_modules/@luxoticars/ui/src";
 ```
 
-Every piece of content is a prop, so a site overrides only what differs:
+**In an app that already has daisyUI** (luxoticars-dash), do *not* import
+`tokens.css` — daisyUI already emits the same token names and the two definitions
+would fight. Keep the `@source` line.
 
-```astro
----
-import Footer from "@luxoticars/ui/astro/Footer";
-import Logo from "../components/Logo.astro";
-import type { FooterLink } from "@luxoticars/ui/types";
+Light is the base theme. Dark applies under `prefers-color-scheme: dark`, and
+`data-theme="light"` / `data-theme="dark"` on `<html>` pins either one explicitly.
 
-const companyLinks: FooterLink[] = [
-  { label: "About Us", href: "/a/" },
-  { label: "Clients", href: "/a/clients" },
-  { label: "Car Reviews", href: "/a/reviews" },
-];
----
+Two rules the values encode, worth knowing before you reach for a token:
 
-<Footer brandsHeading="Shop" companyLinks={companyLinks}>
-  <Logo slot="logo" heading={false} />
-</Footer>
-```
-
-### Props
-
-| Prop | Default | Notes |
-| --- | --- | --- |
-| `siteTitle` | `"Luxoticars"` | Used by the fallback wordmark, social labels and copyright line. |
-| `homeHref` | `"/"` | Target of the fallback wordmark. |
-| `tagline` | shared copy | Set to `""` to drop the paragraph. |
-| `brandsHeading` | `"Shop by Brand"` | `luxoticars-vi` currently uses `"Shop"`. |
-| `brandLinks` | 10 marques | |
-| `companyHeading` | `"Luxoticars"` | |
-| `companyLinks` | About / Clients / Car Reviews | Slugs differ per site, so pass your own. |
-| `enquiriesHeading` | `"Enquiries"` | |
-| `enquiriesText` | shared copy | |
-| `contacts` | email + WhatsApp | `icon` is `"email"` or `"whatsapp"`. |
-| `socials` | 5 networks | Pass `[]` to hide the row. |
-| `legalLinks` | Privacy / Terms | |
-| `copyright` | `© <year> <siteTitle>. All rights reserved.` | Overrides the whole line. |
-| `year` | current year | |
-| `idPrefix` | `"footer"` | Only matters if a page renders two footers. |
-| `class` | `""` | Appended to the root `<footer>`. |
-
-Any link may set `external: true`, which adds `target="_blank"`, the matching `rel`,
-and a visually hidden "(opens in a new tab)" note.
-
-The `logo` slot replaces the built-in wordmark. Leave it empty and the component
-renders `siteTitle` as a home link, which is deliberately not an `<h1>`: a heading
-down in the footer gives every page a second level-1 heading after its real one.
-
-Defaults are importable on their own if you want to extend rather than replace a list:
-
-```ts
-import { brandLinks } from "@luxoticars/ui/data/footer";
-```
-
-### Theming
-
-The footer ships its own scoped CSS and does not require Tailwind. It reads these
-custom properties when the host app defines them and falls back to the Luxoticars
-palette when it does not:
-
-| Property | Fallback |
-| --- | --- |
-| `--color-marque-accent` | `oklch(0.74 0.16 232.661)` |
-| `--footer-bg` | `oklch(0.145 0 0)` |
-| `--footer-fg` | `oklch(0.87 0 0)` |
-| `--footer-muted` | `oklch(0.708 0 0)` |
-| `--footer-hairline` | `oklch(0.269 0 0)` |
-| `--font-futura` | inherited |
-
-It also resets its own list markers, link underlines and heading margins rather than
-assuming the host provides a reset. `luxoticars-vi` loads Tailwind and gets that from
-preflight; `luxoticars-homepage` ships no reset at all, and the same markup renders
-there with bullet points and underlined links unless the component handles it.
+- `primary` is the brand cyan and it is a **fill** colour. On a button it reads
+  11.14:1 against `primary-content`; as text on the light canvas it reads 1.35:1.
+  Use `accent` when you need the brand colour as text.
+- `-content` colours are calibrated against their solid fill. On a tinted background
+  (`bg-error/10`) use the status colour itself as text, not `error-content`.
+- Components may only use tokens **daisyUI also defines**, because the dash gets its
+  tokens from daisyUI rather than from this file. A token that exists only here
+  silently produces no utility there — that is how the focus ring went missing on the
+  dash before it used `ring-accent`.
 
 ## Storybook
 
-Every component has stories so a maintainer can eyeball it before release.
+Storybook is where components are reviewed and where their documentation lives.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development and testing guide.
 
@@ -170,30 +128,39 @@ npm run storybook        # dev server on http://localhost:6006
 npm run build-storybook  # static build in storybook-static/
 ```
 
-Astro components have no browser runtime, and their scoped CSS is emitted by
-Astro's build rather than inlined into the rendered markup, so a `.astro` file
-cannot render inside a story on its own. The Vite plugin in
-`.storybook/astro-stories.ts` bridges that: it runs Astro's own pipeline in Node,
-renders each variant with the Container API, pulls the matching scoped CSS out of
-Astro's virtual style module, and hands both to the story. What you see in
-Storybook is the real compiled markup with its real styles.
+Astro components have no browser runtime, so they cannot render in a story on
+their own. [`@storybook-astro/framework`](https://github.com/storybook-astro/storybook-astro)
+bridges that with Astro's Container API: in dev it renders through middleware
+over HMR, so args and the Controls panel drive a real Astro render; the static
+build pre-renders each story ahead of time, which is why Controls are inert on
+the published site.
 
-The consequence is that Astro stories are driven by a fixed list of variants
-rather than live Storybook controls. To add one, edit the component's variants
-file:
+Write a story with plain args. Slot content goes under the reserved `slots` key:
 
 ```ts
-// stories/Footer.variants.ts
-const variants: Record<string, Variant> = {
-  Default: {},
-  Minimal: { props: { socials: [], tagline: "" } },
-  CustomLogo: { slots: { logo: '<a href="/">ACME</a>' } },
+import Button from "../../src/astro/ui/Button.astro";
+
+export default {
+  title: "Components/Button",
+  component: Button,
+  tags: ["autodocs"],
+};
+
+export const Outline = {
+  args: { variant: "outline", slots: { default: "Enquire now" } },
 };
 ```
 
-Then export a story for it in `stories/Footer.stories.ts`. Plain JavaScript
-builders like `createButton` have no such constraint and use normal Storybook
-controls.
+`tags: ["autodocs"]` is what generates a component's documentation page. The
+props table and every description come from the component's own `Props` type and
+frontmatter JSDoc, so documenting a prop means writing the JSDoc next to it —
+not editing this file. That extraction needs `typescript` installed and a
+`tsconfig.json` at the repo root; without them the build still succeeds and the
+tables are silently empty.
+
+Stories live in `stories/` rather than beside their components, because
+`package.json#files` ships all of `src/` and co-located stories would land in
+every consumer's `node_modules`.
 
 Storybook is a development-only concern. It is not part of the published package:
 `files` limits the package to `src` and the README, and installing this package
@@ -212,7 +179,18 @@ the deploy job fails.
 
 ## Styling approach
 
-Components carry their own scoped CSS and CSS custom properties rather than Tailwind
-utility classes in the markup. Only one of the two consuming apps loads Tailwind, so a
-utility baked into shipped markup is dead text in the other. Custom properties work in
-both, and a Tailwind app can still restyle via the token table above.
+Two conventions coexist, deliberately.
+
+`Footer.astro` predates the token table and carries its own scoped CSS and custom
+properties, so it renders in an app with no Tailwind at all.
+
+Everything under `astro/ui/` ships Tailwind utility classes resolved against the
+shared tokens. These are the design-system primitives; they assume Tailwind v4 and
+the `@source` line above. `cn` (`clsx` + `tailwind-merge`) is exported as
+`@luxoticars/ui/utils/cn` so a consumer can drop their own copy and keep a single
+`tailwind-merge` in the bundle.
+
+Tree-shaking: Astro components are reached one subpath at a time and there is no
+barrel re-exporting them, so importing `Button` pulls in nothing else. Do not add an
+`index.ts` that re-exports `.astro` files — that barrel is not shakeable and would
+drag every component into every page's build graph.

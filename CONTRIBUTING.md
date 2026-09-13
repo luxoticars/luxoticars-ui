@@ -50,50 +50,56 @@ npm run storybook        # http://localhost:6006
 npm run build-storybook  # static build into storybook-static/
 ```
 
-### Why Astro stories look unusual
+### How Astro stories render
 
 Astro components have no browser runtime, and their scoped CSS is emitted by
 Astro's build rather than inlined into the rendered markup. A `.astro` file
 therefore cannot render inside a story on its own.
 
-The Vite plugin in `.storybook/astro-stories.ts` bridges that. It runs Astro's
-own pipeline in Node, renders each variant with the Container API, pulls the
-matching scoped CSS out of Astro's virtual style module, and hands both to the
-story. What Storybook shows is the real compiled markup with its real styles.
-
-The consequence is that Astro stories are driven by a fixed list of variants
-instead of live controls, because rendering happens ahead of time in Node.
+[`@storybook-astro/framework`](https://github.com/storybook-astro/storybook-astro)
+bridges that with Astro's Container API. In dev it renders through middleware
+over HMR, so args and the Controls panel drive a real Astro render. The static
+build pre-renders every story ahead of time, so Controls are inert on the
+published site.
 
 ## Adding to a component's stories
 
-Add a case to the component's variants file, then export a story for it.
-
-```ts
-// stories/Footer.variants.ts
-const variants: Record<string, Variant> = {
-  Default: {},
-  Minimal: { props: { socials: [], tagline: "" } },
-  CustomLogo: { slots: { logo: '<a href="/">ACME</a>' } },
-};
-```
+Export a story with plain args. Slot content goes under the reserved `slots`
+key; everything else is a prop.
 
 ```ts
 // stories/Footer.stories.ts
-export const Minimal = story("Minimal");
+export const Minimal = {
+  args: {
+    socials: [],
+    tagline: "",
+    slots: { logo: '<a href="/">ACME</a>' },
+  },
+};
 ```
-
-Plain JavaScript builders such as `createButton` have no such constraint. Their
-stories use ordinary Storybook args and controls.
 
 ## Adding a component
 
-1. Add `src/astro/<Name>.astro`.
-2. Add `stories/<Name>.variants.ts` and `stories/<Name>.stories.ts`. The Vite
-   plugin resolves `virtual:astro-story/<Name>` to those two files by name, so
-   the names must match the component.
-3. Export shared prop types from `src/types.d.ts`.
-4. No `package.json` change is needed. The `exports` map uses a wildcard, so
+1. Add `src/astro/<Name>.astro`, or `src/astro/ui/<Name>.astro` for a
+   design-system primitive.
+2. Document it in the component itself. The props table and descriptions on its
+   docs page are generated from the `Props` type and the JSDoc above each field,
+   so a prop is documented by writing JSDoc next to it. Do not add a props table
+   to `README.md` — it only duplicates the types and then drifts.
+3. Add `stories/<path>/<Name>.stories.ts` with `component` set to the imported
+   `.astro` file and `tags: ["autodocs"]`.
+4. Export shared prop types from `src/types.d.ts`.
+5. No `package.json` change is needed. The `exports` map uses a wildcard, so
    `@luxoticars/ui/astro/<Name>` resolves automatically.
+
+Docgen needs `typescript` installed and a `tsconfig.json` at the repo root. If
+either goes missing the Storybook build still succeeds and every props table is
+silently empty.
+
+`.npmrc` sets `legacy-peer-deps=true`. `@storybook-astro/framework` declares a
+`vitest@^4.1.0` peer, and Vite 8 pulls `vitest@5` in transitively through its
+devtools, so npm's strict peer resolution refuses to install. Nothing here uses
+vitest; drop the flag once that peer range widens.
 
 ### Style components so they work in both apps
 

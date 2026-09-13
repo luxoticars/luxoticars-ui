@@ -19,6 +19,11 @@
     "./types": {
       "types": "./src/types.d.ts"
     },
+    "./styles/tokens.css": "./src/styles/tokens.css",
+    "./utils/cn": {
+      "types": "./src/utils/cn.d.ts",
+      "default": "./src/utils/cn.js"
+    },
     "./data/footer": {
       "types": "./src/data/footer.d.ts",
       "default": "./src/data/footer.js"
@@ -38,11 +43,22 @@
     "ui"
   ],
   "license": "MIT",
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.7.0"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
   "devDependencies": {
+    "@storybook-astro/framework": "^1.12.0",
     "@storybook/addon-docs": "^10.6.0",
-    "@storybook/html-vite": "^10.6.0",
+    "@storybook/builder-vite": "^10.6.0",
+    "@tailwindcss/vite": "^4.1.18",
     "astro": "^7.3.2",
     "storybook": "^10.6.0",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3",
     "vite": "^8.3.0"
   }
 }

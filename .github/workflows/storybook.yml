@@ -1,5 +1,9 @@
 # Publishes the Storybook to GitHub Pages so maintainers can review components
-# in a browser without checking the repo out.
+# in a browser without checking the repo out. Also runs as PR CI: `build`
+# verifies `npm ci && npm run build-storybook` on every pull request (the
+# exact failure mode of a lockfile that's drifted from package.json, or a
+# config change that breaks the build), without deploying anything —
+# `deploy` and the Pages artifact upload are skipped for pull_request events.
 #
 # This workflow does nothing until Pages is turned on for the repository:
 # Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
@@ -17,6 +21,7 @@ name: Storybook
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -49,11 +54,14 @@ jobs:
 
       # Storybook emits relative asset paths, so the build works unchanged at
       # the /luxoticars-ui/ project sub-path without a base URL setting.
-      - uses: actions/upload-pages-artifact@v3
+      # Skipped on pull_request: nothing consumes the artifact without deploy.
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: storybook-static
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

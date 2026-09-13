@@ -1,20 +1,41 @@
-import type { Preview } from "@storybook/html-vite";
+import type { Preview } from "@storybook-astro/framework";
+import ThemeFrame from "./ThemeFrame.astro";
+import "./preview.css";
 
+/**
+ * Tokens resolve off `data-theme`, so the theme toolbar wraps every story in
+ * ThemeFrame.astro rather than mutating `document`. A decorator that touches
+ * the DOM (document.createElement, document.documentElement.dataset...)
+ * throws when @storybook-astro/framework composes decorators for the static
+ * build, which runs in Node — that silently dropped every Astro story from
+ * the published output. ThemeFrame is pure Astro, so it composes correctly
+ * in both dev and the static build.
+ */
 const preview: Preview = {
   parameters: {
     layout: "fullscreen",
-    // The footer is built for a dark page. Default the canvas to match so the
-    // component is reviewed against the background it actually ships on.
-    backgrounds: {
-      options: {
-        dark: { name: "Dark", value: "#0a0a0a" },
-        light: { name: "Light", value: "#ffffff" },
+    backgrounds: { disable: true },
+  },
+  globalTypes: {
+    theme: {
+      description: "Luxoticars theme",
+      toolbar: {
+        icon: "paintbrush",
+        items: [
+          { value: "dark", title: "Dark" },
+          { value: "light", title: "Light" },
+        ],
+        dynamicTitle: true,
       },
     },
   },
-  initialGlobals: {
-    backgrounds: { value: "dark" },
-  },
+  initialGlobals: { theme: "dark" },
+  decorators: [
+    (_Story, context) => ({
+      component: ThemeFrame,
+      props: { theme: context.globals.theme },
+    }),
+  ],
 };
 
 export default preview;

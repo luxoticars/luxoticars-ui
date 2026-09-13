@@ -1,2 +1,0 @@
-Astro requires a pages directory to exist. This one is deliberately empty: it
-keeps Storybook's Astro pipeline happy without adding scaffolding to src/.
