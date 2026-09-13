@@ -1,4 +1,15 @@
-# luxoticars-ui — branch & PR flow (fork → upstream)
+# luxoticars-ui
+
+`@luxoticars/ui` — Accessible Luxoticars components for HTML, Astro and Tailwind CSS. Not published to npm; consumers install it straight from the Git repo (`github:luxoticars/luxoticars-ui`).
+
+## What's in the package
+
+- **Dual API, one component:** every component ships both an HTML string-builder (`src/html/`, e.g. `createButton`) for markup-only contexts, and an Astro component (`src/astro/`, e.g. `astro/ui/Button`) for Astro projects. Both read from the same design tokens and utils.
+- **`src/index.js`** — entry for the HTML API. **`src/astro/*.astro`** — entry per Astro component, exported via `package.json#exports` subpaths (`./astro/*`).
+- **`src/styles/tokens.css`** — the design tokens, exported as `./styles/tokens.css`.
+- **`src/utils/cn`** — class-name merge helper (`clsx` + `tailwind-merge`), and **`src/data/footer`** — shared footer data. Both are JS with hand-written `.d.ts` siblings (see typing convention below).
+- **`src/types.d.ts`** — shared type exports (`./types`).
+- Docs for props/slots/examples live in **Storybook**, generated from each component's types and JSDoc — not hand-written in README, so they can't drift from the code (`npm run storybook`).
 
 ## Repo topology
 
