@@ -82,6 +82,40 @@
   --radius-field: 0.25rem;
 }
 
+/*
+  Explicit opt-in, for when "light" needs to win on a subtree that is not
+  :root itself (e.g. a Storybook theme-preview wrapper) — the dark media
+  query only guards bare :root, so without this a nested [data-theme="light"]
+  would inherit dark values from a dark-OS :root instead of overriding them.
+*/
+[data-theme="light"] {
+  --lux-base-100: oklch(97.2% 0.004 264.7);
+  --lux-base-200: oklch(93% 0.005 264.7);
+  --lux-base-300: oklch(80% 0.008 264.7);
+  --lux-base-content: oklch(20% 0.018 264);
+
+  --lux-primary: oklch(86% 0.127 207.078);
+  --lux-primary-content: oklch(25% 0.09 281.288);
+  --lux-secondary: oklch(45% 0.02 286);
+  --lux-secondary-content: oklch(100% 0 0);
+  --lux-accent: oklch(52% 0.16 232.661);
+  --lux-accent-content: oklch(100% 0 0);
+
+  --lux-neutral: oklch(12% 0.042 264.695);
+  --lux-neutral-content: oklch(96% 0.003 264.542);
+
+  --lux-info: oklch(48% 0.154 245);
+  --lux-info-content: oklch(100% 0 0);
+  --lux-success: oklch(50% 0.177 163.223);
+  --lux-success-content: oklch(100% 0 0);
+  --lux-warning: oklch(54% 0.199 91.936);
+  --lux-warning-content: oklch(100% 0 0);
+  --lux-error: oklch(57% 0.194 13.428);
+  --lux-error-content: oklch(100% 0 0);
+
+  --radius-field: 0.25rem;
+}
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --lux-base-100: oklch(19% 0.052 264.7);

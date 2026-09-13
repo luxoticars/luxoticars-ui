@@ -116,7 +116,7 @@ const iconOnlySizeStyles: Record<ButtonSize, string> = {
   removed, `href` dropped so it is not activatable, and `aria-disabled` set so
   assistive tech reports the state a real `<button disabled>` would.
 */
-const isDisabledLink = Boolean(href) && disabled;
+const isDisabledLink = href !== undefined && disabled;
 
 const classes = cn(
   baseStyles,
@@ -129,14 +129,14 @@ const classes = cn(
 ---
 
 {
-  href ? (
+  href !== undefined ? (
     <a
+      {...props}
       href={isDisabledLink ? undefined : href}
       role={isDisabledLink ? "link" : undefined}
       aria-disabled={isDisabledLink ? "true" : undefined}
       tabindex={isDisabledLink ? -1 : undefined}
       class={classes}
-      {...props}
     >
       <slot name="left-icon" />
       <slot />

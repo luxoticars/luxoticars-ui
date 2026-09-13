@@ -1,10 +1,15 @@
 import type { Preview } from "@storybook-astro/framework";
+import ThemeFrame from "./ThemeFrame.astro";
 import "./preview.css";
 
 /**
- * Tokens resolve off `data-theme` on <html>, so the theme toolbar has to set
- * that attribute rather than only recolouring the Storybook canvas — otherwise
- * the canvas and the component disagree about which theme is active.
+ * Tokens resolve off `data-theme`, so the theme toolbar wraps every story in
+ * ThemeFrame.astro rather than mutating `document`. A decorator that touches
+ * the DOM (document.createElement, document.documentElement.dataset...)
+ * throws when @storybook-astro/framework composes decorators for the static
+ * build, which runs in Node — that silently dropped every Astro story from
+ * the published output. ThemeFrame is pure Astro, so it composes correctly
+ * in both dev and the static build.
  */
 const preview: Preview = {
   parameters: {
@@ -26,13 +31,10 @@ const preview: Preview = {
   },
   initialGlobals: { theme: "dark" },
   decorators: [
-    (story, context) => {
-      document.documentElement.dataset.theme = context.globals.theme;
-      const host = document.createElement("div");
-      host.className = "bg-base-100 text-base-content";
-      host.append(story() as Node);
-      return host;
-    },
+    (_Story, context) => ({
+      component: ThemeFrame,
+      props: { theme: context.globals.theme },
+    }),
   ],
 };
 

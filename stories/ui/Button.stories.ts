@@ -56,10 +56,20 @@ export const AsLink = {
 
 /**
  * An `<a>` ignores `disabled`, so the component drops `href`, sets
- * `aria-disabled` and dims the link itself. Check the markup, not just the pixels.
+ * `aria-disabled` and dims the link itself. Check the markup, not just the
+ * pixels — and note the deliberately conflicting `tabindex`/`aria-disabled`
+ * args: they regression-test that the enforced disabled-state attributes are
+ * applied after the caller's spread props, not before, since Astro lets a
+ * later attribute silently win over an earlier one of the same name.
  */
 export const DisabledLink = {
-  args: { href: "/inventory", disabled: true, tabindex: 5, "aria-disabled": "false", slots: { default: "Browse inventory" } },
+  args: {
+    href: "/inventory",
+    disabled: true,
+    tabindex: 5,
+    "aria-disabled": "false",
+    slots: { default: "Browse inventory" },
+  },
 };
 
 export const DisabledButton = { args: { disabled: true } };
