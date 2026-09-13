@@ -1,0 +1,11 @@
+/*
+  Tailwind for the Storybook preview only. Components ship utility classes and
+  no CSS of their own, so without this the canvas shows unstyled markup.
+
+  `@source` is required: Tailwind v4 scans the consumer project and ignores
+  node_modules, and here the "consumer" is the preview bundle while the classes
+  live in ../src. Consumers of the package need the same line — see README.
+*/
+@import "tailwindcss";
+@import "../src/styles/tokens.css";
+@source "../src";
