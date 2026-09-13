@@ -96,6 +96,11 @@ Docgen needs `typescript` installed and a `tsconfig.json` at the repo root. If
 either goes missing the Storybook build still succeeds and every props table is
 silently empty.
 
+`.npmrc` sets `legacy-peer-deps=true`. `@storybook-astro/framework` declares a
+`vitest@^4.1.0` peer, and Vite 8 pulls `vitest@5` in transitively through its
+devtools, so npm's strict peer resolution refuses to install. Nothing here uses
+vitest; drop the flag once that peer range widens.
+
 ### Style components so they work in both apps
 
 This is the constraint that catches people out. `luxoticars-vi` loads Tailwind;

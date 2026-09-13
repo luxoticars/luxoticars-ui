@@ -75,7 +75,7 @@ import Button from "@luxoticars/ui/astro/ui/Button";
 **Per-component props, slots and examples are not documented here.** They live in
 Storybook, generated from each component's own types and JSDoc, so they cannot
 drift from the code the way a hand-written table in this file does. Run
-`pnpm storybook`, or read the published build.
+`npm run storybook`, or read the published build.
 
 ## Design tokens
 
@@ -123,9 +123,9 @@ Storybook is where components are reviewed and where their documentation lives.
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development and testing guide.
 
 ```bash
-pnpm install
-pnpm storybook        # dev server on http://localhost:6006
-pnpm build-storybook  # static build in storybook-static/
+npm install
+npm run storybook        # dev server on http://localhost:6006
+npm run build-storybook  # static build in storybook-static/
 ```
 
 Astro components have no browser runtime, so they cannot render in a story on
