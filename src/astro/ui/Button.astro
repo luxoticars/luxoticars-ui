@@ -1,0 +1,132 @@
+---
+import { cn } from "../../utils/cn.js";
+import type { HTMLAttributes } from "astro/types";
+
+export type ButtonVariant =
+  | "default"
+  | "destructive"
+  | "outline"
+  | "secondary"
+  | "ghost"
+  | "link"
+  | "success"
+  | "warning"
+  | "info";
+
+export type ButtonSize = "xs" | "sm" | "default" | "lg" | "xl";
+
+interface Shared {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  iconOnly?: boolean;
+  pill?: boolean;
+  disabled?: boolean;
+}
+
+/**
+ * With `href` the component renders an `<a>` and accepts anchor attributes
+ * (`target`, `rel`, `download`); without it, a `<button>`. Keeping these as a
+ * union means the spread is type-checked against the element actually rendered.
+ */
+export type Props =
+  | (Shared & HTMLAttributes<"button"> & { href?: undefined })
+  | (Shared & Omit<HTMLAttributes<"a">, "href"> & { href: string });
+
+const {
+  variant = "default",
+  size = "default",
+  iconOnly = false,
+  pill = false,
+  href,
+  disabled = false,
+  class: className,
+  ...props
+} = Astro.props;
+
+const baseStyles =
+  "inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0";
+
+/*
+  Solid variants pair a fill with its `-content` colour. Status variants are
+  tinted instead, and use the status colour as TEXT — `-content` colours are
+  calibrated against the solid fill and would be invisible on a 10% tint.
+  `link` uses accent rather than primary: primary is a fill colour and reads
+  1.35:1 as text on the light canvas.
+*/
+const variantStyles: Record<ButtonVariant, string> = {
+  default: "bg-primary text-primary-content hover:bg-primary/90",
+  destructive: "bg-error/10 text-error hover:bg-error/20",
+  outline: "border border-base-300 bg-base-100 text-base-content hover:bg-base-200",
+  secondary: "bg-secondary text-secondary-content hover:bg-secondary/80",
+  ghost: "text-base-content hover:bg-base-200",
+  link: "text-accent underline-offset-4 hover:underline",
+  success: "bg-success/10 text-success hover:bg-success/20",
+  warning: "bg-warning/10 text-warning hover:bg-warning/20",
+  info: "bg-info/10 text-info hover:bg-info/20",
+};
+
+const sizeStyles: Record<ButtonSize, string> = {
+  xs: "h-7 px-2.5 gap-1.5 text-xs [&_svg]:size-3",
+  sm: "h-8 px-3 gap-1.5 text-xs [&_svg]:size-3.5",
+  default: "h-9 px-4 gap-2 text-sm [&_svg]:size-4",
+  lg: "h-10 px-6 gap-2.5 text-base [&_svg]:size-5",
+  xl: "h-11 px-8 gap-3 text-lg [&_svg]:size-5",
+};
+
+const iconOnlySizeStyles: Record<ButtonSize, string> = {
+  xs: "size-7 text-xs [&_svg]:size-3",
+  sm: "size-8 text-xs [&_svg]:size-3.5",
+  default: "size-9 text-sm [&_svg]:size-4",
+  lg: "size-10 text-base [&_svg]:size-5",
+  xl: "size-11 text-lg [&_svg]:size-5",
+};
+
+const radiusStyles: Record<ButtonSize, string> = {
+  xs: "rounded-sm",
+  sm: "rounded-md",
+  default: "rounded-md",
+  lg: "rounded-md",
+  xl: "rounded-lg",
+};
+
+/*
+  An `<a>` cannot be disabled: the attribute is ignored, so `disabled:*`
+  utilities never fire and the link stays clickable. A disabled link is
+  therefore rendered with the dimming applied unconditionally, pointer events
+  removed, `href` dropped so it is not activatable, and `aria-disabled` set so
+  assistive tech reports the state a real `<button disabled>` would.
+*/
+const isDisabledLink = Boolean(href) && disabled;
+
+const classes = cn(
+  baseStyles,
+  variantStyles[variant],
+  iconOnly ? iconOnlySizeStyles[size] : sizeStyles[size],
+  pill ? "rounded-full" : radiusStyles[size],
+  isDisabledLink && "pointer-events-none opacity-50",
+  className,
+);
+---
+
+{
+  href ? (
+    <a
+      href={isDisabledLink ? undefined : href}
+      role={isDisabledLink ? "link" : undefined}
+      aria-disabled={isDisabledLink ? "true" : undefined}
+      tabindex={isDisabledLink ? -1 : undefined}
+      class={classes}
+      {...props}
+    >
+      <slot name="left-icon" />
+      <slot />
+      <slot name="right-icon" />
+    </a>
+  ) : (
+    <button type="button" class={classes} disabled={disabled} {...props}>
+      <slot name="left-icon" />
+      <slot />
+      <slot name="right-icon" />
+    </button>
+  )
+}

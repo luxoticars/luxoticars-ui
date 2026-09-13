@@ -71,6 +71,66 @@ import Footer from "@luxoticars/ui/astro/Footer";
 ---
 ```
 
+## Design tokens
+
+Colour comes from one shared token table, `@luxoticars/ui/styles/tokens.css`. The
+names are daisyUI's (`primary` / `primary-content`, `base-100..300`, `base-content`,
+`error`, `success`, `warning`, `info`, `accent`, `neutral`) and the values are copied
+from luxoticars-dash's `randomshark` themes, so a component renders identically in the
+dash and on luxoticars.cc.
+
+**In a Tailwind app without daisyUI** (luxoticars-web), import the tokens and point
+Tailwind at the package. The `@source` line is not optional: Tailwind v4 does not scan
+`node_modules`, so without it every class in this package is treated as unused and
+purged, and components render as unstyled text.
+
+```css
+/* src/styles/global.css */
+@import "tailwindcss";
+@import "@luxoticars/ui/styles/tokens.css";
+@source "../../node_modules/@luxoticars/ui/src";
+```
+
+**In an app that already has daisyUI** (luxoticars-dash), do *not* import
+`tokens.css` — daisyUI already emits the same token names and the two definitions
+would fight. Keep the `@source` line.
+
+Light is the base theme. Dark applies under `prefers-color-scheme: dark`, and
+`data-theme="light"` / `data-theme="dark"` on `<html>` pins either one explicitly.
+
+Two rules the values encode, worth knowing before you reach for a token:
+
+- `primary` is the brand cyan and it is a **fill** colour. On a button it reads
+  11.14:1 against `primary-content`; as text on the light canvas it reads 1.35:1.
+  Use `accent` when you need the brand colour as text.
+- `-content` colours are calibrated against their solid fill. On a tinted background
+  (`bg-error/10`) use the status colour itself as text, not `error-content`.
+- Components may only use tokens **daisyUI also defines**, because the dash gets its
+  tokens from daisyUI rather than from this file. A token that exists only here
+  silently produces no utility there — that is how the focus ring went missing on the
+  dash before it used `ring-accent`.
+
+## Button
+
+```astro
+---
+import Button from "@luxoticars/ui/astro/ui/Button";
+---
+<Button variant="outline" size="lg">Enquire now</Button>
+<Button href="/inventory">Browse inventory</Button>
+```
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `variant` | `default` \| `destructive` \| `outline` \| `secondary` \| `ghost` \| `link` \| `success` \| `warning` \| `info` | `default` | `default` and `secondary` are solid fills; the four status variants are tints. |
+| `size` | `xs` \| `sm` \| `default` \| `lg` \| `xl` | `default` | Also scales the border radius and any slotted SVG. |
+| `iconOnly` | `boolean` | `false` | Square. Pass your own `aria-label`. |
+| `pill` | `boolean` | `false` | Fully rounded, overriding the size radius. |
+| `href` | `string` | — | Renders an `<a>` instead of a `<button>`, and accepts anchor attributes (`target`, `rel`, `download`). |
+| `disabled` | `boolean` | `false` | On the `<a>` branch the `href` is dropped and `aria-disabled` set, because an anchor ignores `disabled`. |
+
+Slots: default (label), `left-icon`, `right-icon`.
+
 ## Footer
 
 The site footer shared by `luxoticars-homepage` and `luxoticars-vi`. It renders the
@@ -212,7 +272,18 @@ the deploy job fails.
 
 ## Styling approach
 
-Components carry their own scoped CSS and CSS custom properties rather than Tailwind
-utility classes in the markup. Only one of the two consuming apps loads Tailwind, so a
-utility baked into shipped markup is dead text in the other. Custom properties work in
-both, and a Tailwind app can still restyle via the token table above.
+Two conventions coexist, deliberately.
+
+`Footer.astro` predates the token table and carries its own scoped CSS and custom
+properties, so it renders in an app with no Tailwind at all.
+
+Everything under `astro/ui/` ships Tailwind utility classes resolved against the
+shared tokens. These are the design-system primitives; they assume Tailwind v4 and
+the `@source` line above. `cn` (`clsx` + `tailwind-merge`) is exported as
+`@luxoticars/ui/utils/cn` so a consumer can drop their own copy and keep a single
+`tailwind-merge` in the bundle.
+
+Tree-shaking: Astro components are reached one subpath at a time and there is no
+barrel re-exporting them, so importing `Button` pulls in nothing else. Do not add an
+`index.ts` that re-exports `.astro` files — that barrel is not shakeable and would
+drag every component into every page's build graph.
