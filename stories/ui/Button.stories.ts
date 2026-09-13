@@ -58,9 +58,10 @@ export const AsLink = {
  * An `<a>` ignores `disabled`, so the component drops `href`, sets
  * `aria-disabled` and dims the link itself. Check the markup, not just the
  * pixels — and note the deliberately conflicting `tabindex`/`aria-disabled`
- * args: they regression-test that the enforced disabled-state attributes are
- * applied after the caller's spread props, not before, since Astro lets a
- * later attribute silently win over an earlier one of the same name.
+ * args: they regression-test that a caller cannot re-enable a disabled link.
+ * Astro renders a spread attribute and an explicit one of the same name as two
+ * attributes and an HTML parser keeps the first, so the component has to drop
+ * the caller's key rather than write the enforced value after it.
  */
 export const DisabledLink = {
   args: {
@@ -73,3 +74,12 @@ export const DisabledLink = {
 };
 
 export const DisabledButton = { args: { disabled: true } };
+
+/**
+ * `type` is forwarded, for the same duplicate-attribute reason as above: the
+ * built-in `type="button"` must not shadow a caller's own, or a Button inside
+ * a form never submits it.
+ */
+export const Submit = {
+  args: { type: "submit", slots: { default: "Save changes" } },
+};

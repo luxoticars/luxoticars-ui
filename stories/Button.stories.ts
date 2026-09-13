@@ -1,4 +1,5 @@
 import { createButton } from "../src/html/button";
+import type { ButtonOptions } from "../src/html/button";
 
 /**
  * `createButton` is a plain string builder with no Astro involved, so stories
@@ -6,7 +7,8 @@ import { createButton } from "../src/html/button";
  */
 export default {
   title: "HTML/createButton",
-  render: (args: Parameters<typeof createButton>[0]) => {
+  tags: ["autodocs"],
+  render: (args: ButtonOptions) => {
     const host = document.createElement("div");
     host.style.padding = "2rem";
     host.innerHTML = createButton(args);
@@ -19,7 +21,7 @@ export default {
     className: { control: "text" },
     disabled: { control: "boolean" },
   },
-  args: { label: "Continue", type: "button", disabled: false },
+  args: { label: "Continue", type: "button", disabled: false } satisfies ButtonOptions,
   parameters: {
     docs: {
       description: {
