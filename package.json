@@ -14,8 +14,14 @@
     "build-storybook": "storybook build"
   },
   "exports": {
-    ".": "./src/index.js",
-    "./html": "./src/html/index.js",
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./html": {
+      "types": "./src/html/index.d.ts",
+      "default": "./src/html/index.js"
+    },
     "./types": {
       "types": "./src/types.d.ts"
     },

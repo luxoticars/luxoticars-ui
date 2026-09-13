@@ -60,6 +60,8 @@ export type Props =
   | (Shared & HTMLAttributes<"button"> & { href?: undefined })
   | (Shared & Omit<HTMLAttributes<"a">, "href"> & { href: string });
 
+const props = Astro.props;
+
 const {
   variant = "default",
   size = "default",
@@ -68,8 +70,36 @@ const {
   href,
   disabled = false,
   class: className,
-  ...props
-} = Astro.props;
+} = props;
+
+/*
+  Splits the component's own props off the attributes that belong to the element
+  being rendered. It is generic and called on an already narrowed `Astro.props`,
+  so each branch below spreads exactly that element's attributes.
+
+  Destructuring a rest object here in the frontmatter instead — `const { href,
+  ...props } = Astro.props` — is what was broken: narrowing `href` cannot narrow
+  a rest object bound separately from it, so the rest stayed the union of BOTH
+  branches and every spread was checked against both. `<a type="…">` is a MIME
+  string, so that union put `type: string` on the `<button>` branch, where it
+  collides with `type="button"` — the one thing this union was introduced to
+  prevent. `astro check` reported it as: Type 'string' is not assignable to type
+  '"button" | "submit" | "reset" | null | undefined'.
+*/
+function elementAttributes<T extends Props>(all: T) {
+  const {
+    variant: _variant,
+    size: _size,
+    iconOnly: _iconOnly,
+    pill: _pill,
+    disabled: _disabled,
+    href: _href,
+    class: _class,
+    ...attributes
+  } = all;
+
+  return attributes;
+}
 
 const baseStyles =
   "inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0";
@@ -118,6 +148,36 @@ const iconOnlySizeStyles: Record<ButtonSize, string> = {
 */
 const isDisabledLink = href !== undefined && disabled;
 
+/*
+  Attributes for the `<a>`. On a disabled link the caller's own `role`,
+  `tabindex` and `aria-disabled` are REMOVED rather than overridden. Astro emits
+  a spread's attribute and an explicit attribute of the same name as two
+  attributes, and an HTML parser keeps the FIRST of a duplicated pair — so an
+  enforced value written after the spread never reaches the DOM. That is what
+  `<Button href="/x" disabled tabindex="5" aria-disabled="false">` did: the
+  markup carried `tabindex="-1" aria-disabled="true"` further along, yet the
+  parsed link stayed focusable and reported itself as enabled.
+*/
+function anchorAttributes<T extends Props & { href: string }>(all: T) {
+  const { role, tabindex, "aria-disabled": ariaDisabled, ...rest } = elementAttributes(all);
+
+  return isDisabledLink
+    ? { ...rest, role: "link" as const, tabindex: -1, "aria-disabled": "true" as const }
+    : { ...rest, role, tabindex, "aria-disabled": ariaDisabled };
+}
+
+/*
+  Attributes for the `<button>`. `type` is taken out of the spread and defaulted
+  here for the same reason: written as a plain `type="button"` next to the
+  spread it duplicated a caller's own `type`, and the first of the pair wins, so
+  `<Button type="submit">` rendered a plain button and never submitted its form.
+*/
+function buttonAttributes<T extends Props & { href?: undefined }>(all: T) {
+  const { type, ...rest } = elementAttributes(all);
+
+  return { ...rest, type: type ?? ("button" as const) };
+}
+
 const classes = cn(
   baseStyles,
   variantStyles[variant],
@@ -129,21 +189,14 @@ const classes = cn(
 ---
 
 {
-  href !== undefined ? (
-    <a
-      {...props}
-      href={isDisabledLink ? undefined : href}
-      role={isDisabledLink ? "link" : undefined}
-      aria-disabled={isDisabledLink ? "true" : undefined}
-      tabindex={isDisabledLink ? -1 : undefined}
-      class={classes}
-    >
+  props.href !== undefined ? (
+    <a {...anchorAttributes(props)} href={isDisabledLink ? undefined : props.href} class={classes}>
       <slot name="left-icon" />
       <slot />
       <slot name="right-icon" />
     </a>
   ) : (
-    <button type="button" class={classes} disabled={disabled} {...props}>
+    <button {...buttonAttributes(props)} class={classes} disabled={disabled}>
       <slot name="left-icon" />
       <slot />
       <slot name="right-icon" />
