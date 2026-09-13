@@ -1,33 +1,69 @@
-import { css, variants } from "virtual:astro-story/Footer";
-import { renderAstro } from "./render-astro";
+import Footer from "../src/astro/Footer.astro";
+import type { FooterLink } from "../src/types";
 
-const story = (key: keyof typeof variants) => ({
-  render: () => renderAstro(css, variants[key], "astro-style-footer"),
-});
+const homepageCompany: FooterLink[] = [
+  { label: "About Us", href: "/a/" },
+  { label: "Clients", href: "/a/clients" },
+  { label: "Car Reviews", href: "/a/reviews" },
+];
 
 export default {
   title: "Components/Footer",
-  parameters: {
-    docs: {
-      description: {
-        component:
-          "The site footer shared by luxoticars-homepage and luxoticars-vi. " +
-          "Rendered through Astro in Node, so what you see is the real compiled " +
-          "markup with its real scoped styles. Variants live in stories/Footer.variants.ts.",
-      },
+  component: Footer,
+  tags: ["autodocs"],
+  argTypes: {
+    slots: { table: { disable: true } },
+  },
+};
+
+/** Shipped defaults, no configuration at all. */
+export const Default = {};
+
+/** How luxoticars-homepage configures it. */
+export const Homepage = {
+  args: { companyLinks: homepageCompany },
+};
+
+/** How luxoticars-vi configures it: different heading and legal slugs. */
+export const Vi = {
+  args: {
+    brandsHeading: "Shop",
+    legalLinks: [
+      { label: "Privacy Policy", href: "/a/privacy-policy/" },
+      { label: "Terms of Services", href: "/a/terms-of-services/" },
+    ],
+  },
+};
+
+/** A caller-supplied logo replaces the built-in wordmark. */
+export const CustomLogo = {
+  args: {
+    slots: {
+      logo: '<a href="/" style="font:700 1.5rem/1 system-ui;color:#fff;letter-spacing:.08em">ACME</a>',
     },
   },
 };
 
-export const Default = story("Default");
-export const Homepage = story("Homepage");
-export const Vi = story("Vi");
-export const CustomLogo = story("CustomLogo");
-export const Minimal = story("Minimal");
-export const ExternalLinks = story("ExternalLinks");
+/** Socials hidden and a single legal link, to check the layout still balances. */
+export const Minimal = {
+  args: {
+    socials: [],
+    legalLinks: [{ label: "Privacy Policy", href: "/a/privacy-policy/" }],
+    tagline: "",
+  },
+};
+
+/** Every link opens in a new tab, exercising the visually hidden note. */
+export const ExternalLinks = {
+  args: {
+    companyLinks: [
+      { label: "About Us", href: "https://example.com/about", external: true },
+      { label: "Careers", href: "https://jobs.example.com", external: true },
+    ],
+  },
+};
 
 /** Narrow viewport, where the columns stack. */
 export const Mobile = {
-  ...story("Default"),
   globals: { viewport: { value: "mobile1", isRotated: false } },
 };

@@ -1,37 +1,65 @@
-import { css, variants } from "virtual:astro-story/ui/Button";
-import { renderAstro } from "../render-astro";
+import Button from "../../src/astro/ui/Button.astro";
 
-const story = (key: keyof typeof variants) => ({
-  render: () => renderAstro(css, variants[key], "astro-style-button"),
-});
+const ICON =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
 
 export default {
   title: "Components/Button",
-  parameters: {
-    docs: {
-      description: {
-        component:
-          "Renders a <button>, or an <a> when `href` is set. Colours come from " +
-          "the shared design tokens in src/styles/tokens.css — switch the " +
-          "background between Dark and Light to check both themes. Variants " +
-          "live in stories/ui/Button.variants.ts.",
-      },
-    },
+  component: Button,
+  tags: ["autodocs"],
+  args: {
+    slots: { default: "Enquire now" },
+  },
+  argTypes: {
+    slots: { table: { disable: true } },
   },
 };
 
-export const Default = story("Default");
-export const Destructive = story("Destructive");
-export const Outline = story("Outline");
-export const Secondary = story("Secondary");
-export const Ghost = story("Ghost");
-export const Link = story("Link");
-export const Success = story("Success");
-export const Warning = story("Warning");
-export const Info = story("Info");
-export const WithRightIcon = story("WithRightIcon");
-export const IconOnly = story("IconOnly");
-export const Pill = story("Pill");
-export const AsLink = story("AsLink");
-export const DisabledLink = story("DisabledLink");
-export const DisabledButton = story("DisabledButton");
+export const Default = {};
+
+export const Variants = {
+  args: { variant: "outline" },
+};
+
+export const Destructive = {
+  args: { variant: "destructive", slots: { default: "Delete listing" } },
+};
+
+export const Secondary = { args: { variant: "secondary" } };
+export const Ghost = { args: { variant: "ghost", slots: { default: "Dismiss" } } };
+export const Link = { args: { variant: "link", slots: { default: "View all cars" } } };
+export const Success = { args: { variant: "success", slots: { default: "Published" } } };
+export const Warning = { args: { variant: "warning", slots: { default: "Payment due" } } };
+export const Info = { args: { variant: "info", slots: { default: "Under review" } } };
+
+export const Large = { args: { size: "xl" } };
+export const Small = { args: { size: "xs" } };
+export const Pill = { args: { pill: true, slots: { default: "Featured" } } };
+
+export const WithRightIcon = {
+  args: { slots: { default: "Continue", "right-icon": ICON } },
+};
+
+export const IconOnly = {
+  args: {
+    iconOnly: true,
+    variant: "outline",
+    "aria-label": "Next",
+    slots: { default: ICON },
+  },
+};
+
+/** Renders an `<a>`, not a `<button>`. */
+export const AsLink = {
+  args: { href: "/inventory", variant: "outline", slots: { default: "Browse inventory" } },
+};
+
+/**
+ * An `<a>` ignores `disabled`, so the component drops `href`, sets
+ * `aria-disabled` and dims the link itself. Check the markup, not just the pixels.
+ */
+export const DisabledLink = {
+  args: { href: "/inventory", disabled: true, slots: { default: "Browse inventory" } },
+};
+
+export const DisabledButton = { args: { disabled: true } };

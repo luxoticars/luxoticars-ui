@@ -16,17 +16,45 @@ export type ButtonVariant =
 export type ButtonSize = "xs" | "sm" | "default" | "lg" | "xl";
 
 interface Shared {
+  /**
+   * Visual treatment. `default` and `secondary` are solid fills; the four
+   * status variants are tints that use the status colour as text.
+   * @default "default"
+   */
   variant?: ButtonVariant;
+  /**
+   * Height, padding, type scale and the size of any slotted SVG.
+   * @default "default"
+   */
   size?: ButtonSize;
+  /**
+   * Square button sized for a single icon. Pass your own `aria-label`: the
+   * component cannot infer one from an SVG slot.
+   * @default false
+   */
   iconOnly?: boolean;
+  /** Fully rounded, overriding the theme's control radius. @default false */
   pill?: boolean;
+  /**
+   * On the `<a>` branch this drops `href` and sets `aria-disabled`, because an
+   * anchor ignores `disabled`.
+   * @default false
+   */
   disabled?: boolean;
 }
 
 /**
+ * A button, or a link that looks like one.
+ *
  * With `href` the component renders an `<a>` and accepts anchor attributes
  * (`target`, `rel`, `download`); without it, a `<button>`. Keeping these as a
  * union means the spread is type-checked against the element actually rendered.
+ *
+ * Slots: default (the label), `left-icon`, `right-icon`.
+ *
+ * Colours and radius come from the shared design tokens. Only tokens daisyUI
+ * also defines may be used here — the dash sources its tokens from daisyUI, so
+ * anything defined only in `styles/tokens.css` silently produces no utility there.
  */
 export type Props =
   | (Shared & HTMLAttributes<"button"> & { href?: undefined })
@@ -81,14 +109,6 @@ const iconOnlySizeStyles: Record<ButtonSize, string> = {
   xl: "size-11 text-lg [&_svg]:size-5",
 };
 
-const radiusStyles: Record<ButtonSize, string> = {
-  xs: "rounded-sm",
-  sm: "rounded-md",
-  default: "rounded-md",
-  lg: "rounded-md",
-  xl: "rounded-lg",
-};
-
 /*
   An `<a>` cannot be disabled: the attribute is ignored, so `disabled:*`
   utilities never fire and the link stays clickable. A disabled link is
@@ -102,7 +122,7 @@ const classes = cn(
   baseStyles,
   variantStyles[variant],
   iconOnly ? iconOnlySizeStyles[size] : sizeStyles[size],
-  pill ? "rounded-full" : radiusStyles[size],
+  pill ? "rounded-full" : "rounded-[var(--radius-field)]",
   isDisabledLink && "pointer-events-none opacity-50",
   className,
 );

@@ -75,6 +75,11 @@
   --lux-warning-content: oklch(100% 0 0);
   --lux-error: oklch(57% 0.194 13.428);
   --lux-error-content: oklch(100% 0 0);
+
+  /* Control radius, consumed by Button. daisyUI defines this itself and drives
+     .btn and 51 other selectors from it, so a component that hardcodes a
+     Tailwind radius will not match the dash's controls. */
+  --radius-field: 0.25rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -102,6 +107,8 @@
     --lux-warning-content: oklch(28% 0.066 53.813);
     --lux-error: oklch(77% 0.194 13.428);
     --lux-error-content: oklch(27% 0.105 12.094);
+
+    --radius-field: 0.5rem;
   }
 }
 
@@ -129,4 +136,5 @@
   --lux-warning-content: oklch(28% 0.066 53.813);
   --lux-error: oklch(77% 0.194 13.428);
   --lux-error-content: oklch(27% 0.105 12.094);
+  --radius-field: 0.5rem;
 }

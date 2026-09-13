@@ -1,4 +1,4 @@
-import type { Preview } from "@storybook/html-vite";
+import type { Preview } from "@storybook-astro/framework";
 import "./preview.css";
 
 /**
