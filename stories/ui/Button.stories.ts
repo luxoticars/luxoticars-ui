@@ -59,7 +59,7 @@ export const AsLink = {
  * `aria-disabled` and dims the link itself. Check the markup, not just the pixels.
  */
 export const DisabledLink = {
-  args: { href: "/inventory", disabled: true, slots: { default: "Browse inventory" } },
+  args: { href: "/inventory", disabled: true, tabindex: 5, "aria-disabled": "false", slots: { default: "Browse inventory" } },
 };
 
 export const DisabledButton = { args: { disabled: true } };
