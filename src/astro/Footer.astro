@@ -1,6 +1,7 @@
 ---
 import type { FooterContact, FooterLink, FooterSocial } from "../types";
 import * as defaults from "../data/footer";
+import Logo from "./Logo.astro";
 
 interface Props {
   /**
@@ -80,15 +81,8 @@ const contactIcons = {
     <div class="footer__masthead">
       <div class="footer__brand">
         <div class="footer__logo-wrap">
-          {/* Home link, not a heading — an h1 down here gives every page on the
-              site a second level-1 heading after its real one. */}
           <slot name="logo">
-            <a href={homeHref} class="footer__wordmark-link">
-              <span class="footer__wordmark">
-                {siteTitle}
-                <sub>&copy;</sub>
-              </span>
-            </a>
+            <Logo siteTitle={siteTitle} href={homeHref} />
           </slot>
         </div>
         {tagline && <p class="footer__tagline">{tagline}</p>}
@@ -335,26 +329,6 @@ const contactIcons = {
   .footer__wordmark-link {
     display: inline-flex;
     border-radius: 2px;
-  }
-
-  .footer__wordmark {
-    position: relative;
-    display: inline-flex;
-    padding-right: 0.5rem;
-    font-family: var(--font-futura-bold, var(--font-futura, inherit));
-    font-size: var(--text-xl, 1.25rem);
-    font-weight: var(--font-weight-bold, 700);
-    color: var(--color-white, #fff);
-    text-transform: uppercase;
-  }
-
-  .footer__wordmark sub {
-    position: absolute;
-    right: -0.2rem;
-    bottom: 0.4rem;
-    font-size: 0.45rem;
-    font-weight: normal;
-    line-height: 1;
   }
 
   .footer__tagline {
