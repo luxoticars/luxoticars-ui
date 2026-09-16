@@ -1,5 +1,20 @@
 import Footer from "../src/astro/Footer.astro";
 import type { FooterLink } from "../src/types";
+/*
+  The component's styles live in a stylesheet it shares with `createFooter`, and
+  it reaches them through an `@import` in its scoped `<style>`. Astro resolves
+  that import; @storybook-astro/framework does not — it lifts the text of the
+  `<style>` block into the preview verbatim and only ever follows `.astro`
+  imports. So the stylesheet is imported here as well, which is what actually
+  styles this story.
+
+  The lifted `@import` still resolves against the preview iframe's URL and 404s
+  there. It is inert — the bundled import above has already applied the same
+  rules — but it is why the console shows a missing `/styles/footer.css` on
+  these stories. Storybook-only: an app using the component gets the stylesheet
+  from Astro's build, correctly scoped.
+*/
+import "../src/styles/footer.css";
 
 const homepageCompany: FooterLink[] = [
   { label: "About Us", href: "/a/" },
