@@ -127,7 +127,7 @@ instead, and the `.astro` file pulls them in:
 
 ```astro
 <style>
-  @import "../styles/footer.css";
+  @import "../styles/<name>.css";
 </style>
 ```
 
