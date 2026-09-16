@@ -53,10 +53,27 @@ In CI, a personal access token also works (prefer an environment variable so it 
 String builders for contexts that render markup without Astro.
 
 ```js
-import { createButton } from "@luxoticars/ui";
+import { createButton, createFooter } from "@luxoticars/ui";
 
 const button = createButton({ label: "Continue" });
+const footer = createFooter({ siteTitle: "Luxoticars" });
 ```
+
+The two builders get their styling from different places, and neither ships any:
+
+- `createButton` writes Tailwind utility classes, so it is styled in an app that
+  loads Tailwind and has the `@source` line below.
+- `createFooter` writes plain class names styled by
+  `@luxoticars/ui/styles/footer.css`, the same stylesheet `astro/Footer` uses.
+  Import it once, anywhere in your CSS or JS bundle. No Tailwind needed:
+
+  ```js
+  import "@luxoticars/ui/styles/footer.css";
+  ```
+
+`createFooter` takes the same options as the Astro component and defaults to the
+same content, so the two render identical markup. Everything except `logo` — the
+string-builder stand-in for the component's `logo` slot — is HTML-escaped.
 
 ## Astro API
 
@@ -181,8 +198,13 @@ the deploy job fails.
 
 Two conventions coexist, deliberately.
 
-`Footer.astro` predates the token table and carries its own scoped CSS and custom
-properties, so it renders in an app with no Tailwind at all.
+The footer predates the token table and is styled by `styles/footer.css`, which
+reads design tokens as custom properties with literal fallbacks, so it renders in
+an app with no Tailwind at all. That one stylesheet serves both APIs:
+`Footer.astro` pulls it into its scoped `<style>` with an `@import`, which Astro
+scopes exactly as it would inline rules, while `createFooter` has no build step
+and leaves the import to the caller. One copy of the rules, so the two footers
+cannot drift apart.
 
 Everything under `astro/ui/` ships Tailwind utility classes resolved against the
 shared tokens. These are the design-system primitives; they assume Tailwind v4 and

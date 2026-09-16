@@ -80,6 +80,11 @@ export const Minimal = {
 
 ## Adding a component
 
+Components ship a dual API: an Astro component and an HTML string builder
+(`src/html/<name>.js` with a hand-written `.d.ts` sibling, exported from
+`src/html/index.js`). Both read the same defaults from `src/data/`, and where a
+component has its own CSS, both are styled by the same file under `src/styles/`.
+
 1. Add `src/astro/<Name>.astro`, or `src/astro/ui/<Name>.astro` for a
    design-system primitive.
 2. Document it in the component itself. The props table and descriptions on its
@@ -89,8 +94,9 @@ export const Minimal = {
 3. Add `stories/<path>/<Name>.stories.ts` with `component` set to the imported
    `.astro` file and `tags: ["autodocs"]`.
 4. Export shared prop types from `src/types.d.ts`.
-5. No `package.json` change is needed. The `exports` map uses a wildcard, so
-   `@luxoticars/ui/astro/<Name>` resolves automatically.
+5. No `package.json` change is needed for the component itself. The `exports` map
+   uses a wildcard, so `@luxoticars/ui/astro/<Name>` resolves automatically — but
+   a new stylesheet under `src/styles/` does need its own `exports` entry.
 
 Docgen needs `typescript` installed and a `tsconfig.json` at the repo root. If
 either goes missing the Storybook build still succeeds and every props table is
@@ -115,6 +121,26 @@ custom properties with literal fallbacks:
   --_accent: var(--color-marque-accent, oklch(0.74 0.16 232.661));
 }
 ```
+
+A component with an HTML twin puts those rules in `src/styles/<name>.css`
+instead, and the `.astro` file pulls them in:
+
+```astro
+<style>
+  @import "../styles/footer.css";
+</style>
+```
+
+Astro scopes an imported stylesheet exactly as it scopes inline rules, so this
+costs the component nothing and the string builder gets the same rules rather
+than a second copy of them. Export the file from `package.json#exports` so a
+consumer of the HTML API can import it.
+
+`@storybook-astro/framework` lifts the text of a `<style>` block into the preview
+without resolving anything, so the story for such a component has to import the
+stylesheet itself — see the comment at the top of `stories/Footer.stories.ts`.
+The lifted `@import` then 404s in the preview iframe; it is inert, and the story
+is styled by its own import.
 
 Reset what you rely on, too. The homepage ships no CSS reset at all, so list
 markers, link underlines and heading margins must be handled by the component
