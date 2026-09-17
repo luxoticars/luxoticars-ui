@@ -213,9 +213,9 @@ and leaves the import to the caller. One copy of the rules, so the two footers
 cannot drift apart. `styles/logo.css` and the `logo` block work the same way, for
 the wordmark both footers fall back to.
 
-Class names in both are BEM — `footer`/`logo` as the block, `block__element` for
-every part, `block__element--modifier` for every variant — so a consuming app has
-a stable hook on every node and no rule depends on the tag or the nesting.
+Class names in both are BEM — `footer`/`logo` as the block, `block__element` for every part, `block__element--modifier` for every variant — so a consuming app has a stable hook on every node.
+
+The only tag-based selector is the focus ring for whatever fills the footer’s `logo` slot, since that slot can contain arbitrary markup.
 
 Everything under `astro/ui/` ships Tailwind utility classes resolved against the
 shared tokens. These are the design-system primitives; they assume Tailwind v4 and
