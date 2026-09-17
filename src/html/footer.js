@@ -1,4 +1,5 @@
 import { escapeHtml, joinClasses } from "./utils.js";
+import { createLogo } from "./logo.js";
 import * as defaults from "../data/footer.js";
 
 /*
@@ -8,6 +9,9 @@ import * as defaults from "../data/footer.js";
   way a caller of `createButton` has to load Tailwind:
 
       import "@luxoticars/ui/styles/footer.css";
+
+  The built-in wordmark comes from `createLogo`, its own block with its own
+  stylesheet, so a footer left with that wordmark needs `styles/logo.css` too.
 
   The Astro component gets that stylesheet scoped by Astro's build; there is no
   build step here, so it stays a plain global import.
@@ -120,16 +124,12 @@ export const createFooter = ({
   const companyHeadingId = `${idPrefix}-heading-company`;
   const copyrightLine = copyright ?? `© ${year} ${siteTitle}. All rights reserved.`;
 
-  /* Home link, not a heading — an h1 down here gives every page on the site a
-     second level-1 heading after its real one.
+  /* `logo` is the string-builder stand-in for the component's `logo` slot, so it
+     is written out as markup rather than escaped. Pass markup you control.
 
-     `logo` is the string-builder stand-in for the component's `logo` slot, so it
-     is written out as markup rather than escaped. Pass markup you control. */
-  const logoMarkup =
-    logo ??
-    `<a href="${escapeHtml(homeHref)}" class="footer__wordmark-link">
-  <span class="footer__wordmark">${escapeHtml(siteTitle)}<sub class="footer__wordmark-mark">&copy;</sub></span>
-</a>`;
+     The fallback is `createLogo`, exactly as the component's fallback is
+     `<Logo />` — one wordmark, not two that have to be kept in step. */
+  const logoMarkup = logo ?? createLogo({ siteTitle, href: homeHref });
 
   const columns = [
     brandLinks.length > 0 &&

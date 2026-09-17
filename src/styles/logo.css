@@ -1,0 +1,44 @@
+/*
+  Logo styles, shared by both APIs.
+
+  Same arrangement as footer.css and for the same reason: `Logo.astro` pulls
+  this in with an `@import` inside its scoped `<style>`, so Astro still scopes
+  every rule to that component, while `createLogo` callers load it directly:
+
+      import "@luxoticars/ui/styles/logo.css";
+
+  Class names are BEM: `logo` is the block — the link itself — and every part of
+  it carries a `logo__<element>` class, so nothing here is selected by tag.
+*/
+
+/* Every design token is referenced with a literal fallback, so the component
+   renders correctly in an app that defines none of them. An app that does
+   define them (tokens.css, or Tailwind's @theme) overrides the fallback. */
+
+/* The reset the footer applies to its own links, applied here too: the two
+   consuming apps disagree about browser defaults, and without this the
+   wordmark renders underlined in the one that ships no reset. */
+.logo {
+  text-decoration: none;
+}
+
+.logo__wordmark {
+  position: relative;
+  display: inline-flex;
+  padding-right: 0.5rem;
+  font-family: var(--font-futura-bold, var(--font-futura, inherit));
+  font-size: var(--text-xl, 1.25rem); /* 1.25rem = 20px */
+  font-weight: var(--font-weight-bold, 700);
+  line-height: 1.25;
+  color: var(--color-white, #fff);
+  text-transform: uppercase;
+}
+
+.logo__mark {
+  position: absolute;
+  right: -0.1em;
+  bottom: 0.35em;
+  font-size: 0.5em;
+  font-weight: normal;
+  line-height: 1;
+}

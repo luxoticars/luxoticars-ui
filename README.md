@@ -53,25 +53,31 @@ In CI, a personal access token also works (prefer an environment variable so it 
 String builders for contexts that render markup without Astro.
 
 ```js
-import { createButton, createFooter } from "@luxoticars/ui";
+import { createButton, createFooter, createLogo } from "@luxoticars/ui";
 
 const button = createButton({ label: "Continue" });
 const footer = createFooter({ siteTitle: "Luxoticars" });
+const logo = createLogo({ siteTitle: "Luxoticars" });
 ```
 
 The two builders get their styling from different places, and neither ships any:
 
 - `createButton` writes Tailwind utility classes, so it is styled in an app that
   loads Tailwind and has the `@source` line below.
-- `createFooter` writes plain class names styled by
-  `@luxoticars/ui/styles/footer.css`, the same stylesheet `astro/Footer` uses.
-  Import it once, anywhere in your CSS or JS bundle. No Tailwind needed:
+- `createFooter` and `createLogo` write plain class names styled by
+  `@luxoticars/ui/styles/footer.css` and `@luxoticars/ui/styles/logo.css`, the
+  same stylesheets `astro/Footer` and `astro/Logo` use. Import them once,
+  anywhere in your CSS or JS bundle. No Tailwind needed:
 
   ```js
   import "@luxoticars/ui/styles/footer.css";
+  import "@luxoticars/ui/styles/logo.css";
   ```
 
-`createFooter` takes the same options as the Astro component and defaults to the
+  A footer left with its built-in wordmark needs both, because that wordmark is
+  `createLogo` — its own block, with its own stylesheet.
+
+Each builder takes the same options as its Astro component and defaults to the
 same content, so the two render identical markup. Everything except `logo` — the
 string-builder stand-in for the component's `logo` slot — is HTML-escaped.
 
@@ -204,7 +210,12 @@ an app with no Tailwind at all. That one stylesheet serves both APIs:
 `Footer.astro` pulls it into its scoped `<style>` with an `@import`, which Astro
 scopes exactly as it would inline rules, while `createFooter` has no build step
 and leaves the import to the caller. One copy of the rules, so the two footers
-cannot drift apart.
+cannot drift apart. `styles/logo.css` and the `logo` block work the same way, for
+the wordmark both footers fall back to.
+
+Class names in both are BEM — `footer`/`logo` as the block, `block__element` for
+every part, `block__element--modifier` for every variant — so a consuming app has
+a stable hook on every node and no rule depends on the tag or the nesting.
 
 Everything under `astro/ui/` ships Tailwind utility classes resolved against the
 shared tokens. These are the design-system primitives; they assume Tailwind v4 and
