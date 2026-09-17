@@ -1,11 +1,12 @@
 import { createFooter } from "../src/html/footer";
 import type { FooterOptions } from "../src/html/footer";
 /*
-  The builder ships markup only, so the story loads the stylesheet the way a
-  consumer would (`@luxoticars/ui/styles/footer.css`). Without it the canvas
-  shows unstyled markup.
+  The builder ships markup only, so the story loads the stylesheets the way a
+  consumer would (`@luxoticars/ui/styles/footer.css`, plus the logo's for the
+  built-in wordmark). Without them the canvas shows unstyled markup.
 */
 import "../src/styles/footer.css";
+import "../src/styles/logo.css";
 
 const ACME_LOGO =
   '<a href="/" style="font:700 1.5rem/1 system-ui;color:#fff;letter-spacing:.08em">ACME</a>';

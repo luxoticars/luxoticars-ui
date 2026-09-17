@@ -61,6 +61,13 @@ export interface FooterOptions {
  * import "@luxoticars/ui/styles/footer.css";
  * ```
  *
+ * Left with its built-in wordmark it also renders a `createLogo`, whose own
+ * stylesheet the caller loads the same way:
+ *
+ * ```js
+ * import "@luxoticars/ui/styles/logo.css";
+ * ```
+ *
  * Every value except `logo` is HTML-escaped on the way into the markup.
  *
  * Plain JS with a hand-written .d.ts rather than TypeScript, because the

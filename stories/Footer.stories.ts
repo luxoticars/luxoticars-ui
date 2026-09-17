@@ -1,6 +1,16 @@
 import Footer from "../src/astro/Footer.astro";
 import type { FooterLink } from "../src/types";
 /*
+  Astro components are prerendered to markup by the Storybook framework, and a
+  component's `<style>` block is injected as its literal source text — an
+  `@import` inside one resolves against the page URL and 404s, so a shared
+  stylesheet has to reach the story as a module, the way a consuming app's
+  bundler reaches it from the component's frontmatter import.
+*/
+import "../src/styles/footer.css";
+/* The footer falls back to `<Logo />` for its wordmark, which is its own block. */
+import "../src/styles/logo.css";
+/*
   The component's styles live in a stylesheet it shares with `createFooter`, and
   it reaches them through an `@import` in its scoped `<style>`. Astro resolves
   that import; @storybook-astro/framework does not — it lifts the text of the

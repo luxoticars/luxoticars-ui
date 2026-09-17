@@ -89,7 +89,7 @@ const contactIcons = {
       </div>
 
       {socials.length > 0 && (
-        <nav class="footer__socials" aria-label={`${siteTitle} on social media`}>
+        <nav class="footer__nav footer__nav--social" aria-label={`${siteTitle} on social media`}>
           {socials.map((social) => (
             <a
               href={social.href}
@@ -119,10 +119,10 @@ const contactIcons = {
           <h2 id={brandsHeadingId} class="footer__column-heading footer__column-heading--brands">
             {brandsHeading}
           </h2>
-          <nav aria-labelledby={brandsHeadingId}>
+          <nav class="footer__nav footer__nav--brands" aria-labelledby={brandsHeadingId}>
             <ul class="footer__link-list footer__link-list--brands">
               {brandLinks.map((link) => (
-                <li>
+                <li class="footer__link-item">
                   <a
                     href={link.href}
                     class="footer__link"
@@ -130,7 +130,7 @@ const contactIcons = {
                     rel={link.external ? "noopener noreferrer" : undefined}
                   >
                     {link.label}
-                    {link.external && <span class="footer__sr-only"> (opens in a new tab)</span>}
+                    {link.external && <span class="footer__external-note"> (opens in a new tab)</span>}
                   </a>
                 </li>
               ))}
@@ -146,10 +146,10 @@ const contactIcons = {
           <h2 id={companyHeadingId} class="footer__column-heading">
             {companyHeading}
           </h2>
-          <nav aria-labelledby={companyHeadingId}>
+          <nav class="footer__nav footer__nav--company" aria-labelledby={companyHeadingId}>
             <ul class="footer__link-list">
               {companyLinks.map((link) => (
-                <li>
+                <li class="footer__link-item">
                   <a
                     href={link.href}
                     class="footer__link"
@@ -157,7 +157,7 @@ const contactIcons = {
                     rel={link.external ? "noopener noreferrer" : undefined}
                   >
                     {link.label}
-                    {link.external && <span class="footer__sr-only"> (opens in a new tab)</span>}
+                    {link.external && <span class="footer__external-note"> (opens in a new tab)</span>}
                   </a>
                 </li>
               ))}
@@ -196,8 +196,8 @@ const contactIcons = {
                   >
                     {icon.paths.map((d) => <path d={d} />)}
                   </svg>
-                  <span class="footer__link">{contact.label}</span>
-                  {contact.external && <span class="footer__sr-only"> (opens in a new tab)</span>}
+                  <span class="footer__link footer__contact-label">{contact.label}</span>
+                  {contact.external && <span class="footer__external-note"> (opens in a new tab)</span>}
                 </a>
               );
             })}
@@ -210,10 +210,10 @@ const contactIcons = {
     <div class="footer__bottom">
       <p class="footer__copyright">{copyrightLine}</p>
       {legalLinks.length > 0 && (
-        <nav aria-label="Legal">
+        <nav class="footer__nav footer__nav--legal" aria-label="Legal">
           <ul class="footer__legal-list">
             {legalLinks.map((link) => (
-              <li>
+              <li class="footer__legal-item">
                 <a
                   href={link.href}
                   class="footer__link footer__link--small"
@@ -221,7 +221,7 @@ const contactIcons = {
                   rel={link.external ? "noopener noreferrer" : undefined}
                 >
                   {link.label}
-                  {link.external && <span class="footer__sr-only"> (opens in a new tab)</span>}
+                  {link.external && <span class="footer__external-note"> (opens in a new tab)</span>}
                 </a>
               </li>
             ))}

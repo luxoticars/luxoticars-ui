@@ -1,4 +1,5 @@
 import { escapeHtml, joinClasses } from "./utils.js";
+import { createLogo } from "./logo.js";
 import * as defaults from "../data/footer.js";
 
 /*
@@ -8,6 +9,9 @@ import * as defaults from "../data/footer.js";
   way a caller of `createButton` has to load Tailwind:
 
       import "@luxoticars/ui/styles/footer.css";
+
+  The built-in wordmark comes from `createLogo`, its own block with its own
+  stylesheet, so a footer left with that wordmark needs `styles/logo.css` too.
 
   The Astro component gets that stylesheet scoped by Astro's build; there is no
   build step here, so it stays a plain global import.
@@ -38,7 +42,7 @@ const contactIcons = {
 
 /* Announced, never seen. The leading space is deliberate: it separates the note
    from the label when a screen reader concatenates the link's text. */
-const externalNote = '<span class="footer__sr-only"> (opens in a new tab)</span>';
+const externalNote = '<span class="footer__external-note"> (opens in a new tab)</span>';
 
 /* An external link needs both halves — `rel` without `target` is pointless, and
    `target` without `rel` hands the opened page a live `window.opener`. */
@@ -51,12 +55,12 @@ const indent = (markup, spaces) =>
     .map((line) => (line ? " ".repeat(spaces) + line : line))
     .join("\n");
 
-const renderListLink = (link, linkClass) => `<li>
+const renderListLink = (link, linkClass, itemClass) => `<li class="${itemClass}">
   <a href="${escapeHtml(link.href)}" class="${linkClass}"${externalAttributes(link.external)}>${escapeHtml(link.label)}${link.external ? externalNote : ""}</a>
 </li>`;
 
-const renderLinkList = (links, linkClass, listClass) => `<ul class="${listClass}">
-${links.map((link) => indent(renderListLink(link, linkClass), 2)).join("\n")}
+const renderLinkList = (links, linkClass, listClass, itemClass) => `<ul class="${listClass}">
+${links.map((link) => indent(renderListLink(link, linkClass, itemClass), 2)).join("\n")}
 </ul>`;
 
 const renderSocial = (social, siteTitle) => `<a
@@ -87,7 +91,7 @@ const renderContact = (contact) => {
     : "";
 
   return `<a href="${escapeHtml(contact.href)}" class="footer__contact-link"${externalAttributes(contact.external)}>
-  ${svg}<span class="footer__link">${escapeHtml(contact.label)}</span>${contact.external ? externalNote : ""}
+  ${svg}<span class="footer__link footer__contact-label">${escapeHtml(contact.label)}</span>${contact.external ? externalNote : ""}
 </a>`;
 };
 
@@ -120,16 +124,12 @@ export const createFooter = ({
   const companyHeadingId = `${idPrefix}-heading-company`;
   const copyrightLine = copyright ?? `© ${year} ${siteTitle}. All rights reserved.`;
 
-  /* Home link, not a heading — an h1 down here gives every page on the site a
-     second level-1 heading after its real one.
+  /* `logo` is the string-builder stand-in for the component's `logo` slot, so it
+     is written out as markup rather than escaped. Pass markup you control.
 
-     `logo` is the string-builder stand-in for the component's `logo` slot, so it
-     is written out as markup rather than escaped. Pass markup you control. */
-  const logoMarkup =
-    logo ??
-    `<a href="${escapeHtml(homeHref)}" class="footer__wordmark-link">
-  <span class="footer__wordmark">${escapeHtml(siteTitle)}<sub>&copy;</sub></span>
-</a>`;
+     The fallback is `createLogo`, exactly as the component's fallback is
+     `<Logo />` — one wordmark, not two that have to be kept in step. */
+  const logoMarkup = logo ?? createLogo({ siteTitle, href: homeHref });
 
   const columns = [
     brandLinks.length > 0 &&
@@ -138,8 +138,8 @@ export const createFooter = ({
         headingId: brandsHeadingId,
         headingClass: "footer__column-heading footer__column-heading--brands",
         heading: brandsHeading,
-        body: `<nav aria-labelledby="${escapeHtml(brandsHeadingId)}">
-${indent(renderLinkList(brandLinks, "footer__link", "footer__link-list footer__link-list--brands"), 2)}
+        body: `<nav class="footer__nav footer__nav--brands" aria-labelledby="${escapeHtml(brandsHeadingId)}">
+${indent(renderLinkList(brandLinks, "footer__link", "footer__link-list footer__link-list--brands", "footer__link-item"), 2)}
 </nav>`,
       }),
     companyLinks.length > 0 &&
@@ -148,8 +148,8 @@ ${indent(renderLinkList(brandLinks, "footer__link", "footer__link-list footer__l
         headingId: companyHeadingId,
         headingClass: "footer__column-heading",
         heading: companyHeading,
-        body: `<nav aria-labelledby="${escapeHtml(companyHeadingId)}">
-${indent(renderLinkList(companyLinks, "footer__link", "footer__link-list"), 2)}
+        body: `<nav class="footer__nav footer__nav--company" aria-labelledby="${escapeHtml(companyHeadingId)}">
+${indent(renderLinkList(companyLinks, "footer__link", "footer__link-list", "footer__link-item"), 2)}
 </nav>`,
       }),
     contacts.length > 0 &&
@@ -176,7 +176,7 @@ ${indent(logoMarkup, 4)}
   </div>${tagline ? `\n  <p class="footer__tagline">${escapeHtml(tagline)}</p>` : ""}
 </div>`,
     socials.length > 0 &&
-      `<nav class="footer__socials" aria-label="${escapeHtml(`${siteTitle} on social media`)}">
+      `<nav class="footer__nav footer__nav--social" aria-label="${escapeHtml(`${siteTitle} on social media`)}">
 ${socials.map((social) => indent(renderSocial(social, siteTitle), 2)).join("\n")}
 </nav>`,
   ].filter(Boolean);
@@ -184,8 +184,8 @@ ${socials.map((social) => indent(renderSocial(social, siteTitle), 2)).join("\n")
   const bottom = [
     `<p class="footer__copyright">${escapeHtml(copyrightLine)}</p>`,
     legalLinks.length > 0 &&
-      `<nav aria-label="Legal">
-${indent(renderLinkList(legalLinks, "footer__link footer__link--small", "footer__legal-list"), 2)}
+      `<nav class="footer__nav footer__nav--legal" aria-label="Legal">
+${indent(renderLinkList(legalLinks, "footer__link footer__link--small", "footer__legal-list", "footer__legal-item"), 2)}
 </nav>`,
   ].filter(Boolean);
 
