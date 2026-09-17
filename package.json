@@ -26,6 +26,7 @@
       "types": "./src/types.d.ts"
     },
     "./styles/tokens.css": "./src/styles/tokens.css",
+    "./styles/footer.css": "./src/styles/footer.css",
     "./utils/cn": {
       "types": "./src/utils/cn.d.ts",
       "default": "./src/utils/cn.js"

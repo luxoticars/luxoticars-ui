@@ -1,0 +1,41 @@
+---
+export type Props = {
+  /** Wordmark text. @default "Luxoticars" */
+  siteTitle?: string;
+  /** Where the wordmark links. @default "/" */
+  href?: string;
+}
+
+const { siteTitle = "Luxoticars", href = "/" } = Astro.props;
+---
+{/* Home link, not a heading — an h1 down here gives every page on the
+    site a second level-1 heading after its real one. */}
+<a href={href} class="logo">
+  <span class="logo__wordmark">
+    {siteTitle}
+    <sub class="logo__mark">&copy;</sub>
+  </span>
+</a>
+<style>
+  /* BEM, like the footer: `logo` is the block and every part of it carries a
+     `logo__<element>` class, so nothing here is selected by tag. */
+  .logo__wordmark {
+    display: inline-flex;
+    font-size: var(--text-xl); /* 1.25rem = 20px */
+    line-height: 1.25;
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-futura-bold, inherit);
+    color: var(--color-white, #fff);
+    text-transform: uppercase;
+    position: relative;
+    padding-right: 0.5rem;
+  }
+  .logo__mark {
+    font-size: 0.5em;
+    line-height: 1;
+    font-weight: normal;
+    position: absolute;
+    bottom: 0.35em;
+    right: -0.1em;
+  }
+</style>
