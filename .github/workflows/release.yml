@@ -45,12 +45,16 @@ jobs:
       # Never tag a release whose Storybook (and so every component) doesn't build.
       - run: npm run build-storybook
 
-      - uses: changesets/action@v1
+      # v2 is the line that supports Changesets CLI v3 (v1 targets CLI v2). It has
+      # no floating `v2` tag, so pin the exact release. It tells the publish
+      # script where to report new tags via CHANGESETS_OUTPUT, which the CLI reads
+      # from the environment, so `npm run release` needs no extra flags.
+      - uses: changesets/action@v2.1.2
         with:
-          version: npm run version
-          publish: npm run release
-          title: "Version Packages"
-          commit: "Version Packages"
-          createGithubReleases: true
+          version-script: npm run version
+          publish-script: npm run release
+          pr-title: "Version Packages"
+          commit-message: "Version Packages"
+          create-github-releases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

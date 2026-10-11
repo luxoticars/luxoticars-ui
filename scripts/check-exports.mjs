@@ -1,7 +1,7 @@
 // Guards the contract consumers depend on: every public subpath in
 // package.json#exports resolves to a file that ships in `files`, and every
 // JS entry has a `types` entry whose file exists. Run before tagging a release.
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const root = new URL("..", import.meta.url).pathname;
@@ -15,8 +15,16 @@ function check(subpath, target) {
   if (typeof target !== "string") return;
   if (!shipped(target)) errors.push(`${subpath}: ${target} is outside "files"`);
   if (target.includes("*")) {
-    const dir = join(root, target.slice(0, target.indexOf("*")));
-    if (!existsSync(dir)) errors.push(`${subpath}: ${relative(root, dir)} does not exist`);
+    // `*` in an exports target matches any characters, slashes included.
+    const base = target.slice(0, target.lastIndexOf("/", target.indexOf("*")) + 1);
+    const pattern = new RegExp(
+      `^${target.split("*").map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&")).join(".*")}$`,
+    );
+    const dir = join(root, base);
+    const matches = existsSync(dir)
+      ? readdirSync(dir, { recursive: true }).filter((f) => pattern.test(`${base}${f}`.replaceAll("\\", "/")))
+      : [];
+    if (!matches.length) errors.push(`${subpath}: ${target} matches no files`);
   } else if (!existsSync(join(root, target))) {
     errors.push(`${subpath}: ${target} does not exist`);
   }
