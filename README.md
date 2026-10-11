@@ -35,6 +35,8 @@ npm install github:luxoticars/luxoticars-ui#main
 
 Without a suffix the default branch is used and `npm update` will pick up new commits.
 
+Releases follow [semver](https://semver.org) and are tagged `vX.Y.Z`; see [CHANGELOG.md](./CHANGELOG.md) and the [GitHub Releases](https://github.com/luxoticars/luxoticars-ui/releases). Production sites should pin a tag. Installing `#semver:^1.2.0` also works and takes minor and patch updates only.
+
 ### Private repository access
 
 If this repository is private, the machine running `npm install` needs Git access to it.

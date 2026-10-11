@@ -187,10 +187,43 @@ npm pack --dry-run
 for both sites. Check keyboard focus is visible, that any link opening a new tab
 carries a visually hidden note, and that headings and landmarks still make sense.
 
-## Publishing
+## Releasing
 
-There is nothing to publish. The package is marked `private` and is consumed by
-Git URL, so merging to `main` is the release. Consumers pick up changes when
-they re-resolve the dependency, which means a change here can reach production
-sites without a version bump. Pin a tag in the consuming app if you need that
-not to happen.
+Versions follow [semver](https://semver.org) and are managed with
+[Changesets](https://github.com/changesets/changesets). Nothing is published to
+npm: a release is a version bump on `main`, a `vX.Y.Z` git tag and a GitHub
+Release. Consumers pin the tag (`github:luxoticars/luxoticars-ui#vX.Y.Z`).
+
+### In every pull request
+
+Run `npm run changeset`, pick the bump and write a one-line note for consumers.
+Commit the generated `.changeset/*.md`. CI fails a PR without one; for changes
+that do not reach consumers (docs, stories, CI) use `npx changeset --empty`.
+
+| Bump | When | Examples |
+| --- | --- | --- |
+| **major** | A consumer must change their code or markup | Removing or renaming a component, prop, slot or `exports` subpath; changing a prop's meaning; renaming a BEM class or a design token that sites may style against |
+| **minor** | New, backwards-compatible capability | New component, prop, variant, export or token |
+| **patch** | Fix with no API change | Visual or accessibility fix, markup tweak that keeps class names, type correction |
+
+While the version is `0.x`, breaking changes may ship as a **minor**; from
+`1.0.0` they must be a **major**. When unsure, pick the larger bump: a site
+that pins `^1.2.0` receives every minor and patch automatically.
+
+### Cutting a release
+
+Maintainers only; the steps are automatic apart from the merge.
+
+1. Merging PRs with changesets to `main` makes the **Release** workflow open or
+   update a **Version Packages** PR. It bumps `package.json`, updates
+   `package-lock.json` and writes `CHANGELOG.md`.
+2. Review the version and changelog, then merge that PR.
+3. The workflow builds Storybook, runs `npm run release` (which checks that
+   every `exports` entry resolves and has types, then creates the `vX.Y.Z` tag),
+   pushes the tag and creates the GitHub Release.
+
+One-time repository setup: **Settings → Actions → General → Workflow
+permissions → Allow GitHub Actions to create and approve pull requests**.
+
+To release by hand: `npm run version`, commit, then `npm run release` and
+`git push --follow-tags`.

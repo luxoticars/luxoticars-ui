@@ -1,0 +1,60 @@
+# Versioning and releases, driven by Changesets.
+#
+# Nothing is published to npm (the package is private and consumed by Git URL),
+# so a "release" is a version bump on main plus a `vX.Y.Z` git tag and a GitHub
+# Release that consumers pin to.
+#
+# On every push to main:
+#   - pending changesets exist  -> open/update the "Version Packages" PR, which
+#                                  bumps package.json and writes CHANGELOG.md
+#   - that PR is merged         -> `npm run release` verifies the exports map and
+#                                  tags the commit; the action pushes the tag and
+#                                  creates the GitHub Release
+#
+# Requires: Settings -> Actions -> General -> Workflow permissions -> "Allow
+# GitHub Actions to create and approve pull requests".
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    # Forks have no business tagging releases.
+    if: github.repository == 'luxoticars/luxoticars-ui'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Never tag a release whose Storybook (and so every component) doesn't build.
+      - run: npm run build-storybook
+
+      # v2 is the line that supports Changesets CLI v3 (v1 targets CLI v2). It has
+      # no floating `v2` tag, so pin the exact release. It tells the publish
+      # script where to report new tags via CHANGESETS_OUTPUT, which the CLI reads
+      # from the environment, so `npm run release` needs no extra flags.
+      - uses: changesets/action@v2.1.2
+        with:
+          version-script: npm run version
+          publish-script: npm run release
+          pr-title: "Version Packages"
+          commit-message: "Version Packages"
+          create-github-releases: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
