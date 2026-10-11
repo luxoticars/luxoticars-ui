@@ -1,0 +1,30 @@
+# Fails a pull request that changes the package without saying how it affects
+# consumers. Docs-only or tooling-only changes can opt out with
+# `npx changeset --empty`.
+name: Changeset
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  changeset:
+    # The release PR consumes changesets by design.
+    if: github.head_ref != 'changeset-release/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx changeset status --since=origin/${{ github.base_ref }}
