@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.3.0
+
+### Minor Changes
+
+- 75e9778: add spacing token
+
 ## 0.2.0
 
 ### Minor Changes
