@@ -7,6 +7,8 @@ export interface LogoOptions {
   siteTitle?: string;
   /** Where the wordmark links. @default "/" */
   href?: string;
+  /** Wordmark color: `white` for dark backgrounds, `black` for light ones. @default "white" */
+  variant?: "white" | "black";
 }
 
 /**

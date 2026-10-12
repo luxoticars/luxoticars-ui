@@ -11,10 +11,24 @@ import "../src/styles/logo.css";
 export default {
   title: "Logo",
   component: Logo,
+  argTypes: {
+    variant: { control: "inline-radio", options: ["white", "black"] },
+  },
 };
 
 export const Default = {
   args: {
     siteTitle: "Luxoticars",
   },
+};
+
+/** White wordmark: it is invisible on the default canvas, so give it a dark one. */
+export const White = {
+  args: { variant: "white" },
+  parameters: { backgrounds: { default: "dark" } },
+};
+
+/** Black wordmark, for light backgrounds. */
+export const Black = {
+  args: { variant: "black" },
 };

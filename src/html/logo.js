@@ -15,7 +15,11 @@ import { escapeHtml } from "./utils.js";
 
 /* Home link, not a heading — an h1 inside a footer gives every page on the site
    a second level-1 heading after its real one. */
-export const createLogo = ({ siteTitle = "Luxoticars", href = "/" } = {}) =>
-  `<a href="${escapeHtml(href)}" class="logo">
+export const createLogo = ({
+  siteTitle = "Luxoticars",
+  href = "/",
+  variant = "white",
+} = {}) =>
+  `<a href="${escapeHtml(href)}" class="logo${variant === "black" ? " logo--black" : ""}">
   <span class="logo__wordmark">${escapeHtml(siteTitle)}<sub class="logo__mark">&copy;</sub></span>
 </a>`;

@@ -25,13 +25,16 @@ export default {
     const host = document.createElement("div");
     /* The wordmark is white, so it is invisible on Storybook's default canvas.
        The footer it normally sits in supplies the dark backdrop. */
-    host.style.cssText = "background:oklch(0.145 0 0);padding:2rem";
+    host.style.cssText = `background:${
+      args.variant === "black" ? "#fff" : "oklch(0.145 0 0)"
+    };padding:2rem`;
     host.innerHTML = createLogo(args);
     return host;
   },
   argTypes: {
     siteTitle: { control: "text" },
     href: { control: "text" },
+    variant: { control: "inline-radio", options: ["white", "black"] },
   },
   parameters: {
     docs: {
@@ -47,6 +50,11 @@ export default {
 
 /** Shipped defaults, no configuration at all — identical to `Logo`. */
 export const Default = {};
+
+/** Black wordmark for light backgrounds, shown on white. */
+export const Black = {
+  args: { variant: "black" },
+};
 
 /** A different wordmark and home link. */
 export const CustomTitle = {
