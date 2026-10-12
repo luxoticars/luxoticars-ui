@@ -18,13 +18,15 @@ export type Props = {
   siteTitle?: string;
   /** Where the wordmark links. @default "/" */
   href?: string;
+  /** Wordmark color: `white` for dark backgrounds, `black` for light ones. @default "white" */
+  variant?: "white" | "black";
 }
 
-const { siteTitle = "Luxoticars", href = "/" } = Astro.props;
+const { siteTitle = "Luxoticars", href = "/", variant = "white" } = Astro.props;
 ---
 {/* Home link, not a heading — an h1 down here gives every page on the
     site a second level-1 heading after its real one. */}
-<a href={href} class="logo">
+<a href={href} class:list={["logo", variant === "black" && "logo--black"]}>
   <span class="logo__wordmark">
     {siteTitle}
     <sub class="logo__mark">&copy;</sub>

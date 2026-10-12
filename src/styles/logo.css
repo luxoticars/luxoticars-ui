@@ -9,6 +9,7 @@
 
   Class names are BEM: `logo` is the block — the link itself — and every part of
   it carries a `logo__<element>` class, so nothing here is selected by tag.
+  The `logo--black` modifier selects the black variant; white is the default.
 */
 
 /* Every design token is referenced with a literal fallback, so the component
@@ -32,6 +33,11 @@
   line-height: 1.25;
   color: var(--color-white, #fff);
   text-transform: uppercase;
+}
+
+/* Black variant, for light backgrounds. The default (white) needs no modifier. */
+.logo--black .logo__wordmark {
+  color: var(--color-black, #000);
 }
 
 .logo__mark {
