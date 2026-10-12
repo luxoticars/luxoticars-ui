@@ -1,25 +1,3 @@
-/*
-  Luxoticars design tokens.
-
-  The vocabulary is daisyUI's (`primary` / `primary-content`, `base-100..300`,
-  `base-content`, `error`, `success`, ...) because that is what
-  luxoticars-dash already speaks. Values are copied from the dash's
-  `randomshark` / `randomshark-light` themes so a component renders identically
-  in the dash and on luxoticars.cc.
-
-  WHO IMPORTS THIS
-  - luxoticars-web, or any Tailwind v4 app WITHOUT daisyUI: import this file.
-    It is the only definition of these tokens.
-  - luxoticars-dash, or any app WITH daisyUI: do NOT import this file. daisyUI
-    already emits the same token names from `@plugin "daisyui/theme"`, and two
-    definitions would fight. The components work unchanged either way.
-
-  THEMES
-  Light is the base. Dark applies on `prefers-color-scheme: dark` unless the
-  root is pinned with `data-theme="light"`, and always under `data-theme="dark"`,
-  so an explicit toggle wins in both directions.
-*/
-
 @theme {
   --color-base-100: var(--lux-base-100);
   --color-base-200: var(--lux-base-200);
@@ -43,19 +21,16 @@
   --color-warning-content: var(--lux-warning-content);
   --color-error: var(--lux-error);
   --color-error-content: var(--lux-error-content);
+
+  --spacing: var(--lux-spacing);
 }
 
 :root {
+  --lux-spacing: 0.25rem;
   --lux-base-100: oklch(97.2% 0.004 264.7);
   --lux-base-200: oklch(93% 0.005 264.7);
   --lux-base-300: oklch(80% 0.008 264.7);
   --lux-base-content: oklch(20% 0.018 264);
-
-  /*
-    The brand cyan. Identical in both themes: it is the client's identity and
-    it is a FILL colour. As a button background with primary-content on top it
-    reads 11.14:1. It must never be used as text on a light canvas.
-  */
   --lux-primary: oklch(86% 0.127 207.078);
   --lux-primary-content: oklch(25% 0.09 281.288);
   --lux-secondary: oklch(45% 0.02 286);
@@ -63,7 +38,6 @@
   --lux-accent: oklch(52% 0.16 232.661);
   --lux-accent-content: oklch(100% 0 0);
 
-  /* Stays dark in BOTH themes — chrome that bleeds into the canvas. */
   --lux-neutral: oklch(12% 0.042 264.695);
   --lux-neutral-content: oklch(96% 0.003 264.542);
 
@@ -75,19 +49,9 @@
   --lux-warning-content: oklch(100% 0 0);
   --lux-error: oklch(57% 0.194 13.428);
   --lux-error-content: oklch(100% 0 0);
-
-  /* Control radius, consumed by Button. daisyUI defines this itself and drives
-     .btn and 51 other selectors from it, so a component that hardcodes a
-     Tailwind radius will not match the dash's controls. */
   --radius-field: 0.25rem;
 }
 
-/*
-  Explicit opt-in, for when "light" needs to win on a subtree that is not
-  :root itself (e.g. a Storybook theme-preview wrapper) — the dark media
-  query only guards bare :root, so without this a nested [data-theme="light"]
-  would inherit dark values from a dark-OS :root instead of overriding them.
-*/
 [data-theme="light"] {
   --lux-base-100: oklch(97.2% 0.004 264.7);
   --lux-base-200: oklch(93% 0.005 264.7);
