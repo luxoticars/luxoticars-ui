@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.4.0
+
+### Minor Changes
+
+- 0b19d05: Add a `variant` option (`"white"` | `"black"`) to `Logo` and `createLogo`. Black is for light backgrounds; white stays the default.
+
 ## 0.3.0
 
 ### Minor Changes
