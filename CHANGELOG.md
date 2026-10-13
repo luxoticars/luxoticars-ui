@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.5.0
+
+### Minor Changes
+
+- dea5ae1: Add `Dialog` and `DialogTrigger` (Astro) and `createDialog` / `createDialogTrigger` (HTML): a native `<dialog>` in `lightbox`, `confirm` and `panel` variants. Opens with invoker commands and needs no setup in Astro. With the HTML API, load `@luxoticars/ui/styles/dialog.css` and call `installDialogFallbacks()` from `@luxoticars/ui/scripts/dialog`.
+
 ## 0.4.0
 
 ### Minor Changes
