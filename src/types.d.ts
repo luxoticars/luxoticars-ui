@@ -23,3 +23,18 @@ export interface FooterContact {
   icon: FooterContactIcon;
   external?: boolean;
 }
+
+/** Which kind of dialog: a centred content modal, a forced choice, or a side sheet. */
+export type DialogVariant = "lightbox" | "confirm" | "panel";
+
+/** Lightbox width/height preset. `default` is 616px wide. */
+export type DialogSize = "narrow" | "default" | "wide" | "large" | "fullscreen";
+
+/** The edge a panel is attached to, in the writing direction. */
+export type DialogSide = "start" | "end";
+
+/**
+ * What may dismiss the dialog, mapped onto `closedby`: `any` — Escape and a
+ * backdrop click; `closerequest` — Escape only; `none` — neither.
+ */
+export type DialogDismiss = "any" | "closerequest" | "none";

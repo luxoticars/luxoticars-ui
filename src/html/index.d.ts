@@ -4,3 +4,5 @@ export { createFooter } from "./footer.js";
 export type { FooterOptions } from "./footer.js";
 export { createLogo } from "./logo.js";
 export type { LogoOptions } from "./logo.js";
+export { createDialog, createDialogTrigger } from "./dialog.js";
+export type { DialogOptions, DialogTriggerOptions } from "./dialog.js";

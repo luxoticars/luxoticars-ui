@@ -153,8 +153,9 @@ Put reset properties on the element's own class instead.
 
 ## Testing
 
-There is no automated test suite yet. Verification today is the following, and a
-pull request should say which of these were run.
+`npm test` runs the unit tests in `tests/` with Node's built-in runner (no
+dependencies). They pin the markup contract of the HTML builders. Everything
+else is verified as follows, and a pull request should say which of these were run.
 
 **1. Storybook builds.** This is the closest thing to a smoke test: it compiles
 every component and every declared variant through Astro.
