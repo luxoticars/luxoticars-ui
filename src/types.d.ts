@@ -38,3 +38,9 @@ export type DialogSide = "start" | "end";
  * backdrop click; `closerequest` — Escape only; `none` — neither.
  */
 export type DialogDismiss = "any" | "closerequest" | "none";
+
+/** A built-in program badge icon. */
+export type ProgramBadgeIcon = "top-rated-seller";
+
+/** Program badge size in px. Sets the icon box, the text size and the gap. */
+export type ProgramBadgeSize = 16 | 24;
