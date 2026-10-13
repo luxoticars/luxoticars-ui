@@ -3,14 +3,14 @@ import type { ProgramBadgeIcon, ProgramBadgeSize } from "../types";
 import type { ProgramBadgePath } from "../data/program-badge-icons";
 
 export interface ProgramBadgeOptions {
-  /** Visible label. Trimmed; whitespace-only counts as no text. */
-  text?: string | null;
-  /** A built-in icon. `""` counts as no icon. */
-  icon?: ProgramBadgeIcon | "" | null;
-  /** @default 16 */
-  size?: ProgramBadgeSize | `${ProgramBadgeSize}` | null;
-  /** The icon's accessible name when the badge has no text. @default the icon's own label */
-  iconLabel?: string | null;
+  /** Visible label. Trimmed; whitespace-only counts as no text. `false` counts as not set, so `text={cond && "…"}` works. */
+  text?: string | false | null;
+  /** A built-in icon. `""` and `false` count as no icon, so `icon={cond && "…"}` works. */
+  icon?: ProgramBadgeIcon | "" | false | null;
+  /** `false` counts as not set. @default 16 */
+  size?: ProgramBadgeSize | `${ProgramBadgeSize}` | false | null;
+  /** The icon's accessible name when the badge has no text. `false` counts as not set. @default the icon's own label */
+  iconLabel?: string | false | null;
   /** The caller's classes, in any form `cn()` accepts (Marko's `class` may be an array or object). */
   className?: ClassValue;
 }

@@ -121,3 +121,64 @@ test("rejects invalid input with a message naming the component", () => {
   });
   assert.throws(() => resolveProgramBadge({ icon: "top-rated-seller", iconLabel: "  " }), /non-empty `iconLabel`/);
 });
+
+/* `false` is what `x={cond && "…"}` leaves behind when cond is falsy. It must
+   mean "not set", exactly like leaving the prop out. */
+
+test("false counts as unset: icon", () => {
+  assert.doesNotThrow(() => resolveProgramBadge({ icon: false, text: "x" }));
+  assert.deepEqual(resolveProgramBadge({ icon: false, text: "x" }), resolveProgramBadge({ text: "x" }));
+  assert.equal(resolveProgramBadge({ icon: false }), null);
+});
+
+test("false counts as unset: text", () => {
+  assert.deepEqual(
+    resolveProgramBadge({ icon: "top-rated-seller", text: false }),
+    resolveProgramBadge({ icon: "top-rated-seller" }),
+  );
+  assert.equal(resolveProgramBadge({ text: false }), null);
+  assert.equal(resolveProgramBadge({ icon: false, text: false }), null);
+});
+
+test("false counts as unset: iconLabel", () => {
+  const badge = resolveProgramBadge({ icon: "top-rated-seller", iconLabel: false });
+  assert.deepEqual(badge, resolveProgramBadge({ icon: "top-rated-seller" }));
+  assert.equal(badge.icon.label, "Top rated seller");
+  assert.equal(resolveProgramBadge({ icon: "top-rated-seller", iconLabel: null }).icon.label, "Top rated seller");
+});
+
+test("false counts as unset: size", () => {
+  assert.doesNotThrow(() => resolveProgramBadge({ text: "x", size: false }));
+  assert.deepEqual(resolveProgramBadge({ text: "x", size: false }), resolveProgramBadge({ text: "x" }));
+  assert.equal(resolveProgramBadge({ text: "x", size: false }).className, "program-badge");
+});
+
+test("a falsy icon (0, NaN) counts as no icon, so text alone renders", () => {
+  for (const icon of [0, NaN]) {
+    assert.deepEqual(resolveProgramBadge({ icon, text: "x" }), resolveProgramBadge({ text: "x" }));
+    assert.equal(resolveProgramBadge({ icon, text: "x" }).icon, null);
+  }
+});
+
+test("a truthy icon that is not an icon name still throws", () => {
+  for (const icon of [true, 1, "nope"]) {
+    assert.throws(() => resolveProgramBadge({ icon, text: "x" }), /ProgramBadge: unknown icon/);
+  }
+});
+
+test("text: 0 is text, not unset, as in JSX", () => {
+  assert.equal(resolveProgramBadge({ text: 0 }).text, "0");
+  assert.equal(resolveProgramBadge({ icon: "top-rated-seller", text: 0 }).icon.hidden, "true");
+});
+
+test("icon + text: an empty iconLabel does not throw, and the icon stays hidden", () => {
+  for (const iconLabel of ["", "  "]) {
+    const badge = resolveProgramBadge({ icon: "top-rated-seller", text: "Top rated seller", iconLabel });
+    assert.deepEqual(badge.icon, { paths: ROSETTE.paths, role: undefined, label: undefined, hidden: "true" });
+  }
+});
+
+test("text only: iconLabel is ignored, because there is no icon to name", () => {
+  assert.deepEqual(resolveProgramBadge({ text: "x", iconLabel: "Penjual terbaik" }), resolveProgramBadge({ text: "x" }));
+  assert.deepEqual(resolveProgramBadge({ text: "x", iconLabel: "" }), resolveProgramBadge({ text: "x" }));
+});
