@@ -43,6 +43,10 @@
       "types": "./src/data/footer.d.ts",
       "default": "./src/data/footer.js"
     },
+    "./scripts/dialog": {
+      "types": "./src/scripts/dialog.d.ts",
+      "default": "./src/scripts/dialog.js"
+    },
     "./astro/*.astro": "./src/astro/*.astro",
     "./astro/*": "./src/astro/*.astro"
   },
