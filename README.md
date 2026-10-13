@@ -195,12 +195,18 @@ from Git pulls none of the Storybook dependencies.
 
 `.github/workflows/storybook.yml` builds the Storybook and deploys it to GitHub
 Pages on every push to `main`, publishing to
-`https://luxoticars.github.io/luxoticars-ui/`.
+[`https://ui.luxoticars.com.my`](https://ui.luxoticars.com.my).
 
 It uses the "GitHub Actions" Pages source rather than "Deploy from a branch", so
 the build output never has to be committed. Enable it once under
 **Settings → Pages → Build and deployment → Source: GitHub Actions**; until then
 the deploy job fails.
+
+The custom domain is configured in **Settings → Pages → Custom domain**, not by a
+`CNAME` file (a file is ignored with the Actions source), and needs a DNS record
+`ui  CNAME  luxoticars.github.io`. The build uses relative asset paths, so the same
+output also works on a fork's preview at
+`https://<your-user>.github.io/luxoticars-ui/`.
 
 ## Styling approach
 

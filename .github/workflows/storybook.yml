@@ -14,6 +14,11 @@
 # repo root or /docs, which would mean checking ~7 MB of build output into git
 # on every change.
 #
+# The upstream site is served from the custom domain https://ui.luxoticars.com.my
+# (DNS: CNAME ui -> luxoticars.github.io). With the "GitHub Actions" source a
+# CNAME file in the repo is ignored, so the domain is set under
+# Settings -> Pages -> Custom domain, not in this repo.
+#
 # Forks: enable Pages the same way on your own fork to get your own preview at
 # https://<your-user>.github.io/luxoticars-ui/ without touching the upstream site.
 name: Storybook
@@ -52,8 +57,9 @@ jobs:
       - name: Build Storybook
         run: npm run build-storybook
 
-      # Storybook emits relative asset paths, so the build works unchanged at
-      # the /luxoticars-ui/ project sub-path without a base URL setting.
+      # Storybook emits relative asset paths, so the same build works at the
+      # custom domain root and at a fork's /luxoticars-ui/ project sub-path
+      # without a base URL setting.
       # Skipped on pull_request: nothing consumes the artifact without deploy.
       - if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
