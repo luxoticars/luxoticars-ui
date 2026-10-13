@@ -1,0 +1,317 @@
+/*
+  Dialog styles, shared by both APIs.
+
+  Same arrangement as logo.css and footer.css: `Dialog.astro` imports this
+  file from its frontmatter, and `createDialog` callers load it directly:
+
+      import "@luxoticars/ui/styles/dialog.css";
+
+  Class names are BEM. `dialog` is the block, on a native <dialog>; its parts
+  are `dialog__<element>`, its variants `dialog--<modifier>`. Nothing here is
+  selected by tag, so a consuming app has a hook on every node.
+
+  Widths, breakpoints and motion follow @ebay/skin 19.37.1 (dialog,
+  lightbox-dialog, confirm-dialog, panel-dialog). The design and its
+  rationale: docs/superpowers/specs/2026-10-13-dialog-design.md.
+*/
+
+/*
+  Tokens. Each reads the tokens.css name first, then daisyUI's, then a
+  literal, so the dialog renders in an app that defines neither.
+
+  The order matters. Tailwind's @theme declares `--color-base-100:
+  var(--lux-base-100)` on :root, and a custom property is resolved where it
+  is declared — so inside a nested `[data-theme="dark"]` the daisyUI-named
+  variable still carries the :root value, while `--lux-*` is redeclared on
+  the themed element itself. In luxoticars-dash, which has no tokens.css,
+  `--lux-*` is undefined and daisyUI's own variables take over.
+*/
+.dialog {
+  --_surface: var(--lux-base-100, var(--color-base-100, oklch(97.2% 0.004 264.7)));
+  --_text: var(--lux-base-content, var(--color-base-content, oklch(20% 0.018 264)));
+  --_border: var(--lux-base-300, var(--color-base-300, oklch(80% 0.008 264.7)));
+  --_focus: var(--lux-accent, var(--color-accent, oklch(52% 0.16 232.661)));
+  --_scrim: var(
+    --dialog-scrim,
+    color-mix(in oklch, var(--lux-neutral, var(--color-neutral, oklch(12% 0.042 264.695))) 70%, transparent)
+  );
+  --_radius: var(--radius-box, 0.75rem);
+  --_max-width: var(--dialog-max-width, 38.5rem); /* 616px */
+  --_enter: var(--dialog-duration-enter, 500ms);
+  --_exit: var(--dialog-duration-exit, 167ms);
+  --_fade: 167ms;
+  --_ease-enter: cubic-bezier(0.3, 0, 0, 1);
+  --_ease-fade: cubic-bezier(0.3, 0, 0.7, 1);
+  --_ease-exit: cubic-bezier(0.3, 0, 1, 1);
+  /* Where an opening dialog comes from and a closing one goes to. */
+  --_from-scale: 0.75;
+  --_from-translate: 0 0;
+
+  /* UA reset. The homepage ships no reset, and the UA sheet gives a modal
+     dialog a border, padding, Canvas colours and its own maximum size. */
+  box-sizing: border-box;
+  inline-size: min(var(--_max-width), 100% - 2rem);
+  max-inline-size: 100%;
+  max-block-size: 90dvh;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--_radius);
+  background: var(--_surface);
+  color: var(--_text);
+  box-shadow: 0 1.5rem 3rem -0.75rem rgb(0 0 0 / 0.35);
+  overflow: hidden;
+
+  /* Closed state, and the exit transition into it. `display` and `overlay`
+     are discrete: allow-discrete keeps the dialog rendered, and in the top
+     layer, until the fade has finished. */
+  opacity: 0;
+  scale: var(--_from-scale);
+  translate: var(--_from-translate);
+  transition-property: opacity, scale, translate, display, overlay;
+  transition-duration: var(--_exit);
+  transition-timing-function: var(--_ease-exit);
+  transition-behavior: allow-discrete;
+}
+
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  scale: 1;
+  translate: 0 0;
+  transition-duration: var(--_fade), var(--_enter), var(--_enter), 0s, 0s;
+  transition-timing-function: var(--_ease-fade), var(--_ease-enter), var(--_ease-enter), linear, linear;
+}
+
+@starting-style {
+  .dialog[open] {
+    opacity: 0;
+    scale: var(--_from-scale);
+    translate: var(--_from-translate);
+  }
+}
+
+/* The scrim. Custom properties reach ::backdrop from its dialog; the
+   literal covers an engine where they do not. */
+.dialog::backdrop {
+  background-color: transparent;
+  transition-property: background-color, display, overlay;
+  transition-duration: var(--_exit, 167ms);
+  transition-timing-function: var(--_ease-exit, ease-in);
+  transition-behavior: allow-discrete;
+}
+
+.dialog[open]::backdrop {
+  background-color: var(--_scrim, rgb(17 24 32 / 0.7));
+  transition-duration: var(--_fade, 167ms), 0s, 0s;
+  transition-timing-function: var(--_ease-fade, linear);
+}
+
+@starting-style {
+  .dialog[open]::backdrop {
+    background-color: transparent;
+  }
+}
+
+/* Scroll lock, only while a modal dialog is open. The gutter stops the page
+   shifting sideways when its scrollbar goes away. */
+html:has(.dialog:modal) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+/* ---- Parts ---- */
+
+.dialog__header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1rem 0;
+}
+
+.dialog__title {
+  flex: 1 1 auto;
+  align-self: center;
+  margin: 0;
+  font: inherit;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* 32px: above WCAG 2.5.8's 24px minimum target. */
+.dialog__close {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-field, 0.25rem);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.dialog__close:hover {
+  background: color-mix(in oklch, currentColor 10%, transparent);
+}
+
+.dialog__close:focus-visible {
+  outline: 2px solid var(--_focus);
+  outline-offset: 2px;
+}
+
+.dialog__close-icon {
+  inline-size: 1rem;
+  block-size: 1rem;
+  pointer-events: none;
+}
+
+.dialog__body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 1rem;
+}
+
+.dialog__body > :first-child {
+  margin-block-start: 0;
+}
+
+.dialog__body > :last-child {
+  margin-block-end: 0;
+}
+
+.dialog__description {
+  margin-block: 0 1rem;
+}
+
+/* Stacked on a phone, a right-aligned row from 512px. */
+.dialog__footer {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 1rem;
+}
+
+@media (width >= 512px) {
+  .dialog__footer {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+/* ---- Lightbox ---- */
+
+.dialog--lightbox .dialog__footer {
+  border-block-start: 1px solid var(--_border);
+}
+
+.dialog--narrow {
+  --_max-width: var(--dialog-max-width, 30rem); /* 480px */
+}
+
+.dialog--wide {
+  --_max-width: var(--dialog-max-width, 56rem); /* 896px */
+}
+
+.dialog--large,
+.dialog--fullscreen {
+  block-size: 70dvh;
+  max-block-size: 95dvh;
+}
+
+/* Under 512px a lightbox is a bottom sheet that slides up. */
+@media (width < 512px) {
+  .dialog--lightbox {
+    margin-block: auto 1rem;
+    --_from-scale: 1;
+    --_from-translate: 0 calc(100% + 1rem);
+  }
+
+  .dialog--large {
+    inline-size: 100%;
+    block-size: 95dvh;
+    margin-block: auto 0;
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+    --_from-translate: 0 100%;
+  }
+
+  .dialog--fullscreen {
+    inline-size: 100%;
+    block-size: 100dvh;
+    max-block-size: 100dvh;
+    margin: 0;
+    border-radius: 0;
+    --_from-translate: 0 100%;
+  }
+}
+
+/* ---- Confirm ---- */
+
+/* Centred at every width, and its two buttons stay on one row. */
+.dialog--confirm .dialog__footer {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ---- Panel ---- */
+
+.dialog--panel {
+  --_enter: var(--dialog-duration-enter, 320ms);
+  --_ease-enter: ease-out;
+  --_from-scale: 1;
+  --_from-translate: -100% 0;
+  inline-size: 100%;
+  block-size: 100dvh;
+  max-block-size: 100dvh;
+  margin-block: 0;
+  margin-inline: 0 auto;
+  border-radius: 0;
+  border-inline-end: 1px solid var(--_border);
+}
+
+.dialog--panel.dialog--end {
+  --_from-translate: 100% 0;
+  margin-inline: auto 0;
+  border-inline-end: 0;
+  border-inline-start: 1px solid var(--_border);
+}
+
+/* translate is physical, so the slide flips with the writing direction. */
+.dialog--panel:dir(rtl) {
+  --_from-translate: 100% 0;
+}
+
+.dialog--panel.dialog--end:dir(rtl) {
+  --_from-translate: -100% 0;
+}
+
+@media (width >= 512px) {
+  .dialog--panel {
+    inline-size: 24rem; /* 384px */
+  }
+}
+
+/* ---- Reduced motion: fade only ---- */
+
+/* !important on the custom properties outranks every variant's --_from-*
+   without depending on selector specificity or source order. */
+@media (prefers-reduced-motion: reduce) {
+  .dialog {
+    --_from-scale: 1 !important;
+    --_from-translate: 0 0 !important;
+  }
+}
