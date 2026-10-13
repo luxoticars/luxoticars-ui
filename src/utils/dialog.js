@@ -1,8 +1,10 @@
 /*
   The one place a dialog's options are validated and turned into markup
-  facts — classes, ids, role, `closedby`. `astro/ui/Dialog.astro` and
-  `html/dialog.js` both call it, so the two APIs agree by construction rather
-  than by being kept in step by hand. Internal: not in package.json#exports.
+  facts — classes, ids, role, `closedby`, and which parts render.
+  `astro/ui/Dialog.astro` and `html/dialog.js` each translate their own inputs
+  (slots, options) into the booleans below and then only follow the answer, so
+  the two APIs agree by construction rather than by being kept in step by hand.
+  Internal: not in package.json#exports.
 */
 
 const VARIANTS = ["lightbox", "confirm", "panel"];
@@ -23,6 +25,7 @@ export function resolveDialogOptions({
   closeLabel = "Close",
   hasTitle,
   hasDescription,
+  hasContent,
   hasFooter,
 }) {
   const named = typeof id === "string" && id.trim() !== "";
@@ -72,6 +75,12 @@ export function resolveDialogOptions({
     closedby,
     titleId: `${id}-title`,
     descriptionId: hasDescription ? `${id}-desc` : undefined,
-    showClose: variant !== "confirm",
+    /* Only a dialog with a ✕ has a label for it. */
+    closeLabel: variant === "confirm" ? undefined : closeLabel,
+    parts: {
+      close: variant !== "confirm",
+      body: hasDescription || hasContent,
+      footer: hasFooter,
+    },
   };
 }

@@ -94,7 +94,7 @@ const {
   size,
   side,
   dismiss,
-  closeLabel = "Close",
+  closeLabel,
   class: className,
   ...attributes
 } = Astro.props as Props & { size?: DialogSize; side?: DialogSide; closeLabel?: string };
@@ -123,20 +123,18 @@ const {
 const textOf = (html: string) => html.replace(/<[^>]*>/g, "").trim();
 const titleHtml = Astro.slots.has("title") ? await Astro.slots.render("title") : "";
 const descriptionHtml = Astro.slots.has("description") ? await Astro.slots.render("description") : "";
-const hasDescription = textOf(descriptionHtml) !== "";
-const hasFooter = Astro.slots.has("footer");
 const d = resolveDialogOptions({
   id,
   variant,
   size,
   side,
   dismiss,
-  closeLabel: variant === "confirm" ? undefined : closeLabel,
+  closeLabel,
   hasTitle: textOf(titleHtml) !== "",
-  hasDescription,
-  hasFooter,
+  hasDescription: textOf(descriptionHtml) !== "",
+  hasContent: Astro.slots.has("default"),
+  hasFooter: Astro.slots.has("footer"),
 });
-const hasBody = hasDescription || Astro.slots.has("default");
 ---
 
 <dialog
@@ -151,22 +149,22 @@ const hasBody = hasDescription || Astro.slots.has("default");
   <div class="dialog__header">
     <h2 id={d.titleId} class="dialog__title" set:html={titleHtml} />
     {
-      d.showClose && (
+      d.parts.close && (
         <button
           type="button"
           class="dialog__close"
           command="close"
           commandfor={id}
-          aria-label={closeLabel}
+          aria-label={d.closeLabel}
           set:html={DIALOG_CLOSE_ICON}
         />
       )
     }
   </div>
   {
-    hasBody && (
+    d.parts.body && (
       <div class="dialog__body">
-        {hasDescription && (
+        {d.descriptionId && (
           <div id={d.descriptionId} class="dialog__description" set:html={descriptionHtml} />
         )}
         <slot />
@@ -174,7 +172,7 @@ const hasBody = hasDescription || Astro.slots.has("default");
     )
   }
   {
-    hasFooter && (
+    d.parts.footer && (
       <form method="dialog" class="dialog__footer">
         <slot name="footer" />
       </form>

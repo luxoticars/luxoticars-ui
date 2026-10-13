@@ -12,6 +12,8 @@ export interface DialogOptionsInput {
   hasTitle: boolean;
   /** Whether a non-empty description was supplied (slot or option). */
   hasDescription: boolean;
+  /** Whether body content was supplied (default slot, or `body` option). */
+  hasContent: boolean;
   /** Whether footer content was supplied (slot or option). Required for a confirm. */
   hasFooter: boolean;
 }
@@ -25,8 +27,17 @@ export interface ResolvedDialog {
   titleId: string;
   /** Present only when a description was supplied. */
   descriptionId: string | undefined;
-  /** Whether the header renders the ✕ button (never on a confirm). */
-  showClose: boolean;
+  /** The ✕ button's accessible name; `undefined` when there is no ✕ (a confirm). */
+  closeLabel: string | undefined;
+  /** Which optional parts render. The header and title always do. */
+  parts: {
+    /** The ✕ button — never on a confirm. */
+    close: boolean;
+    /** `.dialog__body` — when there is a description, content, or both. */
+    body: boolean;
+    /** `form.dialog__footer` — when footer content was supplied. */
+    footer: boolean;
+  };
 }
 
 /**

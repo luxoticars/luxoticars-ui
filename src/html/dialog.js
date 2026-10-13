@@ -21,7 +21,7 @@ export const createDialog = ({
   size,
   side,
   dismiss,
-  closeLabel = "Close",
+  closeLabel,
   title,
   description,
   body = "",
@@ -37,6 +37,7 @@ export const createDialog = ({
     closeLabel,
     hasTitle: filled(title),
     hasDescription: filled(description),
+    hasContent: filled(body),
     hasFooter: filled(footer),
   });
   const eid = escapeHtml(id);
@@ -52,14 +53,14 @@ export const createDialog = ({
     .filter(Boolean)
     .join(" ");
 
-  const close = d.showClose
-    ? `<button type="button" class="dialog__close" command="close" commandfor="${eid}" aria-label="${escapeHtml(closeLabel)}">${DIALOG_CLOSE_ICON}</button>`
+  const close = d.parts.close
+    ? `<button type="button" class="dialog__close" command="close" commandfor="${eid}" aria-label="${escapeHtml(d.closeLabel)}">${DIALOG_CLOSE_ICON}</button>`
     : "";
   const descriptionHtml = d.descriptionId
     ? `<div id="${escapeHtml(d.descriptionId)}" class="dialog__description">${escapeHtml(description)}</div>`
     : "";
-  const bodyHtml = descriptionHtml || body ? `<div class="dialog__body">${descriptionHtml}${body}</div>` : "";
-  const footerHtml = footer ? `<form method="dialog" class="dialog__footer">${footer}</form>` : "";
+  const bodyHtml = d.parts.body ? `<div class="dialog__body">${descriptionHtml}${body}</div>` : "";
+  const footerHtml = d.parts.footer ? `<form method="dialog" class="dialog__footer">${footer}</form>` : "";
 
   return `<dialog ${dialogAttributes}><div class="dialog__header"><h2 id="${escapeHtml(d.titleId)}" class="dialog__title">${escapeHtml(title)}</h2>${close}</div>${bodyHtml}${footerHtml}</dialog>`;
 };
