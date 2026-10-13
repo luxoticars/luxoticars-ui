@@ -7,12 +7,11 @@
       import "@luxoticars/ui/styles/dialog.css";
 
   Class names are BEM. `dialog` is the block, on a native <dialog>; its parts
-  are `dialog__<element>`, its variants `dialog--<modifier>`. Nothing here is
-  selected by tag, so a consuming app has a hook on every node.
+  are `dialog__<element>`, its variants `dialog--<modifier>`. No part of the
+  dialog is selected by tag, so a consuming app has a hook on every node; the
+  one tag selector is the page scroll lock on `html`.
 
-  Widths, breakpoints and motion follow @ebay/skin 19.37.1 (dialog,
-  lightbox-dialog, confirm-dialog, panel-dialog). The design and its
-  rationale: docs/superpowers/specs/2026-10-13-dialog-design.md.
+  The design and its rationale: docs/superpowers/specs/2026-10-13-dialog-design.md.
 */
 
 /*

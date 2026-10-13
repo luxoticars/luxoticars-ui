@@ -22,15 +22,12 @@ Success means:
 
 | Decision | Outcome |
 |---|---|
-| Use `@ebay/skin`? | **No dependency.** It is used as a design reference only: anatomy, sizes, breakpoints and motion. Its legacy dialogs are `div[role=dialog]` driven by JS state classes, and its tokens are a third vocabulary that luxoticars-dash does not have. |
 | Element | Native `<dialog>` opened with `showModal()`. This gives focus containment, `inert` page, Escape handling and focus return for free, as `.github/instructions/a11y.instructions.md` K3 requires. |
 | Browser floor | **Evergreen.** Invoker commands (`command` / `commandfor`, Baseline Dec 2025) open and close dialogs with no JS. The only script is a fallback for Safari, which lacks `closedby`. |
 | Variants this round | `lightbox`, `confirm`, `panel`. |
-| Out of scope | Snackbar (not modal: a live region, its own component), image gallery (prev/next, keys, counter, swipe, zoom — built on `Dialog` later), eBay's "expressive" hero-image variant and its back button. |
+| Out of scope | Snackbar (not modal: a live region, its own component), image gallery (prev/next, keys, counter, swipe, zoom — built on `Dialog` later), a hero-image variant and a back button. |
 
-## eBay reference values kept
-
-From `@ebay/skin@19.37.1` `dist/{dialog,lightbox-dialog,confirm-dialog,panel-dialog}`:
+## Sizes and motion
 
 - Lightbox widths: **616px** default, **480px** narrow, **896px** wide (88% between 768 and 1024px).
 - Breakpoints **512 / 768 / 1024px**. The footer stacks below 512px and is a right-aligned row above it.
@@ -42,19 +39,19 @@ From `@ebay/skin@19.37.1` `dist/{dialog,lightbox-dialog,confirm-dialog,panel-dia
   `cubic-bezier(0.3, 0, 0.7, 1)`; exit **167ms** `cubic-bezier(0.3, 0, 1, 1)`. Panel slide 320ms ease-out.
 - Close button 32×32px (meets WCAG 2.5.8's 24px minimum).
 
-## Where we improve on the reference
+## Design choices
 
-| eBay | Here |
+| Choice | Why |
 |---|---|
-| Open/close via keyframes plus a JS-added `.dialog--close` class | `@starting-style` + `transition-behavior: allow-discrete` on `display` and `overlay`: enter and exit in pure CSS |
-| New `.dialog` has no reduced-motion handling | `prefers-reduced-motion: reduce` drops every transform; opacity fades only |
-| `body { overflow: hidden !important }`, global `:root { scrollbar-gutter: stable }` | `html:has(.dialog:modal) { overflow: hidden; scrollbar-gutter: stable }` — only while a modal is open, no `!important` |
-| Hardcoded scrim `rgb(17 24 32 / .7)` and grey panel border | Scrim from `neutral` at 70%, border from `base-300`: both follow the theme, so dark mode works |
-| `max-height: 90%` | `90dvh`, so mobile browser toolbars do not clip it |
-| Decorative drag handle that does not drag | Omitted — a handle that cannot be dragged is a false affordance |
-| Scroll chaining from the body into the page | `overscroll-behavior: contain` on the scrolling body |
-| No backdrop-dismiss policy | `closedby` per variant, with a fallback for Safari |
-| Confirm result needs click handlers | `<form method="dialog">` footer: the clicked button's `value` becomes `dialog.returnValue` |
+| `@starting-style` + `transition-behavior: allow-discrete` on `display` and `overlay` | Enter and exit in pure CSS, with no script adding state classes |
+| `prefers-reduced-motion: reduce` drops every transform | Opacity fades only |
+| `html:has(.dialog:modal) { overflow: hidden; scrollbar-gutter: stable }`, no `!important` | The page is locked only while a modal is open; nothing global otherwise |
+| Scrim from `neutral` at 70%, borders from `base-300` | Both follow the theme, so dark mode works |
+| `max-height: 90dvh` | Mobile browser toolbars do not clip it |
+| No drag handle on the bottom sheet | A handle that cannot be dragged is a false affordance |
+| `overscroll-behavior: contain` on the scrolling body | Scrolling the dialog never scrolls the page behind it |
+| `closedby` per variant, with a fallback for Safari | Backdrop dismissal is a per-variant policy |
+| `<form method="dialog">` footer | The clicked button's `value` becomes `dialog.returnValue`; no click handlers |
 
 ## Files
 
@@ -268,4 +265,4 @@ They are tested by deleting `closedBy` from the prototype before installing, whi
 
 - Snackbar — non-modal live region.
 - Image gallery — built on `Dialog`: prev/next, arrow keys, "3 / 12", swipe, zoom.
-- Expressive hero-image variant and back button, if a screen needs them.
+- Hero-image variant and back button, if a screen needs them.
