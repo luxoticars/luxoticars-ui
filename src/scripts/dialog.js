@@ -17,7 +17,10 @@
 
 const installed = new WeakSet();
 
-const isDialog = (node) => node instanceof Element && node.matches("dialog.dialog");
+/* Structural, not `instanceof Element`: a document from another window (an
+   iframe's) has nodes from that window's realm, which fail the caller's
+   `instanceof` check. */
+const isDialog = (node) => node?.nodeType === 1 && node.matches("dialog.dialog");
 
 /* returnValue survives a close that carries no value (Escape, the ✕ command,
    a light dismiss), so a confirm closed with "delete", reopened and dismissed

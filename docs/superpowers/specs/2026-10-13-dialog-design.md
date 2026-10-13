@@ -231,7 +231,9 @@ All checks live in the resolver, so both APIs enforce the same list. Each messag
 | `size` on a non-lightbox; `side` on a non-panel | The option would be silently ignored |
 | An unknown `variant`, `size`, `side` or `dismiss` | — |
 
-`createDialogTrigger` throws when `for` is missing, blank or contains whitespace.
+`createDialogTrigger` and `DialogTrigger` throw when `for` is missing, blank or contains whitespace. `DialogTrigger`
+also fails on an `href` (a link cannot open a dialog), and always renders `type="button"`, so a trigger inside a
+form never submits it — both enforced at runtime too, for callers that are not type-checked.
 
 ## Styling
 

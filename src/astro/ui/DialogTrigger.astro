@@ -16,14 +16,33 @@ export type Props = Omit<ButtonBranch, "command" | "commandfor" | "type"> & {
  * Takes every `Button` prop (variant, size, iconOnly, pill, disabled) and its
  * slots: default (the label), `left-icon`, `right-icon`.
  */
-const { for: target, ...buttonProps } = Astro.props;
+const { for: target, ...rest } = Astro.props;
 
 if (typeof target !== "string" || target.trim() === "" || /\s/.test(target)) {
   throw new Error("DialogTrigger: `for` must be the id of the dialog to open, with no whitespace.");
 }
+
+/*
+  Typed out of Props already; enforced here too, because a caller in plain JS
+  or behind a cast is not type-checked. An `href` would make Button render an
+  <a>, where invoker commands do nothing — that is a mistake to fail on, not
+  to quietly turn into a button. `type` is pinned to "button", or a trigger
+  inside a form would submit it; the invoker attributes are the trigger's own.
+*/
+const {
+  href,
+  type: _type,
+  command: _command,
+  commandfor: _commandfor,
+  ...buttonProps
+} = rest as typeof rest & { type?: unknown; command?: unknown; commandfor?: unknown };
+
+if (href !== undefined) {
+  throw new Error(`DialogTrigger: \`href\` is not supported — a link cannot open a dialog. Use a Button for navigation.`);
+}
 ---
 
-<Button {...buttonProps} command="show-modal" commandfor={target}>
+<Button {...buttonProps} type="button" command="show-modal" commandfor={target}>
   <slot name="left-icon" slot="left-icon" />
   <slot />
   <slot name="right-icon" slot="right-icon" />
