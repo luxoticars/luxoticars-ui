@@ -1,0 +1,4 @@
+{
+  "exports": "./src/marko",
+  "script-lang": "ts"
+}

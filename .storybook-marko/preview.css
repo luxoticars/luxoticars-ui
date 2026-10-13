@@ -1,0 +1,14 @@
+/*
+  The Marko preview loads the design tokens and paints each story's canvas
+  from them. No Tailwind: the badge ships its own stylesheet and no utility
+  classes. The theme decorator in preview.ts puts `data-theme` and this class
+  on the canvas element, so `--lux-*` is redeclared where it is read, as it is
+  under the Astro preview's ThemeFrame.
+*/
+@import "../src/styles/tokens.css";
+
+.lux-canvas {
+  background: var(--lux-base-100);
+  color: var(--lux-base-content);
+  padding: 2rem;
+}

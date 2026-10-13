@@ -29,3 +29,29 @@ export const cases = {
     "data-test": "badge",
   },
 } satisfies Record<string, ProgramBadgeCase>;
+
+/**
+ * Controls for the Marko stories. @storybook/marko has no docgen, so these are
+ * written out, with the descriptions of the JSDoc on the tag's `Input`. The
+ * Astro stories get theirs from `Props` instead.
+ */
+export const markoArgTypes = {
+  text: { control: "text", description: "Visible label." },
+  icon: {
+    control: "select",
+    options: ["top-rated-seller", "none"],
+    mapping: { none: undefined },
+    description: "A built-in icon.",
+  },
+  size: {
+    control: "inline-radio",
+    options: [16, 24],
+    description: "Icon size in px; also sets the text size and gap.",
+    table: { defaultValue: { summary: "16" } },
+  },
+  iconLabel: {
+    control: "text",
+    description: "What screen readers hear for an icon-only badge. Ignored when `text` is set.",
+    table: { defaultValue: { summary: "the icon's own label" } },
+  },
+} as const;
