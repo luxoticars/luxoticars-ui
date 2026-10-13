@@ -1,0 +1,30 @@
+---
+import Button from "./Button.astro";
+import type { Props as ButtonProps } from "./Button.astro";
+
+/* The <button> branch of Button only: a link cannot invoke a command. The
+   invoker attributes and `type` are the trigger's own. */
+type ButtonBranch = Extract<ButtonProps, { href?: undefined }>;
+
+export type Props = Omit<ButtonBranch, "command" | "commandfor" | "type"> & {
+  /** The `id` of the `Dialog` this button opens. */
+  for: string;
+};
+
+/**
+ * A `Button` that opens a `Dialog` with `command="show-modal"` — no script.
+ * Takes every `Button` prop (variant, size, iconOnly, pill, disabled) and its
+ * slots: default (the label), `left-icon`, `right-icon`.
+ */
+const { for: target, ...buttonProps } = Astro.props;
+
+if (typeof target !== "string" || target.trim() === "" || /\s/.test(target)) {
+  throw new Error("DialogTrigger: `for` must be the id of the dialog to open, with no whitespace.");
+}
+---
+
+<Button {...buttonProps} command="show-modal" commandfor={target}>
+  <slot name="left-icon" slot="left-icon" />
+  <slot />
+  <slot name="right-icon" slot="right-icon" />
+</Button>

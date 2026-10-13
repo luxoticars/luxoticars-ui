@@ -1,0 +1,115 @@
+---
+/*
+  Story-only: Dialog, DialogTrigger and Button composed the way an app
+  composes them. A closed dialog is invisible, so every story needs its
+  trigger beside it. Lives in stories/, so it never ships.
+*/
+import Dialog from "../../src/astro/ui/Dialog.astro";
+import DialogTrigger from "../../src/astro/ui/DialogTrigger.astro";
+import Button from "../../src/astro/ui/Button.astro";
+import type { DialogDismiss, DialogSide, DialogSize } from "../../src/types";
+import { copy, IMAGE_SRC } from "../dialog-content";
+
+interface Props {
+  /** Which composition to render. @default "lightbox" */
+  scenario?: keyof typeof copy;
+  /** Passed to a lightbox-type scenario. */
+  size?: DialogSize;
+  /** Passed to the panel scenario. */
+  side?: DialogSide;
+  /** Passed through; `any` is ignored for the confirm. */
+  dismiss?: DialogDismiss;
+}
+
+const { scenario = "lightbox", size, side, dismiss } = Astro.props;
+const id = `demo-${scenario}`;
+const inputStyle = "border:1px solid;padding:0.5rem;border-radius:0.25rem";
+---
+
+<DialogTrigger for={id} variant={scenario === "confirm" ? "destructive" : "outline"}>
+  {copy[scenario].trigger}
+</DialogTrigger>
+
+{
+  scenario === "lightbox" && (
+    <Dialog id={id} size={size} dismiss={dismiss}>
+      <Fragment slot="title">{copy.lightbox.title}</Fragment>
+      <p>{copy.lightbox.body}</p>
+      <Fragment slot="footer">
+        <Button type="submit" value="cancel" variant="outline">Not now</Button>
+        <Button type="submit" value="save">Save search</Button>
+      </Fragment>
+    </Dialog>
+  )
+}
+
+{
+  scenario === "confirm" && (
+    <Dialog id={id} variant="confirm" dismiss={dismiss === "any" ? undefined : dismiss}>
+      <Fragment slot="title">{copy.confirm.title}</Fragment>
+      <Fragment slot="description">{copy.confirm.description}</Fragment>
+      <Fragment slot="footer">
+        <Button type="submit" value="cancel" variant="outline">Cancel</Button>
+        <Button type="submit" value="delete" variant="destructive">Delete</Button>
+      </Fragment>
+    </Dialog>
+  )
+}
+
+{
+  scenario === "panel" && (
+    <Dialog id={id} variant="panel" side={side} dismiss={dismiss}>
+      <Fragment slot="title">{copy.panel.title}</Fragment>
+      <ul>{copy.panel.items.map((item) => <li>{item}</li>)}</ul>
+      <Fragment slot="footer">
+        <Button type="submit" value="apply">Show results</Button>
+      </Fragment>
+    </Dialog>
+  )
+}
+
+{
+  scenario === "form" && (
+    <Dialog id={id} dismiss={dismiss ?? "closerequest"}>
+      <Fragment slot="title">{copy.form.title}</Fragment>
+      <Fragment slot="description">{copy.form.description}</Fragment>
+      <form id="demo-form-fields" method="post" action="/enquiries" style="display:grid;gap:0.75rem">
+        <label style="display:grid;gap:0.25rem">
+          Name <input name="name" required autocomplete="name" style={inputStyle} />
+        </label>
+        <label style="display:grid;gap:0.25rem">
+          Email <input name="email" type="email" required autocomplete="email" style={inputStyle} />
+        </label>
+      </form>
+      <Fragment slot="footer">
+        <Button type="submit" value="cancel" variant="outline">Cancel</Button>
+        <Button type="submit" value="send" form="demo-form-fields">Send enquiry</Button>
+      </Fragment>
+    </Dialog>
+  )
+}
+
+{
+  scenario === "image" && (
+    <Dialog id={id} size={size ?? "large"} dismiss={dismiss}>
+      <Fragment slot="title">{copy.image.title}</Fragment>
+      <img
+        src={IMAGE_SRC}
+        alt={copy.image.alt}
+        style="display:block;inline-size:100%;block-size:100%;object-fit:contain"
+      />
+    </Dialog>
+  )
+}
+
+{
+  scenario === "long" && (
+    <Dialog id={id} dismiss={dismiss}>
+      <Fragment slot="title">{copy.long.title}</Fragment>
+      {copy.long.paragraphs.map((p) => <p>{p}</p>)}
+      <Fragment slot="footer">
+        <Button type="submit" value="accept">I agree</Button>
+      </Fragment>
+    </Dialog>
+  )
+}
