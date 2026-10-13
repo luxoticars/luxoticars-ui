@@ -9,6 +9,19 @@ import tailwindcss from "@tailwindcss/vite";
 const config: StorybookConfig = {
   stories: ["../stories/**/*.stories.ts"],
   addons: ["@storybook/addon-docs"],
+  /*
+    The Marko Storybook (.storybook-marko/), composed into this one so both
+    renderers share one sidebar. In development it is its own dev server
+    (`npm run storybook:marko`, port 6007). In the static build it is built
+    into storybook-static/marko/, so a relative URL works both at the custom
+    domain root and under a fork's /luxoticars-ui/ path.
+  */
+  refs: (_config, { configType }) => ({
+    marko: {
+      title: "Marko",
+      url: configType === "DEVELOPMENT" ? "http://localhost:6007" : "./marko",
+    },
+  }),
   framework: {
     name: "@storybook-astro/framework",
     options: {
