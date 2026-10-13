@@ -26,7 +26,7 @@ Success means:
 |---|---|
 | Renderers | Astro and Marko 6. The **HTML string builder is deferred**, not dropped. This is a deliberate exception to the "every component ships an HTML builder" convention; `createProgramBadge` is a follow-up. |
 | Names | Marko `<program-badge>`, Astro `ProgramBadge` (`@luxoticars/ui/astro/ui/ProgramBadge`). The Marko name is unprefixed at the maintainer's request; see [Known limitations](#known-limitations). |
-| Marko version and syntax | Marko 6 Tags API, written in **concise syntax** in every `.marko` file in this repo: the tag itself and any Storybook helper. No Marko 5 syntax: no `$` scriptlets, `style { }` blocks, `class { }` blocks or `onClick("name")` handlers. |
+| Marko version and syntax | Marko 6 Tags API, written in **concise syntax** in every `.marko` file in this repo, including any made only for a spike or a test. No Marko 5 syntax: no `$` scriptlets, `style { }` blocks, `class { }` blocks or `onClick("name")` handlers. |
 | Icons | Original artwork on a 24×24 grid, one colour (`currentColor`), with details knocked out using `fill-rule="evenodd"` so they show the surface behind them. The first icon is a rosette with a star (see [Icon](#icon-top-rated-seller)). |
 | Storybook | Storybook **composition**: `.storybook/` (Astro) stays the host and references `.storybook-marko/` (Marko) through `refs`. |
 | Provenance | Only the idea comes from eBay Sonata UI's `su-program-badge`. See [Provenance](#provenance). |
@@ -109,13 +109,15 @@ resolveProgramBadge(options: {
 
 | Input | Result |
 |---|---|
-| No `icon` and no `text` (both absent or empty) | `null`: nothing renders |
-| `icon` and `text` | Icon `hidden: "true"`, no `role` or `label`. `iconLabel` is ignored, because the text names the badge. |
+| No `icon` and no `text` (absent, empty, or whitespace-only text) | `null`: nothing renders |
+| `icon` and `text` | Icon `hidden: "true"`, no `role` or `label`. `iconLabel` is ignored, because the text names the badge. The text is trimmed. |
+| `icon` and whitespace-only `text` | Treated as icon-only, so the icon stays named. Hiding it next to an invisible label would leave the badge with no name. |
 | `icon` only | Icon `role: "img"`, `label: iconLabel ?? the icon's default label` |
 | `text` only | `icon: null` |
-| Unknown `icon` | Throws: `ProgramBadge: unknown icon "x". Use one of: top-rated-seller.` |
+| Unknown `icon`, including inherited object keys such as `"toString"` | Throws: `ProgramBadge: unknown icon "x". Use one of: top-rated-seller.` |
+| `size` as a numeric string (`"24"`) | Accepted as the number, which is how an HTML attribute or a Storybook control may pass it |
 | `size` not 16 or 24 | Throws, naming the allowed sizes |
-| Icon-only with `iconLabel: ""` | Throws: an icon-only badge needs a non-empty label |
+| Icon-only with an empty or whitespace-only `iconLabel` | Throws: an icon-only badge needs a non-empty label |
 
 Throwing follows Dialog's rule that a component refuses to ship inaccessible or invalid output: the server
 render, and therefore the build, fails with the message. Classes are joined with `cn()`, so a caller's
@@ -227,7 +229,11 @@ Every token has a literal fallback, as in `footer.css` and `logo.css`. The only 
 | Gap | 0.25rem | 0.5rem |
 
 - `.program-badge`: `display: inline-flex; align-items: center`. The text colour is inherited.
-- `.program-badge__icon`: `flex-shrink: 0`, coloured `var(--color-accent, oklch(52% 0.16 232.661))`. A caller
+- `.program-badge__icon`: `flex-shrink: 0`, coloured
+  `var(--lux-accent, var(--color-accent, oklch(52% 0.16 232.661)))`. `--lux-*` is read first for the reason
+  `dialog.css` records: Tailwind's `@theme` declares `--color-accent: var(--lux-accent)` on `:root`, and a
+  custom property resolves where it is declared. Inside a nested `[data-theme]`, `--color-accent` would
+  therefore still carry the `:root` value, while `--lux-accent` is redeclared on the themed element. A caller
   can recolour it with a class.
 
 ## Storybook
@@ -236,7 +242,7 @@ Every token has a literal fallback, as in `footer.css` and `logo.css`. The only 
 |---|---|
 | `.storybook/main.ts` | Gains a `refs` function: `http://localhost:6007` in development, the relative `marko/` path in a static build. |
 | `.storybook-marko/main.ts` | Framework `@storybook/marko-vite`, stories from `../stories-marko/**/*.stories.ts`, `@storybook/addon-docs` |
-| `.storybook-marko/preview.ts` | Imports `src/styles/tokens.css`. Has the same Dark/Light theme toolbar as the Astro preview, implemented with a decorator that wraps each story in `ThemeFrame.marko` (concise syntax) setting `data-theme`. |
+| `.storybook-marko/preview.ts` | Loads `src/styles/tokens.css` and has the same Dark/Light theme toolbar as the Astro preview. A decorator sets `data-theme` on the story's canvas element and returns the story unchanged, which is the mechanism `@storybook/addon-themes` uses. A Marko `ThemeFrame` is not possible: `@storybook/marko@10.1.0` throws "Decorators are not yet supported in Tags API templates" for any decorator that returns a Marko 6 component. Touching the DOM is safe here, unlike in the Astro preview, because this renderer only runs in the browser. There is no static prerender in Node. |
 | `stories/program-badge-cases.ts` | The story cases, framework-free (precedent: `stories/dialog-content.ts`). Both story files and the parity test read it. |
 | `stories/ui/ProgramBadge.stories.ts` | Astro stories, built from the cases |
 | `stories-marko/program-badge.stories.ts` | Marko stories, built from the same cases |
@@ -244,9 +250,9 @@ Every token has a literal fallback, as in `footer.css` and `logo.css`. The only 
 The cases are **Default** (icon and text), **TextOnly**, **IconOnly**, **Large** (size 24) and
 **IconOnlyMalayLabel** (`iconLabel: "Penjual terbaik"`).
 
-The Astro stories get their controls and docs from `Props` and its JSDoc. Whether `@storybook/marko`
-infers controls from a tag's `Input` type is recorded in spike S1. If it does not, the Marko stories declare
-`argTypes` explicitly, with the same descriptions as the JSDoc.
+The Astro stories get their controls and docs from `Props` and its JSDoc. `@storybook/marko@10.1.0` has no
+docgen: it does not read a tag's `Input` type. So the Marko stories declare `argTypes` explicitly, as Sonata
+UI's do, and those `argTypes` live in `stories/program-badge-cases.ts` beside the cases.
 
 Scripts:
 
@@ -296,7 +302,7 @@ Sonata UI (`@ebay/sonata-ui`, Marko 5) is a working Marko tag library, so its wi
 
    | # | Question | Pass | Fallback |
    |---|---|---|---|
-   | S1 | Does a trivial concise-syntax Marko 6 story render with `@storybook/marko-vite@5`, Storybook 10.6 and Vite 8, both in dev and in a static build? Also record whether controls are inferred from `Input`. | Story renders in both | None; stop and report |
+   | S1 | Does a trivial concise-syntax Marko 6 story render with `@storybook/marko-vite@5`, Storybook 10.6 and Vite 8, both in dev and in a static build, with `tokens.css` (which contains Tailwind's `@theme` at-rule) loaded by a preview without Tailwind? | Story renders in both | If only the `@theme` rule breaks the build: load `tokens.css` through `@tailwindcss/vite`, as the Astro preview does. Anything else: none; stop and report. |
    | S2 | Does the Astro Storybook compose the Marko one through a relative `refs` URL when the static build is served at `/` **and** at `/luxoticars-ui/`? | The Marko stories are listed and render in the host at both paths | An absolute URL from a `STORYBOOK_MARKO_URL` build variable set in the workflow. If composition itself fails: two Storybooks linked to each other, after checking with the maintainer. |
    | S3 | Installed from `npm pack` into a scratch Marko 6 app, is `<program-badge>` discovered through `marko.json`, does its TypeScript syntax compile, and does `mtc` in that app see its `Input` types? | All three | **Doesn't compile:** confirm `"script-lang": "ts"` is in the shipped `marko.json`. If it still fails, the tag is authored without TypeScript syntax and its `Input` moves to a `program-badge.d.marko` beside it. That is Sonata's published layout, and the Marko counterpart of this repo's JS + `.d.ts` convention. **Types don't reach the consumer:** commit the `.d.marko` that `@marko/type-check` emits beside the tag, and add a staleness check to verification (regenerate, then `git diff --exit-code`). |
    | S4 | Does the host's theme toolbar reach composed Marko stories? | Recorded either way | Acceptable if the theme can be switched in the Marko Storybook itself (`/marko/`) |
