@@ -11,7 +11,7 @@ it is the first component in the package with a Marko version.
 Success means:
 
 - **One answer, two renderers.** The Astro component and the Marko tag produce the same tree for the same
-  inputs. A parity test enforces it (see [Verification](#verification)).
+  inputs. A parity test, run before the PR (see [Verification](#verification)), enforces it.
 - **Accessible by construction.** When there is text, the icon is hidden from assistive tech, so the badge is
   read once. When the badge is icon-only, the icon carries the name. Meaningful graphics meet 3:1 contrast
   (WCAG 1.4.11) in both themes.
@@ -74,7 +74,7 @@ Each concern has one home. The framework-free homes are shared by both renderers
 Rules the implementation holds to:
 
 1. The framework-free files import nothing from Astro or Marko and never touch the DOM.
-2. The renderers make **no decisions**. Every class, `role` and `aria-*` value they print comes from the
+2. The renderers make **no decisions**. Every value they print that varies with the input comes from the
    resolver. Their only conditionals are "is there a badge", "is there an icon" and "is there text", each read
    straight off the resolver's result. A conditional that only one renderer needs belongs in the resolver.
 3. The two renderers never import each other.
@@ -349,7 +349,8 @@ All of these must pass before the PR is raised:
   import by path: `import ProgramBadge from "@luxoticars/ui/marko/program-badge.marko"`. A path import
   compiles and renders, but `@marko/type-check` does not yet resolve its types (TS2307).
 - **Two dev servers** for the composed view in development.
-- **The theme toolbar** may not reach composed Marko stories (spike S4).
+- **The theme toolbar** of the host does not reach composed Marko stories: Storybook does not pass globals to a
+  non-local ref (spike S4). Switch themes in the Marko Storybook itself (`/marko/`).
 
 ## Follow-ups
 

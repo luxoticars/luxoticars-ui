@@ -185,7 +185,9 @@ Marko tags have their own Storybook (`.storybook-marko/`, stories in
 `stories-marko/`), composed into the Astro one so both share one sidebar under
 "Marko". In development run `npm run storybook:marko` (port 6007) alongside
 `npm run storybook`; `npm run build-storybook` builds both, the Marko one into
-`storybook-static/marko/`.
+`storybook-static/marko/`. The host's theme toolbar does not reach the composed
+Marko stories; open the Marko Storybook on its own (`/marko/` on the published
+site, or port 6007) to see them in the light theme.
 
 Astro components have no browser runtime, so they cannot render in a story on
 their own. [`@storybook-astro/framework`](https://github.com/storybook-astro/storybook-astro)

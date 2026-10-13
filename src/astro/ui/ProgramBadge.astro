@@ -1,8 +1,11 @@
 ---
 /*
-  Prints what `resolveProgramBadge()` decides, and nothing else. Every class,
-  `role` and `aria-*` value below comes from the resolver, which the Marko tag
-  (`src/marko/program-badge.marko`) shares, so the two renderers cannot drift.
+  Prints what `resolveProgramBadge()` decides, and nothing else. Every value
+  below that varies with the input (classes, `role`, `aria-*`, text, paths)
+  comes from the resolver; the fixed parts (`program-badge__icon`,
+  `program-badge__text`, `viewBox`) are the markup contract both renderers
+  share. The Marko tag (`src/marko/program-badge.marko`) shares the resolver,
+  so the two renderers cannot drift.
 
   The stylesheet is imported in the frontmatter, as Logo.astro does, so
   importing the component is the whole setup.
@@ -42,7 +45,9 @@ export type Props = HTMLAttributes<"span"> & {
   emits a spread's attribute and an explicit one of the same name as two
   attributes, and an HTML parser keeps the first (see Button.astro), so the
   resolver's merged class would be lost. `class:list` is taken out for the
-  same reason: Astro turns it into a `class` attribute too.
+  same reason: Astro turns it into a `class` attribute too. In a real template
+  Astro already folds `class:list` into `class` before the component runs; this
+  guards props passed directly, as the Container API and Storybook args do.
 */
 const { text, icon, size, iconLabel, class: className, "class:list": classList, ...attrs } = Astro.props;
 const badge = resolveProgramBadge({ text, icon, size, iconLabel, className: [className, classList] });

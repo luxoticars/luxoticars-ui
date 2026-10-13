@@ -1,7 +1,9 @@
 /*
-  Prints what `resolveProgramBadge()` decides, and nothing else. Every class,
-  role and aria-* value below comes from the resolver, which
-  `astro/ui/ProgramBadge.astro` shares, so the two renderers cannot drift.
+  Prints what `resolveProgramBadge()` decides, and nothing else. Every value
+  below that varies with the input (classes, role, aria-*, text, paths) comes
+  from the resolver; the fixed parts (program-badge__icon, program-badge__text,
+  viewBox) are the markup contract both renderers share. The resolver is shared
+  with `astro/ui/ProgramBadge.astro`, so the two renderers cannot drift.
 
   Concise syntax, by repo convention. The stylesheet is imported instead of
   sitting beside the tag as an auto-discovered style.css because the Astro

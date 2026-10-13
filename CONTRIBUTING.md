@@ -168,8 +168,9 @@ Put reset properties on the element's own class instead.
 ## Testing
 
 `npm test` runs the unit tests in `tests/` with Node's built-in runner (no
-dependencies). They pin the markup contract of the HTML builders. Everything
-else is verified as follows, and a pull request should say which of these were run.
+dependencies). They pin the HTML builders' markup and the option resolvers every
+renderer shares. Everything else is verified as follows, and a pull request
+should say which of these were run.
 
 **1. Storybook builds.** This is the closest thing to a smoke test: it compiles
 every component and every declared variant through Astro.

@@ -1,6 +1,6 @@
 # luxoticars-ui
 
-`@luxoticars/ui` — Accessible Luxoticars components for HTML, Astro and Tailwind CSS. Not published to npm; consumers install it straight from the Git repo (`github:luxoticars/luxoticars-ui`).
+`@luxoticars/ui` — Accessible Luxoticars components for HTML, Astro, Marko and Tailwind CSS. Not published to npm; consumers install it straight from the Git repo (`github:luxoticars/luxoticars-ui`).
 
 ## What's in the package
 
@@ -25,9 +25,10 @@
    git checkout -B <branch> origin/main    # e.g. claude/<topic>-<suffix>
    ```
 
-2. **Do the work, then verify before committing.** This repo ships unbuilt and has no test suite; verification is:
+2. **Do the work, then verify before committing.** This repo ships unbuilt; its committed tests are the `node:test` unit tests (`npm test`). Verification is:
    ```bash
    npm ci
+   npm test                         # the node:test unit tests; must pass
    npm i --no-save @astrojs/check @marko/type-check @emnapi/runtime@1.11.3   # NOT dependencies — install transiently, together, never commit; @emnapi/runtime is pruned otherwise and astro check silently checks nothing
    npx astro check                  # must be 0 errors; the Astro type gate
    npx mtc -p tsconfig.marko.json        # the Marko type gate; must be 0 errors
