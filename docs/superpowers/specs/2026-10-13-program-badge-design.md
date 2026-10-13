@@ -1,6 +1,6 @@
 # ProgramBadge — design
 
-Status: spec, not yet implemented · 2026-10-13
+Status: spec approved, not yet implemented · 2026-10-13
 
 ## Intent
 
@@ -276,6 +276,19 @@ dependency is added.
 `@marko/type-check` is installed transiently for verification, as `@astrojs/check` is, and is never
 committed.
 
+### Compared with Sonata UI's distribution
+
+Sonata UI (`@ebay/sonata-ui`, Marko 5) is a working Marko tag library, so its wiring is the reference point:
+
+| | Sonata UI | `@luxoticars/ui` | Why the difference |
+|---|---|---|---|
+| Source | TypeScript `.marko` in `src/components/<name>/index.marko`, with its `style.css` alongside and auto-discovered | TypeScript `.marko` in `src/marko/program-badge.marko`, importing the shared `program-badge.css` | The stylesheet is shared with the Astro renderer. In Marko 6, `components/` folders are a heuristic for Marko 5 interop, so the folder is not named that. |
+| Build | `mtc` with `outDir: dist`, which emits `.marko` with types stripped plus `.d.marko`, and postcss for CSS | None: the package ships unbuilt | Consumers install from Git, not from a registry. Spike S3 tests whether unbuilt source is enough. |
+| `marko.json` | `{ "exports": "./dist/components" }` | `{ "exports": "./src/marko" }` | Points at source because nothing is built |
+| `files` | `dist`, `marko.json`, and negations that drop stories and tests | `src`, `marko.json` | Stories already live outside `src/` |
+| `marko` dependency | Required peer, `"5"` | Optional peer, `"^6"` | Marko is one of two renderers here |
+| Publishing | `npm publish` to a private registry after `build:release` | A Git tag (`changeset git-tag`) | Unchanged |
+
 ## Order of work
 
 0. **Spike (throwaway, not committed).** Each question has a pass condition and a fallback. If a question fails
@@ -285,7 +298,7 @@ committed.
    |---|---|---|---|
    | S1 | Does a trivial concise-syntax Marko 6 story render with `@storybook/marko-vite@5`, Storybook 10.6 and Vite 8, both in dev and in a static build? Also record whether controls are inferred from `Input`. | Story renders in both | None; stop and report |
    | S2 | Does the Astro Storybook compose the Marko one through a relative `refs` URL when the static build is served at `/` **and** at `/luxoticars-ui/`? | The Marko stories are listed and render in the host at both paths | An absolute URL from a `STORYBOOK_MARKO_URL` build variable set in the workflow. If composition itself fails: two Storybooks linked to each other, after checking with the maintainer. |
-   | S3 | Installed from `npm pack` into a scratch Marko 6 app, is `<program-badge>` discovered through `marko.json`, does its TypeScript syntax compile, and does `mtc` in that app see its `Input` types? | All three | If the types don't reach the consumer: commit the `.d.marko` that `@marko/type-check` emits beside the tag, and add a staleness check (regenerate, then `git diff --exit-code`) to verification |
+   | S3 | Installed from `npm pack` into a scratch Marko 6 app, is `<program-badge>` discovered through `marko.json`, does its TypeScript syntax compile, and does `mtc` in that app see its `Input` types? | All three | **Doesn't compile:** confirm `"script-lang": "ts"` is in the shipped `marko.json`. If it still fails, the tag is authored without TypeScript syntax and its `Input` moves to a `program-badge.d.marko` beside it. That is Sonata's published layout, and the Marko counterpart of this repo's JS + `.d.ts` convention. **Types don't reach the consumer:** commit the `.d.marko` that `@marko/type-check` emits beside the tag, and add a staleness check to verification (regenerate, then `git diff --exit-code`). |
    | S4 | Does the host's theme toolbar reach composed Marko stories? | Recorded either way | Acceptable if the theme can be switched in the Marko Storybook itself (`/marko/`) |
 
 1. The framework-free files: icon data, resolver and its tests, stylesheet, shared types.
