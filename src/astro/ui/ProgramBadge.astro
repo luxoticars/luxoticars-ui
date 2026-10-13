@@ -1,0 +1,68 @@
+---
+/*
+  Prints what `resolveProgramBadge()` decides, and nothing else. Every class,
+  `role` and `aria-*` value below comes from the resolver, which the Marko tag
+  (`src/marko/program-badge.marko`) shares, so the two renderers cannot drift.
+
+  The stylesheet is imported in the frontmatter, as Logo.astro does, so
+  importing the component is the whole setup.
+*/
+import "../../styles/program-badge.css";
+import type { HTMLAttributes } from "astro/types";
+import type { ProgramBadgeIcon, ProgramBadgeSize } from "../../types";
+import { resolveProgramBadge } from "../../utils/program-badge.js";
+
+/**
+ * A programme badge: an icon and/or a short label, such as "Top rated seller".
+ *
+ * With `text`, the icon is decorative and hidden from assistive tech. Without
+ * it, the icon carries the badge's accessible name: `iconLabel`, or the icon's
+ * own label. Renders nothing when there is neither. Throws on an unknown `icon`
+ * or `size`, which fails the build with the message.
+ *
+ * Other attributes (`id`, `data-*`, …) go on the outer `<span>`.
+ */
+export type Props = HTMLAttributes<"span"> & {
+  /** Visible label. */
+  text?: string;
+  /** A built-in icon. */
+  icon?: ProgramBadgeIcon;
+  /** Icon size in px; also sets the text size and gap. @default 16 */
+  size?: ProgramBadgeSize;
+  /**
+   * What screen readers hear for an icon-only badge. Ignored when `text` is set.
+   * @default the icon's own label, e.g. "Top rated seller"
+   */
+  iconLabel?: string;
+};
+
+/*
+  `class` comes out of the spread instead of being written after it. Astro
+  emits a spread's attribute and an explicit one of the same name as two
+  attributes, and an HTML parser keeps the first (see Button.astro), so the
+  resolver's merged class would be lost.
+*/
+const { text, icon, size, iconLabel, class: className, ...attrs } = Astro.props;
+const badge = resolveProgramBadge({ text, icon, size, iconLabel, className });
+---
+
+{
+  badge && (
+    <span {...attrs} class={badge.className}>
+      {badge.icon && (
+        <svg
+          class="program-badge__icon"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          focusable="false"
+          role={badge.icon.role}
+          aria-label={badge.icon.label}
+          aria-hidden={badge.icon.hidden}
+        >
+          {badge.icon.paths.map((shape) => <path d={shape.d} fill-rule={shape.fillRule} />)}
+        </svg>
+      )}
+      {badge.text && <span class="program-badge__text">{badge.text}</span>}
+    </span>
+  )
+}

@@ -1,0 +1,43 @@
+/*
+  Program badge styles, shared by both renderers: `astro/ui/ProgramBadge.astro`
+  and `marko/program-badge.marko` each import this file, so the two cannot
+  drift apart.
+
+  BEM: `program-badge` is the block, `__icon` and `__text` its elements, and
+  `--24` the large size. Marko's styles are global, so the block namespaces
+  every rule.
+
+  Tokens are read `--lux-*` first, then the daisyUI name, then a literal.
+  Tailwind's @theme declares `--color-accent: var(--lux-accent)` on :root, and
+  a custom property resolves where it is declared, so inside a nested
+  [data-theme] `--color-accent` still carries the :root value, while
+  `--lux-accent` is redeclared on the themed element (see dialog.css). In an
+  app with daisyUI and no tokens.css, `--lux-*` is undefined and daisyUI's
+  variable takes over. The literal keeps an app that defines neither working.
+*/
+
+.program-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--text-sm, 0.875rem);
+  line-height: 1.25rem;
+}
+
+.program-badge__icon {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  color: var(--lux-accent, var(--color-accent, oklch(52% 0.16 232.661)));
+}
+
+.program-badge--24 {
+  gap: 0.5rem;
+  font-size: var(--text-base, 1rem);
+  line-height: 1.5rem;
+}
+
+.program-badge--24 .program-badge__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
