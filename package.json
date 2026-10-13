@@ -82,7 +82,8 @@
     }
   },
   "sideEffects": [
-    "**/*.css"
+    "**/*.css",
+    "**/*.marko"
   ],
   "devDependencies": {
     "@changesets/cli": "^3.0.3",

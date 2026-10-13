@@ -273,6 +273,7 @@ dependency is added.
 |---|---|
 | `marko.json` (new, root) | `{ "exports": "./src/marko", "script-lang": "ts" }`. The spike found `script-lang: ts` required: without it consumers lose the tag's types (TS7016). |
 | `package.json#files` | Adds `marko.json` |
+| `package.json#sideEffects` | `["**/*.css", "**/*.marko"]`. Marko templates are side-effectful: without the `.marko` entry a production (linked) Marko build tree-shakes the tag and drops its imported stylesheet (found by the final review). |
 | `package.json#exports` | `"./marko/*.marko": "./src/marko/*.marko"` and `"./marko/*": "./src/marko/*.marko"`, mirroring the `./astro/*` pair, for apps that import by path, plus `"./marko.json": "./marko.json"` and `"./src/marko/*.marko": "./src/marko/*.marko"`: the Marko compiler finds a dependency's taglib through exports (`<pkg>/marko.json`) and imports discovered tags by their package-relative path (found by the spike) |
 | `peerDependencies` | `marko: "^6"`, marked optional in `peerDependenciesMeta`, so Astro-only consumers never install Marko |
 | `devDependencies` | `marko@^6`, `@storybook/marko`, `@storybook/marko-vite@^5` (`@marko/vite` and `@marko/compiler` arrive with these) |

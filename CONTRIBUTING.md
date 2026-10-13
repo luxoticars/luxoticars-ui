@@ -205,6 +205,11 @@ npx astro build
 npx astro check        # needs TypeScript 6.x; astro check cannot run on TS 7 yet
 ```
 
+For a change to a Marko tag, also check a Marko 6 app's production build: build
+it with `@marko/vite` in linked mode (server, then client) and confirm the tag's
+stylesheet is in the client CSS. A server-only render (`linked: false`) never
+emits CSS, so it cannot catch a stylesheet that was tree-shaken out.
+
 **4. The published payload is what you expect.** `files` limits the package to
 `src`, `marko.json` and the README. Confirm no dev tooling leaked in:
 
