@@ -23,3 +23,8 @@ export const IconOnly = { args: cases.IconOnly };
 export const Large = { args: cases.Large };
 export const IconOnlyMalayLabel = { args: cases.IconOnlyMalayLabel };
 export const WithAttributes = { args: cases.WithAttributes };
+
+// Astro-only, so not in the shared cases: Marko has no `class:list`.
+export const WithClassList = {
+  args: { icon: "top-rated-seller", text: "Top rated seller", "class:list": ["extra", { ring: true }] },
+};

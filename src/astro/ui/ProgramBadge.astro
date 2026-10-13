@@ -40,10 +40,11 @@ export type Props = HTMLAttributes<"span"> & {
   `class` comes out of the spread instead of being written after it. Astro
   emits a spread's attribute and an explicit one of the same name as two
   attributes, and an HTML parser keeps the first (see Button.astro), so the
-  resolver's merged class would be lost.
+  resolver's merged class would be lost. `class:list` is taken out for the
+  same reason: Astro turns it into a `class` attribute too.
 */
-const { text, icon, size, iconLabel, class: className, ...attrs } = Astro.props;
-const badge = resolveProgramBadge({ text, icon, size, iconLabel, className });
+const { text, icon, size, iconLabel, class: className, "class:list": classList, ...attrs } = Astro.props;
+const badge = resolveProgramBadge({ text, icon, size, iconLabel, className: [className, classList] });
 ---
 
 {
