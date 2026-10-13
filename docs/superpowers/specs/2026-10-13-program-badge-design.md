@@ -271,12 +271,12 @@ dependency is added.
 
 | Change | Detail |
 |---|---|
-| `marko.json` (new, root) | `{ "exports": "./src/marko", "script-lang": "ts" }`. Whether `script-lang` is needed is settled by spike S3. |
+| `marko.json` (new, root) | `{ "exports": "./src/marko", "script-lang": "ts" }`. The spike found `script-lang: ts` required: without it consumers lose the tag's types (TS7016). |
 | `package.json#files` | Adds `marko.json` |
 | `package.json#exports` | `"./marko/*.marko": "./src/marko/*.marko"` and `"./marko/*": "./src/marko/*.marko"`, mirroring the `./astro/*` pair, for apps that import by path, plus `"./marko.json": "./marko.json"` and `"./src/marko/*.marko": "./src/marko/*.marko"`: the Marko compiler finds a dependency's taglib through exports (`<pkg>/marko.json`) and imports discovered tags by their package-relative path (found by the spike) |
 | `peerDependencies` | `marko: "^6"`, marked optional in `peerDependenciesMeta`, so Astro-only consumers never install Marko |
 | `devDependencies` | `marko@^6`, `@storybook/marko`, `@storybook/marko-vite@^5` (`@marko/vite` and `@marko/compiler` arrive with these) |
-| `tsconfig.marko.json` (new) | Extends `tsconfig.json`, with `noEmit: true`. Includes `src/marko`, `src/utils`, `src/data`, `src/types.d.ts`, `stories-marko` and `.storybook-marko`. The main `tsconfig.json` and `astro check` stay untouched. |
+| `tsconfig.marko.json` (new) | A standalone config (it does not extend `tsconfig.json`), `strict` with `noEmit: true`. Includes `src/marko`, `stories-marko`, `.storybook-marko` and `stories/program-badge-cases.ts`; the framework-free files (`src/utils`, `src/data`, `src/types.d.ts`) are pulled in through imports. `mtc` forces `composite`, which makes TypeScript require every emittable `.ts` file to be in `include` (TS6307), so the shared cases file is listed explicitly. `composite` also writes a `.tsbuildinfo` file, so `tsBuildInfoFile` points under `node_modules/.cache`. The main `tsconfig.json` and `astro check` stay untouched. |
 | `description` / `keywords` | Mention Marko |
 
 `@marko/type-check` is installed transiently for verification, as `@astrojs/check` is, and is never
@@ -345,7 +345,8 @@ All of these must pass before the PR is raised:
 - **The unprefixed Marko tag name.** Marko's custom-tag docs caution that when two installed packages
   export the same tag name, Marko uses the first one it finds, and they encourage library prefixes. A
   consumer's own `tags/program-badge.marko` would also take precedence over this one. Anyone affected can
-  import by path: `import ProgramBadge from "@luxoticars/ui/marko/program-badge.marko"`.
+  import by path: `import ProgramBadge from "@luxoticars/ui/marko/program-badge.marko"`. A path import
+  compiles and renders, but `@marko/type-check` does not yet resolve its types (TS2307).
 - **Two dev servers** for the composed view in development.
 - **The theme toolbar** may not reach composed Marko stories (spike S4).
 

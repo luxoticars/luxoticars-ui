@@ -9,7 +9,7 @@
 - **`src/styles/tokens.css`** — the design tokens, exported as `./styles/tokens.css`.
 - **`src/utils/cn`** — class-name merge helper (`clsx` + `tailwind-merge`), and **`src/data/footer`** — shared footer data. Both are JS with hand-written `.d.ts` siblings (see typing convention below).
 - **`src/types.d.ts`** — shared type exports (`./types`).
-- Docs for props/slots/examples live in **Storybook**, generated from each component's types and JSDoc — not hand-written in README, so they can't drift from the code (`npm run storybook`).
+- Docs for props/slots/examples live in **Storybook**, generated from each component's types and JSDoc (Astro; Marko stories write their `argTypes` by hand, since `@storybook/marko` has no docgen) — not hand-written in README, so they can't drift from the code (`npm run storybook`).
 
 ## Repo topology
 

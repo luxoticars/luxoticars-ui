@@ -121,8 +121,14 @@ import ProgramBadge from "@luxoticars/ui/marko/program-badge.marko"
 ProgramBadge icon="top-rated-seller"
 ```
 
-As with the Astro components, props are documented in Storybook, generated from
-each tag's `Input` type, not here.
+A path import compiles and renders, but `@marko/type-check` cannot yet resolve
+the types of a `.marko` file imported from a package subpath (it reports TS2307),
+so a type-checked app should prefer the discovered tag.
+
+As with the Astro components, props are documented in Storybook, not here. For
+Marko tags the controls and their descriptions are written out beside the
+stories, because `@storybook/marko` has no docgen; they mirror the JSDoc on each
+tag's `Input`.
 
 ## Design tokens
 
