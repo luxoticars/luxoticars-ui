@@ -1,6 +1,6 @@
 # Dialog — design
 
-Status: draft for review · 2026-10-13 · branch `claude/dialog-native`
+Status: implemented on branch `claude/dialog-native` · 2026-10-13
 
 ## Intent
 
@@ -12,24 +12,24 @@ Success means:
 
 - **Self-contained.** Importing the Astro component is the whole setup. Its stylesheet and its small
   runtime script come with it, and nothing has to be wired up in the consuming app.
-- **Refuses to be inaccessible.** A dialog with no accessible name, or a confirm with no description,
-  fails the build instead of shipping.
+- **Refuses to be inaccessible.** A dialog that would ship without a way to name it or leave it fails the
+  build (Astro) or throws (HTML). The full list is under [Validation](#validation).
 - **Composable.** The dialog does not own its contents. Footer actions are ordinary `Button`s, a form
   is the consumer's own `<form>`, and a trigger is a `Button` that knows which dialog it opens.
-- **Verified in a real browser,** not by reading markup (see Verification).
+- **Verified in a real browser,** not by reading markup (see [Verification](#verification)).
 
-### Decisions already made
+### Decisions
 
 | Decision | Outcome |
 |---|---|
-| Element | Native `<dialog>` opened with `showModal()`. This gives focus containment, `inert` page, Escape handling and focus return for free, as `.github/instructions/a11y.instructions.md` K3 requires. |
-| Browser floor | **Evergreen.** Invoker commands (`command` / `commandfor`, Baseline Dec 2025) open and close dialogs with no JS. The only script is a fallback for Safari, which lacks `closedby`. |
-| Variants this round | `lightbox`, `confirm`, `panel`. |
+| Element | Native `<dialog>` opened with `showModal()`. This gives focus containment, an `inert` page, Escape handling and focus return for free, as `.github/instructions/a11y.instructions.md` K3 requires. |
+| Browser floor | **Evergreen.** Invoker commands (`command` / `commandfor`, Baseline since December 2025) open and close dialogs with no JS. The runtime script does two things: it clears stale results in every browser, and it stands in for `closedby` where a browser lacks it (Safari, as of October 2026). |
+| Variants | `lightbox`, `confirm`, `panel`. |
 | Out of scope | Snackbar (not modal: a live region, its own component), image gallery (prev/next, keys, counter, swipe, zoom — built on `Dialog` later), a hero-image variant and a back button. |
 
 ## Sizes and motion
 
-- Lightbox widths: **616px** default, **480px** narrow, **896px** wide (88% between 768 and 1024px).
+- Lightbox widths: **616px** default, **480px** narrow, **896px** wide.
 - Breakpoints **512 / 768 / 1024px**. The footer stacks below 512px and is a right-aligned row above it.
 - Under 512px the lightbox is a **bottom sheet** that slides up. From 512px it is centred and scales from **0.75 → 1**.
 - `large`: 70% height on desktop, 95% on mobile. `fullscreen`: edge-to-edge on mobile, as `large` above 512px.
@@ -37,7 +37,7 @@ Success means:
 - Confirm: centred at every size, max 616px from 768px, title 18/28px semibold, Cancel before the confirming action.
 - Motion: transform **500ms** `cubic-bezier(0.3, 0, 0, 1)` in; opacity and scrim **167ms**
   `cubic-bezier(0.3, 0, 0.7, 1)`; exit **167ms** `cubic-bezier(0.3, 0, 1, 1)`. Panel slide 320ms ease-out.
-- Close button 32×32px (meets WCAG 2.5.8's 24px minimum).
+- Close button 32×32px, above WCAG 2.5.8's 24px minimum target.
 
 ## Design choices
 
@@ -49,20 +49,39 @@ Success means:
 | Scrim from `neutral` at 70%, borders from `base-300` | Both follow the theme, so dark mode works |
 | `max-height: 90dvh` | Mobile browser toolbars do not clip it |
 | No drag handle on the bottom sheet | A handle that cannot be dragged is a false affordance |
-| `overscroll-behavior: contain` on the scrolling body | Scrolling the dialog never scrolls the page behind it |
-| `closedby` per variant, with a fallback for Safari | Backdrop dismissal is a per-variant policy |
+| `overscroll-behavior: contain` on whatever scrolls | Scrolling the dialog never scrolls the page behind it |
+| `closedby` per variant, with a stand-in for Safari | Backdrop dismissal is a per-variant policy |
 | `<form method="dialog">` footer | The clicked button's `value` becomes `dialog.returnValue`; no click handlers |
+
+## Architecture
+
+Each concern has one home. Both APIs share every one of them except the renderer.
+
+| Concern | Home | Owns |
+|---|---|---|
+| **Decisions** | `src/utils/dialog.js` (internal, not exported) | `resolveDialogOptions()`: validation, classes, role, `closedby`, ids, the close label, and **which parts render** (close button, body, footer). Pure: no DOM, no markup. |
+| **Rendering** | `src/astro/ui/Dialog.astro`, `src/html/dialog.js` | Each translates its own inputs (Astro slots, HTML options) into the resolver's booleans, then follows its answer. Neither re-derives anything the resolver decides. |
+| **Styling** | `src/styles/dialog.css` | All presentation. One page-level rule: the scroll lock on `html`. |
+| **Runtime** | `src/scripts/dialog.js` | `installDialogFallbacks()`, made of two independent parts: `clearStaleResults` (every browser) and `emulateClosedBy` (Safari only, removable on its own). |
+| **Opening** | `src/astro/ui/DialogTrigger.astro`, `createDialogTrigger()` | A button with `command="show-modal"`. No script. |
+
+The markup itself is written twice, once per renderer. The parity test (Verification, item 11) holds the two
+copies together.
 
 ## Files
 
 | File | Purpose |
 |---|---|
+| `src/utils/dialog.js` + `dialog.d.ts` | The option resolver and the close icon, shared by both APIs |
 | `src/styles/dialog.css` | The single stylesheet, shared by both APIs (the `logo.css` / `footer.css` arrangement) |
-| `src/astro/ui/Dialog.astro` | The dialog |
+| `src/astro/ui/Dialog.astro` | The Astro dialog |
 | `src/astro/ui/DialogTrigger.astro` | A `Button` that opens a dialog |
-| `src/scripts/dialog.js` + `dialog.d.ts` | `installDialogFallbacks()` — Safari fallbacks, idempotent |
 | `src/html/dialog.js` + `dialog.d.ts` | `createDialog()`, `createDialogTrigger()` |
-| `stories/ui/Dialog.stories.ts`, `stories/createDialog.stories.ts` | Storybook (stories never live beside components) |
+| `src/scripts/dialog.js` + `dialog.d.ts` | `installDialogFallbacks()`, idempotent per document |
+| `src/types.d.ts` | `DialogVariant`, `DialogSize`, `DialogSide`, `DialogDismiss` |
+| `tests/html-dialog.test.js`, `tests/dialog-options.test.js` | Unit tests (`npm test`, Node's built-in runner) |
+| `stories/ui/Dialog.stories.ts`, `stories/ui/DialogDemo.astro` | Astro stories; the demo composes `Dialog` + `DialogTrigger` + `Button` |
+| `stories/createDialog.stories.ts`, `stories/dialog-content.ts` | HTML-API stories, and the copy both story files share |
 | `.changeset/dialog-component.md` | Minor bump |
 
 `package.json#exports` gains `./styles/dialog.css` and `./scripts/dialog` (with a `types` entry).
@@ -71,14 +90,14 @@ unchanged. `src/html/index.js` (and its `.d.ts`) re-export the two builders. `np
 
 ## Markup
 
-Both APIs emit the same tree. Every node carries a BEM class, so nothing in the stylesheet selects by tag.
+Both APIs emit the same tree. Every part of the dialog carries a BEM class, so no part of it is selected by tag.
 
 ```html
 <dialog id="x" class="dialog dialog--lightbox" aria-labelledby="x-title" aria-describedby="x-desc" closedby="any">
   <div class="dialog__header">
     <h2 id="x-title" class="dialog__title">…title…</h2>
     <button type="button" class="dialog__close" command="close" commandfor="x" aria-label="Close">
-      <svg aria-hidden="true" focusable="false" …>…</svg>
+      <svg class="dialog__close-icon" aria-hidden="true" focusable="false" …>…</svg>
     </button>
   </div>
   <div class="dialog__body">
@@ -93,7 +112,10 @@ Both APIs emit the same tree. Every node carries a BEM class, so nothing in the 
   can be exposed as a page-level `banner` landmark.
 - `aria-describedby` and the description node are emitted **only when a description exists**, so the dialog
   never references a missing id.
-- The footer form is emitted only when footer content exists. The close button is emitted for `lightbox` and `panel`, never for `confirm`.
+- The resolver decides the optional parts: the body renders when there is a description or content, the footer
+  when there is footer content, and the close button for `lightbox` and `panel`, never for `confirm`.
+  In the HTML API, whitespace-only options count as none; in Astro, the `title` and `description` slots are
+  checked by their rendered text, while the default and `footer` slots count as present whenever they are given.
 - `confirm` adds `role="alertdialog"`.
 
 Modifier classes: `dialog--lightbox`, `dialog--confirm`, `dialog--panel`; size `dialog--narrow`, `dialog--wide`,
@@ -118,12 +140,12 @@ Props are a discriminated union on `variant`, so a prop that does not apply to a
 
 | Prop | Type | Default | Applies to |
 |---|---|---|---|
-| `id` | `string` (required) | — | all — triggers target it, and title/description ids derive from it |
+| `id` | `string` (required, no whitespace) | — | all — triggers target it, and title/description ids derive from it |
 | `variant` | `"lightbox" \| "confirm" \| "panel"` | `"lightbox"` | — |
 | `size` | `"narrow" \| "default" \| "wide" \| "large" \| "fullscreen"` | `"default"` | `lightbox` |
 | `side` | `"start" \| "end"` | `"start"` | `panel` |
 | `dismiss` | `"any" \| "closerequest" \| "none"` | `"any"`; `confirm`: `"closerequest"` | all; `confirm` does not accept `"any"` |
-| `closeLabel` | `string` | `"Close"` | `lightbox`, `panel` |
+| `closeLabel` | `string` (non-empty) | `"Close"` | `lightbox`, `panel` |
 | …rest | `HTMLAttributes<"dialog">` | — | spread onto `<dialog>` |
 
 `dismiss` maps to `closedby`: `any` closes on backdrop click and Escape, `closerequest` on Escape only, `none`
@@ -133,17 +155,20 @@ Slots:
 
 | Slot | Required | Renders as |
 |---|---|---|
-| `title` | **yes** — build error if absent | `<h2 class="dialog__title" id="{id}-title">`, referenced by `aria-labelledby` |
-| `description` | **yes for `confirm`** — build error if absent; optional otherwise | `<div class="dialog__description" id="{id}-desc">`, referenced by `aria-describedby` |
+| `title` | **yes** | `<h2 class="dialog__title" id="{id}-title">`, referenced by `aria-labelledby` |
+| `description` | **yes for `confirm`**; optional otherwise | `<div class="dialog__description" id="{id}-desc">`, referenced by `aria-describedby` |
 | default | no | inside `.dialog__body` |
-| `footer` | no | inside `<form method="dialog" class="dialog__footer">` |
+| `footer` | **yes for `confirm`**; optional otherwise | inside `<form method="dialog" class="dialog__footer">` |
 
-Slot presence is checked with `Astro.slots.has()`; the errors name the dialog's `id` and the missing slot.
+The `title` and `description` slots are checked by their **rendered text**, not by `Astro.slots.has()`. A slot
+that is present but renders nothing — `<Fragment slot="title">{car.name}</Fragment>` with an empty name —
+counts as missing, and markup with no text does too.
 
 Attribute integrity follows the `Button.astro` precedent: an HTML parser keeps the *first* of a duplicated
 attribute, so attributes the component must control are **removed from the spread**, not overridden after it.
 Removed: `role`, `aria-labelledby`, `aria-describedby`, `closedby`, `open` (an `open` attribute shows the dialog
-non-modally, which bypasses focus containment). `class` is merged with `cn`.
+non-modally, which bypasses focus containment) and `title` (a tooltip duplicating the title slot). `class` is
+merged with `cn`.
 
 The component imports `../../styles/dialog.css` in its frontmatter (the `Logo.astro` pattern — an `@import`
 inside a scoped `<style>` 404s in Storybook's prerender), and calls `installDialogFallbacks()` from a processed
@@ -152,7 +177,8 @@ inside a scoped `<style>` 404s in Storybook's prerender), and calls `installDial
 ### `DialogTrigger.astro`
 
 `Button` with `command="show-modal"` and `commandfor={for}`. It accepts every `Button` prop except `href` (a
-link cannot invoke a command), so triggers look like the rest of the UI. `for` is required.
+link cannot invoke a command) and forwards `Button`'s `left-icon` / `right-icon` slots, so triggers look like the
+rest of the UI. `for` is required and must contain no whitespace.
 
 ```astro
 <DialogTrigger for="delete-car" variant="destructive">Delete listing</DialogTrigger>
@@ -181,27 +207,53 @@ createDialog({ id, variant, size, side, dismiss, closeLabel, title, description,
 createDialogTrigger({ for: id, label, className })
 ```
 
-- `title`, `description`, `closeLabel`, `label` are **escaped**. `body` and `footer` are **raw HTML supplied
-  by the caller** and are not escaped; the `.d.ts` JSDoc says so.
-- It throws the same errors the Astro component does: missing `id`, missing `title`, `confirm` without
-  `description`, `confirm` with `dismiss: "any"`, and an unknown `variant`, `size`, `side` or `dismiss`.
+- `title`, `description`, `closeLabel`, `label`, `id` and `className` are **escaped**. `body` and `footer` are
+  **raw HTML supplied by the caller** and are not escaped; the `.d.ts` JSDoc says so.
+- `DialogOptions` is a discriminated union on `variant`, like the Astro props; a confirm requires `description`
+  and `footer`.
+- It throws the same errors the Astro component does (see [Validation](#validation)).
 - Callers load `@luxoticars/ui/styles/dialog.css` and call `installDialogFallbacks()` from
   `@luxoticars/ui/scripts/dialog` once.
 
+## Validation
+
+All checks live in the resolver, so both APIs enforce the same list. Each message starts `Dialog "<id>": `
+(or `Dialog: ` when there is no usable id).
+
+| Condition | Why |
+|---|---|
+| Missing or blank `id`; an `id` containing whitespace | Triggers and ARIA references cannot target it |
+| Missing or empty title | No accessible name |
+| A confirm without a description | Nothing for the alertdialog to announce |
+| A confirm without a footer | No ✕ and no backdrop dismiss: its buttons are the only way out |
+| An empty `closeLabel` (lightbox, panel) | The ✕ button would have no name |
+| A confirm with `dismiss: "any"` | A forced choice must not close on a stray click |
+| `size` on a non-lightbox; `side` on a non-panel | The option would be silently ignored |
+| An unknown `variant`, `size`, `side` or `dismiss` | — |
+
+`createDialogTrigger` throws when `for` is missing, blank or contains whitespace.
+
 ## Styling
 
-- **Tokens.** Every value is `var(--color-<daisyUI name>, var(--lux-<name>, <literal>))`. daisyUI defines the
-  first name in luxoticars-dash; `tokens.css` defines the second in luxoticars-web. The second link matters
-  because Tailwind v4 emits a theme variable only when a utility uses it, so `--color-base-100` may not exist
-  there. The literal makes the dialog render in an app with neither. Surface `base-100`, text `base-content`,
-  borders `base-300`, scrim `neutral` at 70% via `color-mix`, radius `--radius-box` with a literal fallback.
+- **Colour tokens.** Each reads the `tokens.css` name first, then daisyUI's, then a literal:
+  `var(--lux-<name>, var(--color-<name>, <literal>))`. The order matters. Tailwind's `@theme` declares
+  `--color-base-100: var(--lux-base-100)` on `:root`, and a custom property is resolved where it is declared, so
+  under a nested `[data-theme="dark"]` the daisyUI-named variable still carries the `:root` value. `--lux-*` is
+  redeclared on the themed element itself. In luxoticars-dash, which has no `tokens.css`, `--lux-*` is undefined
+  and daisyUI's own variables take over. The literal makes the dialog render in an app with neither. Surface
+  `base-100`, text `base-content`, borders `base-300`, focus ring `accent`, scrim `neutral` at 70% via `color-mix`,
+  radius `--radius-box` with a literal fallback. The drop shadow is a literal.
 - **Component custom properties** — the only extension points, each with a default:
   `--dialog-max-width`, `--dialog-scrim`, `--dialog-duration-enter`, `--dialog-duration-exit`.
-- **Layout.** `.dialog` is a flex column; header and footer are fixed, `.dialog__body` scrolls with
-  `overscroll-behavior: contain`. `max-height: 90dvh`.
+- **Layout.** `.dialog` is a flex column with `max-height: 90dvh`; the header and footer stay put and
+  `.dialog__body` scrolls with `overscroll-behavior: contain`. On short viewports (`max-height: 25rem`, about a
+  phone at 400% zoom) the whole dialog scrolls instead, so the footer is never clipped out of reach (WCAG 1.4.10).
+- **Forced colours.** The dialog's edge is a shadow, which forced-colors mode drops, so there it gets a
+  `1px solid CanvasText` border.
 - **Motion.** Enter and exit transitions on `opacity`, `translate`/`scale`, `display` and `overlay`, with
   `@starting-style` for the entry state; `::backdrop` fades the scrim. Reduced motion removes all transforms.
-- **RTL.** Logical properties throughout. The panel's slide direction flips under `:dir(rtl)`.
+- **RTL.** Layout uses logical properties. `translate` is physical, so the panel's slide direction flips under
+  `:dir(rtl)`.
 
 ## Behaviour
 
@@ -218,48 +270,70 @@ Focus return to the trigger, page inertness and top-layer stacking are native.
 
 ### `installDialogFallbacks()`
 
-Installs at most once per document, using delegated listeners so dialogs inserted later are covered. Returns
-early where the platform already does the work.
+Installs at most once per document, using delegated listeners so dialogs inserted later are covered. It is
+made of two independent parts.
 
-1. **Backdrop dismiss.** If `"closedBy" in HTMLDialogElement.prototype` is false (Safari), a `click` on an
-   open `.dialog[closedby="any"]` whose coordinates fall outside its bounding box closes it with `""`.
-2. **`dismiss="none"` in Safari.** A `cancel` event on a `.dialog[closedby="none"]` is `preventDefault()`ed.
-3. **Stale `returnValue`.** Closing on Escape leaves `returnValue` at its previous value, so a confirm closed
-   with "delete", reopened and then escaped would still read "delete". On `cancel` for any `.dialog`, the
-   script resets `returnValue` to `""`. This runs in every browser.
+**`clearStaleResults` — every browser.** A close that carries no value (Escape, the ✕ command, a light
+dismiss) leaves `returnValue` at its previous value, so a confirm closed with "delete", reopened and dismissed
+would still read "delete". The script clears `returnValue` when a `.dialog` opens (`beforetoggle`) and again
+when it is cancelled.
+
+**`emulateClosedBy` — only where `"closedBy" in HTMLDialogElement.prototype` is false (Safari).**
+
+1. **Backdrop dismiss.** A click on an open `.dialog[closedby="any"]` that lands outside its box closes it with
+   `""` — but only if the press also started on the backdrop. A text selection dragged from inside the dialog
+   ends in a click on the dialog too, and must not close it.
+2. **`dismiss="none"`.** A `cancel` event on a `.dialog[closedby="none"]` is `preventDefault()`ed.
 
 ## Verification
 
-Per CLAUDE.md: `npm ci`, transient `@astrojs/check`, `npx astro check` → 0 errors, `npm run build-storybook`,
-`npm run check:exports`, `rm -rf .astro`. Then the built Storybook driven by `playwright-core` in Chromium,
-asserting on the real DOM:
+Per CLAUDE.md: `npm ci`, transient `@astrojs/check` (it also needs `@emnapi/runtime` and `@emnapi/core`
+transiently, because `.npmrc`'s `legacy-peer-deps` skips them), `npx astro check` → 0 errors,
+`npm run build-storybook`, `npm run check:exports`, `rm -rf .astro`. Then:
 
-1. Clicking a trigger opens the dialog modally (`:modal`), and focus moves inside it.
-2. Escape closes it, and focus returns to the trigger.
-3. Confirm: the clicked footer button's value is `returnValue`; after reopening and pressing Escape it is `""`.
-4. Backdrop click closes a lightbox and a panel, and does not close a confirm or a `dismiss="closerequest"` dialog.
-5. Roles and ARIA: `alertdialog` on confirm; `aria-labelledby`/`aria-describedby` resolve to existing nodes; no `aria-describedby` without a description.
-6. The document does not scroll while a dialog is open, and does again after it closes.
-7. At 375px a lightbox is docked at the bottom; at 1280px it is centred and no wider than 616px; a panel is 384px.
-8. Dark theme: the surface uses the dark `base-100`.
-9. Reduced motion: no computed transform at any point of the transition.
-10. Form story: the footer submit button submits the body form.
-11. Parity: `createDialog` output matches the prerendered Astro markup for the same inputs, after normalising whitespace and Astro's scoping attributes.
-12. Build-time errors: a missing `title`, and a confirm without `description`, fail with the documented message.
+- **Unit tests** (`npm test`): the resolver's decisions, the builder's markup contract, escaping, and every
+  validation message.
+- **Browser tests**: the built Storybook driven by `playwright-core` (kept in a scratch directory, not a
+  dependency), asserting on the real DOM:
+  1. Clicking a trigger opens the dialog modally (`:modal`), and focus moves inside it.
+  2. Escape closes it, and focus returns to the trigger.
+  3. After a footer choice, reopening and dismissing with Escape, ✕ or the backdrop leaves `returnValue` `""`.
+  4. Backdrop click closes a lightbox and a panel, and does not close a confirm or a `dismiss="closerequest"`
+     dialog; `dismiss="none"` survives two Escapes and a backdrop click.
+  5. Roles and ARIA: `alertdialog` on confirm; `aria-labelledby`/`aria-describedby` resolve to existing nodes;
+     no `aria-describedby` without a description.
+  6. The document does not scroll while a dialog is open, and does again after it closes.
+  7. Layout: at 375px a lightbox is docked at the bottom; at 1280px it is centred and 616px wide; narrow, wide,
+     large, fullscreen and panel sizes; on a 320×200 viewport the footer can be scrolled into view.
+  8. Dark theme, including a dialog under a nested `[data-theme="dark"]` while the OS is light.
+  9. Reduced motion: no transform at any point of the opening; forced colours: a visible edge.
+  10. Form story: the footer submit button submits the body form; Cancel closes without validating.
+  11. Parity: `Dialog` and `createDialog` emit the same tree for the same inputs.
+  12. A drag from inside the dialog onto the backdrop does not close it.
+- **A real consumer app**: the package packed with `npm pack` and installed into a scratch Astro app. It checks
+  that the subpaths resolve, that the component's own `<script>` is bundled and runs, and that the build fails,
+  with the documented message, for a missing or empty title, a confirm without a description, a confirm
+  without a footer, and an empty `closeLabel`.
 
-Fallback paths (1–2 of `installDialogFallbacks`) cannot be exercised in Chromium, which supports `closedby`.
-They are tested by deleting `closedBy` from the prototype before installing, which forces the fallback.
+Chromium supports `closedby` natively, so `emulateClosedBy` can only be exercised in an engine without it. The
+behaviour tests are therefore written to run in both Chromium and Playwright's WebKit; the WebKit run is pending
+(see Known limitations).
 
-## Risks to check while building
+## Known limitations
 
-- **Storybook script execution.** The `@storybook-astro` prerender may not run a component's processed
-  `<script>`. If it does not, stories call `installDialogFallbacks()` from `.storybook/preview.ts`, and the
-  component's own `<script>` is still verified in the build output.
-- **`::backdrop` and custom properties.** Current evergreen browsers inherit custom properties into `::backdrop`
-  from the dialog; this is an inference to confirm in the browser. The literal fallback covers it either way.
-- **Scrollbar gutter.** `scrollbar-gutter: stable` while open reserves a gutter even on a page that did not
-  overflow, so on classic (non-overlay) scrollbars such a page shifts by the scrollbar width. Accepted: the
-  common case is a page that scrolls.
+- **Scrollbar gutter.** While a modal is open, `scrollbar-gutter: stable` reserves the scrollbar's width even on
+  a page that did not overflow. With classic (non-overlay) scrollbars, such as Windows', that narrows the
+  dialog's containing block by the scrollbar width, so a fullscreen dialog or an end-side panel stops about 15px
+  short of the right edge. Accepted: the common case is a page that scrolls, where the space is already taken.
+- **Storybook.** The Storybook prerender emits the component's `<script>` as a raw source path that 404s in the
+  preview. The story files call `installDialogFallbacks()` themselves; the real bundling is verified in the
+  consumer app.
+- **Exit transition outside Chromium.** The `overlay` property is transitioned only in Chromium. In engines
+  without it, a closing dialog may leave the top layer before its fade ends and fade out at its DOM position.
+  This is pending verification in WebKit, and the fix is to drop `display`/`overlay` from the transition where
+  `overlay` is unsupported.
+- **`dismiss="none"` in Safari.** Whether Safari lets a repeated Escape through a prevented `cancel` is pending
+  verification in WebKit.
 
 ## Follow-ups
 
