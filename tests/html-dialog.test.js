@@ -28,7 +28,13 @@ test("lightbox by default: labelled by its title, closes on backdrop, has a clos
 });
 
 test("confirm: alertdialog, described, Escape-only, no close button", () => {
-  const html = createDialog({ id: "del", variant: "confirm", title: "Delete?", description: "Gone for good." });
+  const html = createDialog({
+    id: "del",
+    variant: "confirm",
+    title: "Delete?",
+    description: "Gone for good.",
+    footer: "<button value=cancel>Cancel</button>",
+  });
   assert.deepEqual(attrs(html, "dialog"), {
     id: "del",
     class: "dialog dialog--confirm",
@@ -100,6 +106,10 @@ test("rejects invalid input with a message naming the dialog", () => {
     [{ id: "x", title: "T", dismiss: "click" }, /^Dialog "x": unknown dismiss "click"/],
     [{ id: "x", variant: "confirm", title: "T", description: "D", size: "wide" }, /^Dialog "x": `size` applies to the lightbox variant only/],
     [{ id: "x", title: "T", side: "end" }, /^Dialog "x": `side` applies to the panel variant only/],
+    [{ id: "x", variant: "confirm", title: "T", description: "D" }, /^Dialog "x": a confirm needs a footer/],
+    [{ id: "x", variant: "confirm", title: "T", description: "D", footer: "  " }, /^Dialog "x": a confirm needs a footer/],
+    [{ id: "x", title: "T", closeLabel: "" }, /^Dialog "x": `closeLabel` cannot be empty/],
+    [{ id: "x", variant: "panel", title: "T", closeLabel: "  " }, /^Dialog "x": `closeLabel` cannot be empty/],
   ];
   for (const [options, message] of cases) {
     assert.throws(() => createDialog(options), { message }, JSON.stringify(options));

@@ -6,10 +6,14 @@ export interface DialogOptionsInput {
   size?: string;
   side?: string;
   dismiss?: string;
+  /** The ✕ button's accessible name; must be non-empty when the ✕ renders. @default "Close" */
+  closeLabel?: string;
   /** Whether a non-empty title was supplied (slot or option). */
   hasTitle: boolean;
   /** Whether a non-empty description was supplied (slot or option). */
   hasDescription: boolean;
+  /** Whether footer content was supplied (slot or option). Required for a confirm. */
+  hasFooter: boolean;
 }
 
 export interface ResolvedDialog {

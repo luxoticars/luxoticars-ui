@@ -34,8 +34,10 @@ export const createDialog = ({
     size,
     side,
     dismiss,
+    closeLabel,
     hasTitle: filled(title),
     hasDescription: filled(description),
+    hasFooter: filled(footer),
   });
   const eid = escapeHtml(id);
 

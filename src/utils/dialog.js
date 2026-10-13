@@ -20,8 +20,10 @@ export function resolveDialogOptions({
   size = "default",
   side = "start",
   dismiss,
+  closeLabel = "Close",
   hasTitle,
   hasDescription,
+  hasFooter,
 }) {
   const named = typeof id === "string" && id.trim() !== "";
   const fail = (message) => {
@@ -47,6 +49,14 @@ export function resolveDialogOptions({
   if (!hasTitle) fail("a title is required — it is the dialog's accessible name (the `title` slot, or the `title` option).");
   if (variant === "confirm" && !hasDescription) {
     fail("a confirm needs a description — it is what the alertdialog announces (the `description` slot, or the `description` option).");
+  }
+  /* A confirm has no ✕ and ignores the backdrop, so without footer buttons a
+     touch user (no Escape key) — or anyone, with dismiss "none" — is trapped. */
+  if (variant === "confirm" && !hasFooter) {
+    fail("a confirm needs a footer — its buttons are the only way out (no ✕, no backdrop dismiss).");
+  }
+  if (variant !== "confirm" && (typeof closeLabel !== "string" || closeLabel.trim() === "")) {
+    fail("`closeLabel` cannot be empty — it is the ✕ button's accessible name.");
   }
 
   return {

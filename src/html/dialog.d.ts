@@ -45,6 +45,8 @@ export type DialogOptions =
       variant: "confirm";
       /** Required for a confirm: it is what the alertdialog announces. */
       description: string;
+      /** Required for a confirm: with no ✕ and no backdrop dismiss, its buttons are the only way out. */
+      footer: string;
       /** A confirm is never dismissed by a backdrop click. @default "closerequest" */
       dismiss?: Exclude<DialogDismiss, "any">;
       size?: never;

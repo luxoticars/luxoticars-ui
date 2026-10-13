@@ -305,6 +305,32 @@ html:has(.dialog:modal) {
   }
 }
 
+/* ---- Short viewports ---- */
+
+/* A phone window at 400% zoom is about 320×200 (WCAG 1.4.10): the header and
+   footer alone can outgrow 90dvh, and the footer would be clipped out of
+   reach. There the whole dialog scrolls instead of just its body. */
+@media (max-height: 25rem) {
+  .dialog[open] {
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .dialog__body {
+    flex: none;
+    overflow: visible;
+  }
+}
+
+/* ---- Forced colours ---- */
+
+/* The shadow is the dialog's only edge, and forced-colors mode drops it. */
+@media (forced-colors: active) {
+  .dialog {
+    border: 1px solid CanvasText;
+  }
+}
+
 /* ---- Reduced motion: fade only ---- */
 
 /* !important on the custom properties outranks every variant's --_from-*
