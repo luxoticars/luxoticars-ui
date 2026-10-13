@@ -1,6 +1,6 @@
 # ProgramBadge — design
 
-Status: spec approved, not yet implemented · 2026-10-13
+Status: implemented on branch `claude/program-badge` · 2026-10-13
 
 ## Intent
 
@@ -273,7 +273,7 @@ dependency is added.
 |---|---|
 | `marko.json` (new, root) | `{ "exports": "./src/marko", "script-lang": "ts" }`. Whether `script-lang` is needed is settled by spike S3. |
 | `package.json#files` | Adds `marko.json` |
-| `package.json#exports` | `"./marko/*.marko": "./src/marko/*.marko"` and `"./marko/*": "./src/marko/*.marko"`, mirroring the `./astro/*` pair, for apps that import by path |
+| `package.json#exports` | `"./marko/*.marko": "./src/marko/*.marko"` and `"./marko/*": "./src/marko/*.marko"`, mirroring the `./astro/*` pair, for apps that import by path, plus `"./marko.json": "./marko.json"` and `"./src/marko/*.marko": "./src/marko/*.marko"`: the Marko compiler finds a dependency's taglib through exports (`<pkg>/marko.json`) and imports discovered tags by their package-relative path (found by the spike) |
 | `peerDependencies` | `marko: "^6"`, marked optional in `peerDependenciesMeta`, so Astro-only consumers never install Marko |
 | `devDependencies` | `marko@^6`, `@storybook/marko`, `@storybook/marko-vite@^5` (`@marko/vite` and `@marko/compiler` arrive with these) |
 | `tsconfig.marko.json` (new) | Extends `tsconfig.json`, with `noEmit: true`. Includes `src/marko`, `src/utils`, `src/data`, `src/types.d.ts`, `stories-marko` and `.storybook-marko`. The main `tsconfig.json` and `astro check` stay untouched. |
@@ -307,6 +307,8 @@ Sonata UI (`@ebay/sonata-ui`, Marko 5) is a working Marko tag library, so its wi
    | S3 | Installed from `npm pack` into a scratch Marko 6 app, is `<program-badge>` discovered through `marko.json`, does its TypeScript syntax compile, and does `mtc` in that app see its `Input` types? | All three | **Doesn't compile:** confirm `"script-lang": "ts"` is in the shipped `marko.json`. If it still fails, the tag is authored without TypeScript syntax and its `Input` moves to a `program-badge.d.marko` beside it. That is Sonata's published layout, and the Marko counterpart of this repo's JS + `.d.ts` convention. **Types don't reach the consumer:** commit the `.d.marko` that `@marko/type-check` emits beside the tag, and add a staleness check to verification (regenerate, then `git diff --exit-code`). |
    | S4 | Does the host's theme toolbar reach composed Marko stories? | Recorded either way | Acceptable if the theme can be switched in the Marko Storybook itself (`/marko/`) |
 
+   Outcome: no fallback was taken. The spike also found the two extra exports entries above, and that composed stories render in `#storybook-ref-marko`.
+
 1. The framework-free files: icon data, resolver and its tests, stylesheet, shared types.
 2. The Astro component and its stories.
 3. The Marko tag, `marko.json`, exports, `.storybook-marko/` and its stories.
@@ -328,7 +330,8 @@ All of these must pass before the PR is raised:
    3. Names: with text, the `<svg>` has `aria-hidden="true"` and no `role` or `aria-label`. Icon-only, it is
       found by `getByRole("img", { name })` with the expected label, including the Malay one.
    4. Contrast: the icon against the canvas is at least 3:1, and the text against the canvas is at least
-      4.5:1, in both Dark and Light themes.
+      4.5:1, in both Dark and Light themes. The static Astro Storybook prerenders only its initial (dark)
+      theme, so Astro is checked in Dark; Light is checked on the Marko build, which shares the stylesheet.
    5. Size: the icon box is 16×16 by default and 24×24 at size 24.
 7. **Real consumer apps**, from `npm pack`:
    1. A scratch Marko 6 app discovers `<program-badge>`, server-renders the expected markup, passes `mtc` on a
