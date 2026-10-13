@@ -23,7 +23,7 @@ Success means:
 | Decision | Outcome |
 |---|---|
 | Element | Native `<dialog>` opened with `showModal()`. This gives focus containment, an `inert` page, Escape handling and focus return for free, as `.github/instructions/a11y.instructions.md` K3 requires. |
-| Browser floor | **Evergreen.** Invoker commands (`command` / `commandfor`, Baseline since December 2025) open and close dialogs with no JS. The runtime script does two things: it clears stale results in every browser, and it stands in for `closedby` where a browser lacks it (Safari, as of October 2026). |
+| Browser floor | **Evergreen.** Invoker commands (`command` / `commandfor`, Baseline since December 2025) open and close dialogs with no JS. The runtime script does two things: it clears stale results in every browser, and it stands in for `closedby` where a browser lacks it (Safari releases without `closedby`; Playwright's WebKit 27.2 has it natively). |
 | Variants | `lightbox`, `confirm`, `panel`. |
 | Out of scope | Snackbar (not modal: a live region, its own component), image gallery (prev/next, keys, counter, swipe, zoom — built on `Dialog` later), a hero-image variant and a back button. |
 
@@ -315,9 +315,9 @@ transiently, because `.npmrc`'s `legacy-peer-deps` skips them), `npx astro check
   with the documented message, for a missing or empty title, a confirm without a description, a confirm
   without a footer, and an empty `closeLabel`.
 
-Chromium supports `closedby` natively, so `emulateClosedBy` can only be exercised in an engine without it. The
-behaviour tests are therefore written to run in both Chromium and Playwright's WebKit; the WebKit run is pending
-(see Known limitations).
+The behaviour tests and the consumer-app tests run in both Chromium and Playwright's WebKit 27.2, and pass in
+both. Both engines have `closedby` natively, so `emulateClosedBy` (for Safari releases without it) is not
+exercised by any engine available here; it is verified by code review only.
 
 ## Known limitations
 
@@ -328,12 +328,13 @@ behaviour tests are therefore written to run in both Chromium and Playwright's W
 - **Storybook.** The Storybook prerender emits the component's `<script>` as a raw source path that 404s in the
   preview. The story files call `installDialogFallbacks()` themselves; the real bundling is verified in the
   consumer app.
-- **Exit transition outside Chromium.** The `overlay` property is transitioned only in Chromium. In engines
-  without it, a closing dialog may leave the top layer before its fade ends and fade out at its DOM position.
-  This is pending verification in WebKit, and the fix is to drop `display`/`overlay` from the transition where
-  `overlay` is unsupported.
-- **`dismiss="none"` in Safari.** Whether Safari lets a repeated Escape through a prevented `cancel` is pending
-  verification in WebKit.
+- **Exit transition outside Chromium.** Only Chromium can transition `overlay`. WebKit 27.2 hides a closing
+  dialog at once, so there the exit is instant rather than a fade; it does not leave a copy behind (tested).
+  Firefox is untested.
+- **Focus after a mouse-opened dialog in Safari.** In Safari a mouse click does not focus a button, so when a
+  dialog opened by mouse closes, focus goes to the page body rather than the trigger. That is the platform's
+  behaviour for every native dialog. Opened from the keyboard, focus returns to the trigger (tested in WebKit).
+- **`emulateClosedBy` is unexercised.** See Verification: no available engine lacks `closedby`.
 
 ## Follow-ups
 
