@@ -12,6 +12,7 @@
   "scripts": {
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "test": "node --test \"tests/**/*.test.js\"",
     "changeset": "changeset",
     "changeset:status": "changeset status --since=origin/main",
     "check:exports": "node scripts/check-exports.mjs",
@@ -33,6 +34,7 @@
     "./styles/tokens.css": "./src/styles/tokens.css",
     "./styles/footer.css": "./src/styles/footer.css",
     "./styles/logo.css": "./src/styles/logo.css",
+    "./styles/dialog.css": "./src/styles/dialog.css",
     "./utils/cn": {
       "types": "./src/utils/cn.d.ts",
       "default": "./src/utils/cn.js"
@@ -40,6 +42,10 @@
     "./data/footer": {
       "types": "./src/data/footer.d.ts",
       "default": "./src/data/footer.js"
+    },
+    "./scripts/dialog": {
+      "types": "./src/scripts/dialog.d.ts",
+      "default": "./src/scripts/dialog.js"
     },
     "./astro/*.astro": "./src/astro/*.astro",
     "./astro/*": "./src/astro/*.astro"
