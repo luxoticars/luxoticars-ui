@@ -12,6 +12,9 @@
   --_fg: var(--color-neutral-content, var(--lux-neutral-content, oklch(96% 0.003 264.542)));
   --_muted: var(--site-header-muted, oklch(78% 0.012 264.5));
   --_line: var(--site-header-line, oklch(100% 0 0 / 0.14));
+  /* No --lux-* step: tokens.css's light accent is a dark blue meant for text
+     on light canvases, and this one sits on the dark bar. Same literal as
+     logo.css, whose accent line it matches. */
   --_accent: var(--color-marque-accent, oklch(0.74 0.16 232.661));
   --_primary: var(--color-primary, var(--lux-primary, oklch(86% 0.127 207.078)));
   --_primary-content: var(--color-primary-content, var(--lux-primary-content, oklch(25% 0.09 281.288)));
@@ -146,9 +149,15 @@
   .site-header--with-search:not([data-search-hidden]) .site-header__nav {
     display: none;
   }
+
+  /* With the menu links hidden, the menu button takes their place. */
+  .site-header--with-search:not([data-search-hidden]) .site-header__menu {
+    display: block;
+  }
 }
 
-/* Phones only: the menu does not fit the bar there, so it opens from a button. */
+/* The menu button shows wherever the menu links do not fit: phones, and
+   tablets when the search has taken the links' place. */
 .site-header__menu {
   display: none;
 }
@@ -202,6 +211,15 @@
   text-transform: uppercase;
   text-decoration: none;
   color: var(--_muted);
+}
+
+.site-header__external-note {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }
 
 .site-header__menu-link:last-child {

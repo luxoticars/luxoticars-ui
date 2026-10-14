@@ -43,7 +43,9 @@ const {
 const searchHtml = Astro.slots.has("search") ? await Astro.slots.render("search") : "";
 const hasSearch = searchHtml.trim() !== "";
 const hideSearch = hasSearch ? hideSearchWhileVisible : undefined;
-const [ctaFirst, ...ctaRest] = ctaLabel.split(" ");
+const [ctaFirst, ...ctaRest] = ctaLabel.trim().split(/\s+/);
+const linkTarget = (link: FooterLink) =>
+  link.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
 ---
 
 <header
@@ -58,7 +60,12 @@ const [ctaFirst, ...ctaRest] = ctaLabel.split(" ");
     </div>
 
     <nav class="site-header__nav" aria-label="Main">
-      {links.map((link) => <a href={link.href} class="site-header__link">{link.label}</a>)}
+      {links.map((link) => (
+        <a href={link.href} class="site-header__link" {...linkTarget(link)}>
+          {link.label}
+          {link.external && <span class="site-header__external-note"> (opens in a new tab)</span>}
+        </a>
+      ))}
     </nav>
 
     {hasSearch && <div class="site-header__search" set:html={searchHtml} />}
@@ -74,37 +81,82 @@ const [ctaFirst, ...ctaRest] = ctaLabel.split(" ");
         </svg>
       </summary>
       <nav class="site-header__menu-panel" aria-label="Main">
-        {links.map((link) => <a href={link.href} class="site-header__menu-link">{link.label}</a>)}
+        {links.map((link) => (
+        <a href={link.href} class="site-header__menu-link" {...linkTarget(link)}>
+          {link.label}
+          {link.external && <span class="site-header__external-note"> (opens in a new tab)</span>}
+        </a>
+      ))}
       </nav>
     </details>
   </div>
 </header>
 
 <script>
-  for (const header of document.querySelectorAll<HTMLElement>("[data-site-header]")) {
-    // While the page's own search field is on screen, hide the header's.
-    // The header is sticky, so "on screen" means below the header's own height.
-    const selector = header.dataset.hideSearchWhileVisible;
-    const target = selector ? document.querySelector(selector) : null;
-    if (target) {
-      new IntersectionObserver(
-        ([entry]) => header.toggleAttribute("data-search-hidden", entry.isIntersecting),
-        { rootMargin: `-${header.offsetHeight}px 0px 0px 0px` },
-      ).observe(target);
-    } else {
-      header.removeAttribute("data-search-hidden");
-    }
+  // Runs on first load and again after every ClientRouter page swap; each run
+  // drops the previous run's listeners and observers.
+  let teardown = new AbortController();
 
-    // <details> opens and closes itself; this only adds tap-outside and Escape.
-    const menu = header.querySelector<HTMLDetailsElement>("[data-site-menu]");
-    if (!menu) continue;
-    document.addEventListener("click", (event) => {
-      if (menu.open && !menu.contains(event.target as Node)) menu.open = false;
-    });
-    document.addEventListener("keydown", (event) => {
-      if (event.key !== "Escape" || !menu.open) return;
-      menu.open = false;
-      menu.querySelector("summary")?.focus();
-    });
+  function initSiteHeaders() {
+    teardown.abort();
+    teardown = new AbortController();
+    const { signal } = teardown;
+
+    for (const header of document.querySelectorAll<HTMLElement>("[data-site-header]")) {
+      // While the page's own search field is on screen, hide the header's.
+      // The header is sticky, so "on screen" means below the header's own
+      // height, which is re-measured whenever the viewport changes.
+      const selector = header.dataset.hideSearchWhileVisible;
+      const target = selector ? document.querySelector(selector) : null;
+      if (target) {
+        const search = header.querySelector(".site-header__search");
+        let observer: IntersectionObserver | undefined;
+        const observe = () => {
+          observer?.disconnect();
+          observer = new IntersectionObserver(
+            ([entry]) => {
+              // Never hide the header search out from under someone typing in it.
+              if (entry.isIntersecting && search?.contains(document.activeElement)) return;
+              header.toggleAttribute("data-search-hidden", entry.isIntersecting);
+            },
+            { rootMargin: `-${header.offsetHeight}px 0px 0px 0px` },
+          );
+          observer.observe(target);
+        };
+        observe();
+        window.addEventListener("resize", observe, { signal });
+        signal.addEventListener("abort", () => observer?.disconnect());
+      } else {
+        // No page search to defer to: show the header's as a normal row.
+        header.removeAttribute("data-search-hidden");
+        header.removeAttribute("data-hide-search-while-visible");
+      }
+
+      // <details> opens and closes itself; this adds tap-outside, Escape, and
+      // closing once a link in the panel is chosen.
+      const menu = header.querySelector<HTMLDetailsElement>("[data-site-menu]");
+      if (!menu) continue;
+      document.addEventListener(
+        "click",
+        (event) => {
+          if (!menu.open) return;
+          const inside = menu.contains(event.target as Node);
+          if (!inside || (event.target as Element).closest("a")) menu.open = false;
+        },
+        { signal },
+      );
+      document.addEventListener(
+        "keydown",
+        (event) => {
+          if (event.key !== "Escape" || !menu.open) return;
+          menu.open = false;
+          menu.querySelector("summary")?.focus();
+        },
+        { signal },
+      );
+    }
   }
+
+  initSiteHeaders();
+  document.addEventListener("astro:after-swap", initSiteHeaders);
 </script>
