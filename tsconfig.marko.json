@@ -1,0 +1,26 @@
+// The Marko type gate: `npx mtc -p tsconfig.marko.json` (with @marko/type-check
+// installed transiently). Kept apart from tsconfig.json, which `astro check`
+// reads, so neither toolchain sees the other's files. The framework-free files
+// (src/utils, src/data, src/types.d.ts) are pulled in through imports.
+// stories/program-badge-cases.ts is listed because mtc forces `composite`,
+// which makes TypeScript require every emittable .ts file to be in `include`
+// (TS6307). Declaration files are not emitted, so they are exempt. `composite`
+// also makes it write a .tsbuildinfo file, which is pointed into node_modules
+// (gitignored) instead of the repo root.
+{
+  "include": ["src/marko", "stories-marko", ".storybook-marko", "stories/program-badge-cases.ts"],
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "tsBuildInfoFile": "node_modules/.cache/tsconfig.marko.tsbuildinfo",
+    "allowJs": true,
+    "checkJs": false,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ESNext",
+    "lib": ["DOM", "ESNext"],
+    "types": ["vite/client"],
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true
+  }
+}

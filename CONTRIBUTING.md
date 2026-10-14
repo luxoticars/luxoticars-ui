@@ -50,6 +50,13 @@ npm run storybook        # http://localhost:6006
 npm run build-storybook  # static build into storybook-static/
 ```
 
+Marko tags render in a second Storybook, composed into the first. Run both to
+see them together:
+
+```bash
+npm run storybook:marko  # http://localhost:6007, shown under "Marko" in 6006
+```
+
 ### How Astro stories render
 
 Astro components have no browser runtime, and their scoped CSS is emitted by
@@ -80,10 +87,17 @@ export const Minimal = {
 
 ## Adding a component
 
-Components ship a dual API: an Astro component and an HTML string builder
-(`src/html/<name>.js` with a hand-written `.d.ts` sibling, exported from
-`src/html/index.js`). Both read the same defaults from `src/data/`, and where a
-component has its own CSS, both are styled by the same file under `src/styles/`.
+Components ship up to three renderers: an Astro component, an HTML string
+builder (`src/html/<name>.js` with a hand-written `.d.ts` sibling, exported from
+`src/html/index.js`), and a Marko 6 tag (`src/marko/<name>.marko`). They read
+the same defaults from `src/data/`. Where a component has its own CSS, all of them
+are styled by the same file under `src/styles/`, and where it makes decisions, those
+live in one resolver under `src/utils/` that every renderer follows. `ProgramBadge`
+ships Astro and Marko; its HTML builder is a follow-up.
+
+Marko tags are written in **concise syntax** and the Marko 6 Tags API only. Their
+stories go in `stories-marko/`, with `argTypes` written out, because
+`@storybook/marko` has no docgen.
 
 1. Add `src/astro/<Name>.astro`, or `src/astro/ui/<Name>.astro` for a
    design-system primitive.
@@ -154,8 +168,9 @@ Put reset properties on the element's own class instead.
 ## Testing
 
 `npm test` runs the unit tests in `tests/` with Node's built-in runner (no
-dependencies). They pin the markup contract of the HTML builders. Everything
-else is verified as follows, and a pull request should say which of these were run.
+dependencies). They pin the HTML builders' markup and the option resolvers every
+renderer shares. Everything else is verified as follows, and a pull request
+should say which of these were run.
 
 **1. Storybook builds.** This is the closest thing to a smoke test: it compiles
 every component and every declared variant through Astro.
@@ -163,6 +178,20 @@ every component and every declared variant through Astro.
 ```bash
 npm run build-storybook
 ```
+
+**1a. Types check.** Both type gates must report 0 errors. The tools are not
+dependencies; install them transiently, together, because a later `npm install`
+prunes them:
+
+```bash
+npm i --no-save @astrojs/check @marko/type-check @emnapi/runtime@1.11.3
+npx astro check && rm -rf .astro
+npx mtc -p tsconfig.marko.json
+```
+
+`@emnapi/runtime` is listed because the lockfile marks it optional, so a
+`--no-save` install prunes it, and `astro check` then fails to load and exits 0
+without checking anything; a real pass prints `Result (N files): 0 errors`.
 
 **2. Components look right.** Open the stories and check each variant, including
 the mobile viewport. This is the whole point of Storybook being here.
@@ -177,8 +206,13 @@ npx astro build
 npx astro check        # needs TypeScript 6.x; astro check cannot run on TS 7 yet
 ```
 
+For a change to a Marko tag, also check a Marko 6 app's production build: build
+it with `@marko/vite` in linked mode (server, then client) and confirm the tag's
+stylesheet is in the client CSS. A server-only render (`linked: false`) never
+emits CSS, so it cannot catch a stylesheet that was tree-shaken out.
+
 **4. The published payload is what you expect.** `files` limits the package to
-`src` and the README. Confirm no dev tooling leaked in:
+`src`, `marko.json` and the README. Confirm no dev tooling leaked in:
 
 ```bash
 npm pack --dry-run

@@ -1,6 +1,6 @@
 # @luxoticars/ui
 
-Accessible Luxoticars components for HTML, Astro and Tailwind CSS.
+Accessible Luxoticars components for HTML, Astro, Marko and Tailwind CSS.
 
 ## Installation
 
@@ -102,6 +102,34 @@ Storybook, generated from each component's own types and JSDoc, so they cannot
 drift from the code the way a hand-written table in this file does. Run
 `npm run storybook`, or read the published build.
 
+## Marko API
+
+Marko 6 tags are discovered through the package's `marko.json`, so a Marko app
+uses them with no import. Marko is an optional peer dependency (`marko@^6`):
+install it in the app, not through this package.
+
+```marko
+program-badge icon="top-rated-seller" text="Top rated seller"
+```
+
+Tags can also be imported by path, which is the way out if another installed
+package exports a tag with the same name (Marko uses the first one it finds):
+
+```marko
+import ProgramBadge from "@luxoticars/ui/marko/program-badge.marko"
+
+ProgramBadge icon="top-rated-seller"
+```
+
+A path import compiles and renders, but `@marko/type-check` cannot yet resolve
+the types of a `.marko` file imported from a package subpath (it reports TS2307),
+so a type-checked app should prefer the discovered tag.
+
+As with the Astro components, props are documented in Storybook, not here. For
+Marko tags the controls and their descriptions are written out beside the
+stories, because `@storybook/marko` has no docgen; they mirror the JSDoc on each
+tag's `Input`.
+
 ## Design tokens
 
 Colour comes from one shared token table, `@luxoticars/ui/styles/tokens.css`. The
@@ -153,6 +181,14 @@ npm run storybook        # dev server on http://localhost:6006
 npm run build-storybook  # static build in storybook-static/
 ```
 
+Marko tags have their own Storybook (`.storybook-marko/`, stories in
+`stories-marko/`), composed into the Astro one so both share one sidebar under
+"Marko". In development run `npm run storybook:marko` (port 6007) alongside
+`npm run storybook`; `npm run build-storybook` builds both, the Marko one into
+`storybook-static/marko/`. The host's theme toolbar does not reach the composed
+Marko stories; open the Marko Storybook on its own (`/marko/` on the published
+site, or port 6007) to see them in the light theme.
+
 Astro components have no browser runtime, so they cannot render in a story on
 their own. [`@storybook-astro/framework`](https://github.com/storybook-astro/storybook-astro)
 bridges that with Astro's Container API: in dev it renders through middleware
@@ -188,7 +224,7 @@ Stories live in `stories/` rather than beside their components, because
 every consumer's `node_modules`.
 
 Storybook is a development-only concern. It is not part of the published package:
-`files` limits the package to `src` and the README, and installing this package
+`files` limits the package to `src`, `marko.json` and the README, and installing this package
 from Git pulls none of the Storybook dependencies.
 
 ### Published Storybook
