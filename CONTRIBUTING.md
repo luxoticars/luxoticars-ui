@@ -6,7 +6,7 @@ sites the moment they update the dependency. Review accordingly.
 
 ## Requirements
 
-- Node 22 or newer, matching what both consuming apps run on.
+- Node 24, as pinned in `.nvmrc`. CI and the release workflow read the same file, so local and CI cannot drift. Use `nvm use` or `fnm use` to switch.
 - npm. The repository has a committed `package-lock.json` and CI uses `npm ci`.
 
 ## Fork first
