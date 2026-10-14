@@ -1,0 +1,12 @@
+/* Stand-in for a real search field in the SiteHeader stories. Story slot
+   content is sanitised, which drops <input> and inline styles, so the slot
+   carries plain text and this styles it like the served search bar. */
+.site-header__search > * {
+  display: block;
+  padding: 0.5rem 1rem;
+  border: 1px solid oklch(100% 0 0 / 0.2);
+  border-radius: 9999px;
+  background: oklch(100% 0 0 / 0.06);
+  color: oklch(78% 0.012 264.5);
+  font-size: 0.875rem;
+}

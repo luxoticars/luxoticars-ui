@@ -1,0 +1,288 @@
+/*
+  Site header styles. Astro only: `SiteHeader.astro` imports this file in its
+  frontmatter, so the rules are global and the `site-header` block namespaces
+  them. Class names are BEM, as in footer.css.
+
+  Every token is read with a fallback chain: the daisyUI/Tailwind name first
+  (luxoticars-dash), then tokens.css's `--lux-*` name (apps without Tailwind),
+  then a literal, so the header renders the same wherever it lands.
+*/
+.site-header {
+  --_bg: var(--color-neutral, var(--lux-neutral, oklch(12% 0.042 264.695)));
+  --_fg: var(--color-neutral-content, var(--lux-neutral-content, oklch(96% 0.003 264.542)));
+  --_muted: var(--site-header-muted, oklch(78% 0.012 264.5));
+  --_line: var(--site-header-line, oklch(100% 0 0 / 0.14));
+  --_accent: var(--color-marque-accent, oklch(0.74 0.16 232.661));
+  --_primary: var(--color-primary, var(--lux-primary, oklch(86% 0.127 207.078)));
+  --_primary-content: var(--color-primary-content, var(--lux-primary-content, oklch(25% 0.09 281.288)));
+
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background-color: var(--_bg);
+  border-bottom: 1px solid var(--_line);
+  color: var(--_fg);
+  font-family: var(--font-futura, inherit);
+}
+
+.site-header *,
+.site-header *::before,
+.site-header *::after {
+  box-sizing: border-box;
+}
+
+.site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem 1.5rem;
+  max-width: var(--page-max, 80rem);
+  margin-inline: auto;
+  padding: 0.75rem var(--page-gutter, clamp(1rem, 4vw, 3rem));
+}
+
+.site-header__logo {
+  display: flex;
+}
+
+.site-header__logo .logo:focus-visible {
+  outline: 2px solid var(--_accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.site-header__nav {
+  display: flex;
+  gap: 1.5rem;
+  margin-right: auto;
+}
+
+.site-header__link {
+  position: relative;
+  padding-block: 0.25rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--_muted);
+  border-radius: 2px;
+  transition: color 150ms ease-out;
+}
+
+/* The same accent line as under the wordmark, drawn in from the left. */
+.site-header__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.125rem;
+  height: 2px;
+  background-color: var(--_accent);
+  scale: 0 1;
+  transform-origin: left;
+  transition: scale 300ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.site-header__link:hover {
+  color: var(--_fg);
+}
+
+.site-header__link:hover::after {
+  scale: 1 1;
+}
+
+.site-header__link:focus-visible,
+.site-header__cta:focus-visible {
+  outline: 2px solid var(--_primary);
+  outline-offset: 3px;
+}
+
+.site-header__search {
+  flex: 1 1 18rem;
+  min-width: 0;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+/* While the page's own search field is on screen, the header shows the menu
+   instead of a second search bar. */
+.site-header[data-search-hidden] .site-header__search {
+  display: none;
+}
+
+.site-header__cta {
+  margin-left: auto;
+  padding: 0.4rem 1.4rem;
+  border-radius: 9999px;
+  background-color: var(--_primary);
+  color: var(--_primary-content);
+  font-family: var(--font-futura-bold, var(--font-futura, inherit));
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    scale 150ms ease-out,
+    box-shadow 300ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.site-header__cta:hover {
+  box-shadow: 0 0 1.25rem -0.25rem var(--_primary);
+}
+
+.site-header__cta:active {
+  scale: 0.96;
+}
+
+.site-header--with-search:not([data-search-hidden]) .site-header__cta {
+  margin-left: 0;
+}
+
+/* Below this width the menu and the search do not fit one row, so the search
+   takes the menu's place. Without a search the menu always shows. */
+@media (max-width: 74.99rem) {
+  .site-header--with-search:not([data-search-hidden]) .site-header__nav {
+    display: none;
+  }
+}
+
+/* Phones only: the menu does not fit the bar there, so it opens from a button. */
+.site-header__menu {
+  display: none;
+}
+
+.site-header__menu-button {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-right: -0.625rem;
+  border-radius: 2px;
+  color: var(--_fg);
+  cursor: pointer;
+  list-style: none;
+}
+
+.site-header__menu-button::-webkit-details-marker {
+  display: none;
+}
+
+.site-header__menu-button:focus-visible {
+  outline: 2px solid var(--_primary);
+  outline-offset: -2px;
+}
+
+.site-header__menu[open] .site-header__menu-button {
+  color: var(--_accent);
+}
+
+/* Over the header search, which also sits just under the bar. */
+.site-header__menu-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem var(--page-gutter, clamp(1rem, 4vw, 3rem)) 1rem;
+  background-color: var(--_bg);
+  border-bottom: 1px solid var(--_line);
+}
+
+.site-header__menu-link {
+  display: flex;
+  align-items: center;
+  min-height: 3rem;
+  border-bottom: 1px solid var(--_line);
+  font-size: 0.875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--_muted);
+}
+
+.site-header__menu-link:last-child {
+  border-bottom: 0;
+}
+
+.site-header__menu-link:hover,
+.site-header__menu-link:focus-visible {
+  color: var(--_fg);
+}
+
+.site-header__menu-link:focus-visible {
+  outline: 2px solid var(--_primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 47.5rem) {
+  /* Logo, button and the menu button share one row down to 320px. */
+  .site-header__inner {
+    column-gap: 0.75rem;
+  }
+
+  .site-header__nav {
+    display: none;
+  }
+
+  .site-header__menu {
+    display: block;
+  }
+
+  /* Under the bar, not inside it: when the search appears on scroll it must
+     not make the header taller and shove the page down. */
+  .site-header__search {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-width: none;
+    padding: 0 var(--page-gutter, clamp(1rem, 4vw, 3rem)) 0.625rem;
+    background-color: var(--_bg);
+    border-bottom: 1px solid var(--_line);
+  }
+
+  /* A page with no search field of its own shows this one all the time, so
+     there it is a second row of the bar and takes up real space. */
+  .site-header:not([data-hide-search-while-visible]) .site-header__search {
+    position: static;
+    order: 1;
+    flex-basis: 100%;
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .site-header__cta,
+  .site-header--with-search:not([data-search-hidden]) .site-header__cta {
+    margin-left: auto;
+  }
+}
+
+/* Beside the wordmark there is only room for one word on a small phone. */
+@media (max-width: 30rem) {
+  .site-header__cta-more {
+    display: none;
+  }
+}
+
+@media (max-width: 21.25rem) {
+  .site-header__inner {
+    column-gap: 0.5rem;
+  }
+
+  .site-header__cta {
+    padding-inline: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header__link,
+  .site-header__link::after,
+  .site-header__cta {
+    transition: none;
+  }
+}

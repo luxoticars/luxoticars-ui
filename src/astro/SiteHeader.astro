@@ -1,0 +1,110 @@
+---
+/*
+  Imported in the frontmatter, not through an `@import` in a scoped <style>,
+  for the reason given in Logo.astro: Storybook lifts a scoped style block as
+  literal text and the `@import` 404s. The `site-header` block namespaces it.
+*/
+import "../styles/site-header.css";
+import type { FooterLink } from "../types";
+import Logo from "./Logo.astro";
+
+export type Props = {
+  /** Menu links, in order. @default Buy, Reviews, About */
+  links?: FooterLink[];
+  /** Wordmark text. @default "Luxoticars" */
+  siteTitle?: string;
+  /** Where the wordmark links. @default "/" */
+  homeHref?: string;
+  /** Label of the call-to-action button. Below 30rem only its first word shows. @default "Advertise your car" */
+  ctaLabel?: string;
+  /** Where the call-to-action button goes. @default "https://dash.luxoticars.com" */
+  ctaHref?: string;
+  /**
+   * Selector of the page's own search field. While it is on screen the header
+   * hides the search in its `search` slot, so the page never shows two search
+   * bars at once. Only matters when the `search` slot is filled.
+   */
+  hideSearchWhileVisible?: string;
+};
+
+const {
+  links = [
+    { label: "Buy", href: "/search" },
+    { label: "Reviews", href: "/a/reviews/" },
+    { label: "About", href: "/a/" },
+  ],
+  siteTitle = "Luxoticars",
+  homeHref = "/",
+  ctaLabel = "Advertise your car",
+  ctaHref = "https://dash.luxoticars.com",
+  hideSearchWhileVisible,
+} = Astro.props;
+
+const searchHtml = Astro.slots.has("search") ? await Astro.slots.render("search") : "";
+const hasSearch = searchHtml.trim() !== "";
+const hideSearch = hasSearch ? hideSearchWhileVisible : undefined;
+const [ctaFirst, ...ctaRest] = ctaLabel.split(" ");
+---
+
+<header
+  class:list={["site-header", hasSearch && "site-header--with-search"]}
+  data-site-header
+  data-hide-search-while-visible={hideSearch}
+  data-search-hidden={hideSearch ? "" : undefined}
+>
+  <div class="site-header__inner">
+    <div class="site-header__logo">
+      <Logo siteTitle={siteTitle} href={homeHref} accent />
+    </div>
+
+    <nav class="site-header__nav" aria-label="Main">
+      {links.map((link) => <a href={link.href} class="site-header__link">{link.label}</a>)}
+    </nav>
+
+    {hasSearch && <div class="site-header__search" set:html={searchHtml} />}
+
+    <a href={ctaHref} class="site-header__cta">
+      {ctaFirst}{ctaRest.length > 0 && <span class="site-header__cta-more"> {ctaRest.join(" ")}</span>}
+    </a>
+
+    <details class="site-header__menu" data-site-menu>
+      <summary class="site-header__menu-button" aria-label="Menu">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+        </svg>
+      </summary>
+      <nav class="site-header__menu-panel" aria-label="Main">
+        {links.map((link) => <a href={link.href} class="site-header__menu-link">{link.label}</a>)}
+      </nav>
+    </details>
+  </div>
+</header>
+
+<script>
+  for (const header of document.querySelectorAll<HTMLElement>("[data-site-header]")) {
+    // While the page's own search field is on screen, hide the header's.
+    // The header is sticky, so "on screen" means below the header's own height.
+    const selector = header.dataset.hideSearchWhileVisible;
+    const target = selector ? document.querySelector(selector) : null;
+    if (target) {
+      new IntersectionObserver(
+        ([entry]) => header.toggleAttribute("data-search-hidden", entry.isIntersecting),
+        { rootMargin: `-${header.offsetHeight}px 0px 0px 0px` },
+      ).observe(target);
+    } else {
+      header.removeAttribute("data-search-hidden");
+    }
+
+    // <details> opens and closes itself; this only adds tap-outside and Escape.
+    const menu = header.querySelector<HTMLDetailsElement>("[data-site-menu]");
+    if (!menu) continue;
+    document.addEventListener("click", (event) => {
+      if (menu.open && !menu.contains(event.target as Node)) menu.open = false;
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape" || !menu.open) return;
+      menu.open = false;
+      menu.querySelector("summary")?.focus();
+    });
+  }
+</script>
