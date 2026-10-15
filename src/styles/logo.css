@@ -51,8 +51,8 @@
 
 /* Accent variant: a short line under "LUX", not a full underline, which would
    read as a link. It stretches across the wordmark on hover. */
-/* Margin, not padding: the © mark is positioned from the wordmark's box, and
-   padding would grow that box and carry the mark down with it. */
+/* Margin, not padding: the © mark is positioned inside the wordmark's box,
+   and margin keeps that box the size of the text. */
 .logo--accent .logo__wordmark {
   margin-bottom: 0.375rem;
 }
