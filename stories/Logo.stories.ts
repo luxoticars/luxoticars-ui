@@ -32,3 +32,8 @@ export const White = {
 export const Black = {
   args: { variant: "black" },
 };
+
+/** Accent line under "LUX", as the site header uses it. Hover or keyboard focus stretches it. */
+export const Accent = {
+  args: { variant: "white", accent: true },
+};

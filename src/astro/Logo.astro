@@ -20,13 +20,15 @@ export type Props = {
   href?: string;
   /** Wordmark color: `white` for dark backgrounds, `black` for light ones. @default "white" */
   variant?: "white" | "black";
+  /** Draws a short accent line under the first letters, which stretches across the wordmark on hover. @default false */
+  accent?: boolean;
 }
 
-const { siteTitle = "Luxoticars", href = "/", variant = "white" } = Astro.props;
+const { siteTitle = "Luxoticars", href = "/", variant = "white", accent = false } = Astro.props;
 ---
 {/* Home link, not a heading — an h1 down here gives every page on the
     site a second level-1 heading after its real one. */}
-<a href={href} class:list={["logo", variant === "black" && "logo--black"]}>
+<a href={href} class:list={["logo", variant === "black" && "logo--black", accent && "logo--accent"]}>
   <span class="logo__wordmark">
     {siteTitle}
     <sup class="logo__mark">&copy;</sup>
