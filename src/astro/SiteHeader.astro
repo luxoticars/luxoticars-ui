@@ -74,10 +74,13 @@ const linkTarget = (link: FooterLink) =>
       </div>
     )}
 
-    {/* The full label as the name: on small phones the rest is display:none. */}
-    <a href={ctaHref} class="site-header__cta" aria-label={ctaRest.length > 0 ? ctaLabel.trim() : undefined}>
-      {ctaFirst}{ctaRest.length > 0 && <span class="site-header__cta-more"> {ctaRest.join(" ")}</span>}
-    </a>
+    {/* The full label as the name: on small phones the rest is display:none.
+        No label, no button: an empty pill would be a link with no name. */}
+    {ctaFirst && (
+      <a href={ctaHref} class="site-header__cta" aria-label={ctaRest.length > 0 ? ctaLabel.trim() : undefined}>
+        {ctaFirst}{ctaRest.length > 0 && <span class="site-header__cta-more"> {ctaRest.join(" ")}</span>}
+      </a>
+    )}
 
     <details class="site-header__menu" data-site-menu>
       <summary class="site-header__menu-button" aria-label="Menu">
@@ -108,28 +111,27 @@ const linkTarget = (link: FooterLink) =>
     const { signal } = teardown;
 
     for (const header of document.querySelectorAll<HTMLElement>("[data-site-header]")) {
+      const menu = header.querySelector<HTMLDetailsElement>("[data-site-menu]");
+      const nav = header.querySelector(".site-header__nav");
+      const search = header.querySelector(".site-header__search");
+
       // While the page's own search field is on screen, hide the header's.
       // The header is sticky, so "on screen" means below the header's own
       // height, which is re-measured whenever the viewport changes.
-      const selector = header.dataset.hideSearchWhileVisible;
-      let target: Element | null = null;
-      try {
-        target = selector ? document.querySelector(selector) : null;
-      } catch {
-        // An invalid selector must not stop the menu wiring below.
-      }
-      // The setting stays on the element (a persisted header may find a target
-      // on the next page); this state attribute says whether it applies here.
-      header.toggleAttribute("data-search-floating", Boolean(target));
-      const search = header.querySelector(".site-header__search");
-      if (target && search) {
+      const watchPageSearch = (target: Element) => {
+        if (!search) return;
+        header.setAttribute("data-search-floating", "");
         let pageSearchVisible = false;
-        const apply = () =>
+        const apply = () => {
           // Never hide the header search out from under someone typing in it.
           header.toggleAttribute(
             "data-search-hidden",
             pageSearchVisible && !search.contains(document.activeElement),
           );
+          // On tablets the links come back into the bar as the search hides;
+          // an open menu would then list them twice.
+          if (menu?.open && nav && getComputedStyle(nav).display !== "none") menu.open = false;
+        };
         let observer: IntersectionObserver | undefined;
         let measured = -1;
         const observe = () => {
@@ -156,13 +158,39 @@ const linkTarget = (link: FooterLink) =>
           observer?.disconnect();
           sizeWatch.disconnect();
         });
+      };
+
+      const selector = header.dataset.hideSearchWhileVisible;
+      const find = () => {
+        try {
+          return selector ? document.querySelector(selector) : null;
+        } catch {
+          return null; // An invalid selector must not stop the menu wiring below.
+        }
+      };
+      const target = find();
+      if (target) {
+        watchPageSearch(target);
       } else {
+        // Not on the page (yet): show the header search as a normal row. The
+        // setting stays on the element, and a page search that appears later,
+        // such as a hydrated island, is picked up when it does.
+        header.removeAttribute("data-search-floating");
         header.removeAttribute("data-search-hidden");
+        if (selector && search) {
+          const late = new MutationObserver(() => {
+            const found = find();
+            if (!found) return;
+            late.disconnect();
+            watchPageSearch(found);
+          });
+          late.observe(document.body, { childList: true, subtree: true });
+          signal.addEventListener("abort", () => late.disconnect());
+        }
       }
 
       // <details> opens and closes itself; this adds tap-outside, Escape,
       // tabbing out, and closing once a link in the panel is chosen.
-      const menu = header.querySelector<HTMLDetailsElement>("[data-site-menu]");
       if (!menu) continue;
       document.addEventListener(
         "click",
@@ -173,12 +201,15 @@ const linkTarget = (link: FooterLink) =>
         },
         { signal },
       );
-      // Escape only while focus is in the menu, so it never steals an Escape
-      // meant for something else on the page.
-      menu.addEventListener(
+      // Escape while focus is in the menu, or nowhere in particular (Safari
+      // leaves focus on the page when the button is clicked or tapped), so it
+      // never steals an Escape meant for another control on the page.
+      document.addEventListener(
         "keydown",
         (event) => {
           if (event.key !== "Escape" || !menu.open) return;
+          const active = document.activeElement;
+          if (active && active !== document.body && !menu.contains(active)) return;
           menu.open = false;
           menu.querySelector("summary")?.focus();
         },

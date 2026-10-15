@@ -49,6 +49,13 @@
   display: flex;
 }
 
+/* The accent logo leaves room under itself for its line; here the bar's
+   padding has that room, and the margin would lift the wordmark off the
+   centre line the button and links share. */
+.site-header__logo .logo--accent .logo__wordmark {
+  margin-bottom: 0;
+}
+
 .site-header__logo .logo:focus-visible {
   outline: 2px solid var(--_accent);
   outline-offset: 4px;
@@ -144,15 +151,15 @@
   margin-left: 0;
 }
 
+/* Tall enough for the menu button and the search alike, so the bar keeps its
+   height when they swap with the links and the page below does not jump. */
+.site-header--with-search .site-header__inner {
+  min-height: calc(2.75rem + 1.5rem);
+}
+
 /* Below this width the menu and the search do not fit one row, so the search
    takes the menu's place. Without a search the menu always shows. */
 @media (max-width: 74.99rem) {
-  /* Tall enough for the menu button either way, so the bar keeps its height
-     when the search swaps in and the page below does not jump. */
-  .site-header--with-search .site-header__inner {
-    min-height: calc(2.75rem + 1.5rem);
-  }
-
   .site-header--with-search:not([data-search-hidden]) .site-header__nav {
     display: none;
   }
@@ -263,6 +270,15 @@
     display: block;
   }
 
+  .site-header__cta,
+  .site-header--with-search:not([data-search-hidden]) .site-header__cta {
+    margin-left: auto;
+  }
+}
+
+/* Up to iPad portrait the search does not fit beside the wordmark, button and
+   menu button, so it gets a row of its own. */
+@media (max-width: 52rem) {
   /* Under the bar, not inside it: when the search appears on scroll it must
      not make the header taller and shove the page down. */
   .site-header__search {
@@ -284,11 +300,6 @@
     flex-basis: 100%;
     padding: 0;
     border-bottom: 0;
-  }
-
-  .site-header__cta,
-  .site-header--with-search:not([data-search-hidden]) .site-header__cta {
-    margin-left: auto;
   }
 }
 
