@@ -139,11 +139,14 @@ const linkTarget = (link: FooterLink) =>
           measured = header.offsetHeight;
           observer?.disconnect();
           observer = new IntersectionObserver(
+            // Hand over only once the page search is fully in view, so there
+            // is never a stretch with neither search usable. 0.99, not 1:
+            // subpixel layout can keep the ratio just under 1.
             (entries) => {
-              pageSearchVisible = entries.at(-1)!.isIntersecting;
+              pageSearchVisible = entries.at(-1)!.intersectionRatio >= 0.99;
               apply();
             },
-            { rootMargin: `-${measured}px 0px 0px 0px` },
+            { rootMargin: `-${measured}px 0px 0px 0px`, threshold: [0, 0.99] },
           );
           observer.observe(target);
         };
@@ -161,9 +164,12 @@ const linkTarget = (link: FooterLink) =>
       };
 
       const selector = header.dataset.hideSearchWhileVisible;
+      // Never the header's own search: watching itself, it would hide and
+      // show itself without end.
       const find = () => {
         try {
-          return selector ? document.querySelector(selector) : null;
+          if (!selector) return null;
+          return [...document.querySelectorAll(selector)].find((el) => !header.contains(el)) ?? null;
         } catch {
           return null; // An invalid selector must not stop the menu wiring below.
         }
@@ -192,12 +198,19 @@ const linkTarget = (link: FooterLink) =>
       // <details> opens and closes itself; this adds tap-outside, Escape,
       // tabbing out, and closing once a link in the panel is chosen.
       if (!menu) continue;
+      // Outside on pointerdown: iOS Safari sends no click to the document for
+      // a tap on plain content. Choosing a link still closes on click.
       document.addEventListener(
+        "pointerdown",
+        (event) => {
+          if (menu.open && !menu.contains(event.target as Node)) menu.open = false;
+        },
+        { signal },
+      );
+      menu.addEventListener(
         "click",
         (event) => {
-          if (!menu.open) return;
-          const inside = menu.contains(event.target as Node);
-          if (!inside || (event.target as Element).closest("a")) menu.open = false;
+          if ((event.target as Element).closest("a")) menu.open = false;
         },
         { signal },
       );
@@ -218,7 +231,7 @@ const linkTarget = (link: FooterLink) =>
       // Tabbing out of the menu closes it, so it never sits open over the page.
       // Only when focus lands somewhere else: Safari drops focus on a plain
       // click (no relatedTarget), and closing then would swallow a link tap.
-      // Clicks are handled above.
+      // Taps and clicks are handled above.
       menu.addEventListener(
         "focusout",
         (event) => {

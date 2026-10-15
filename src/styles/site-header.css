@@ -49,13 +49,6 @@
   display: flex;
 }
 
-/* The accent logo leaves room under itself for its line; here the bar's
-   padding has that room, and the margin would lift the wordmark off the
-   centre line the button and links share. */
-.site-header__logo .logo--accent .logo__wordmark {
-  margin-bottom: 0;
-}
-
 .site-header__logo .logo:focus-visible {
   outline: 2px solid var(--_accent);
   outline-offset: 4px;
