@@ -29,6 +29,6 @@ const { siteTitle = "Luxoticars", href = "/", variant = "white" } = Astro.props;
 <a href={href} class:list={["logo", variant === "black" && "logo--black"]}>
   <span class="logo__wordmark">
     {siteTitle}
-    <sub class="logo__mark">&copy;</sub>
+    <sup class="logo__mark">&copy;</sup>
   </span>
 </a>
