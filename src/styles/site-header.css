@@ -269,11 +269,6 @@
   .site-header__menu {
     display: block;
   }
-
-  .site-header__cta,
-  .site-header--with-search:not([data-search-hidden]) .site-header__cta {
-    margin-left: auto;
-  }
 }
 
 /* Up to iPad portrait the search does not fit beside the wordmark, button and
@@ -300,6 +295,12 @@
     flex-basis: 100%;
     padding: 0;
     border-bottom: 0;
+  }
+
+  /* With the search out of the row, the button goes back to the right. */
+  .site-header__cta,
+  .site-header--with-search:not([data-search-hidden]) .site-header__cta {
+    margin-left: auto;
   }
 }
 
