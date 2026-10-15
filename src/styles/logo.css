@@ -50,7 +50,7 @@
 }
 
 /* Accent variant: a short line under "LUX", not a full underline, which would
-   read as a link. It stretches across the wordmark on hover. The line hangs
+   read as a link. It stretches across the wordmark on hover and on keyboard focus. The line hangs
    below the wordmark's box; room for it is the layout's job, not the logo's. */
 
 .logo--accent .logo__wordmark::after {
@@ -64,7 +64,8 @@
   transition: width 300ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-.logo--accent:hover .logo__wordmark::after {
+.logo--accent:hover .logo__wordmark::after,
+.logo--accent:focus-visible .logo__wordmark::after {
   width: calc(100% - 0.5rem);
 }
 
