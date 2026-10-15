@@ -14,13 +14,13 @@ export const brandLinks = [
   { label: "Bentley",      href: "/search?q=Bentley" },
   { label: "Aston Martin", href: "/search?q=Aston+Martin" },
   { label: "Bugatti",      href: "/search?q=Bugatti" },
-  { label: "Pagani",       href: "/search?q=Pagani" },
+  { label: "Lexus",        href: "/search?q=Lexus" },
 ];
 
 export const companyLinks = [
   { label: "About Us", href: "/a/" },
   { label: "Clients", href: "/a/clients/" },
-  { label: "Car Reviews", href: "/a/car-reviews/" },
+  { label: "Car Reviews", href: "/a/reviews/" },
 ];
 
 export const legalLinks = [
