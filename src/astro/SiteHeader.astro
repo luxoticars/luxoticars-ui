@@ -40,8 +40,7 @@ const {
   hideSearchWhileVisible,
 } = Astro.props;
 
-const searchHtml = Astro.slots.has("search") ? await Astro.slots.render("search") : "";
-const hasSearch = searchHtml.trim() !== "";
+const hasSearch = Astro.slots.has("search");
 const hideSearch = hasSearch ? hideSearchWhileVisible : undefined;
 const [ctaFirst, ...ctaRest] = ctaLabel.trim().split(/\s+/);
 const linkTarget = (link: FooterLink) =>
@@ -52,6 +51,7 @@ const linkTarget = (link: FooterLink) =>
   class:list={["site-header", hasSearch && "site-header--with-search"]}
   data-site-header
   data-hide-search-while-visible={hideSearch}
+  data-search-floating={hideSearch ? "" : undefined}
   data-search-hidden={hideSearch ? "" : undefined}
 >
   <div class="site-header__inner">
@@ -68,7 +68,11 @@ const linkTarget = (link: FooterLink) =>
       ))}
     </nav>
 
-    {hasSearch && <div class="site-header__search" set:html={searchHtml} />}
+    {hasSearch && (
+      <div class="site-header__search">
+        <slot name="search" />
+      </div>
+    )}
 
     <a href={ctaHref} class="site-header__cta">
       {ctaFirst}{ctaRest.length > 0 && <span class="site-header__cta-more"> {ctaRest.join(" ")}</span>}
@@ -107,29 +111,52 @@ const linkTarget = (link: FooterLink) =>
       // The header is sticky, so "on screen" means below the header's own
       // height, which is re-measured whenever the viewport changes.
       const selector = header.dataset.hideSearchWhileVisible;
-      const target = selector ? document.querySelector(selector) : null;
-      if (target) {
-        const search = header.querySelector(".site-header__search");
+      let target: Element | null = null;
+      try {
+        target = selector ? document.querySelector(selector) : null;
+      } catch {
+        // An invalid selector must not stop the menu wiring below.
+      }
+      // The setting stays on the element (a persisted header may find a target
+      // on the next page); this state attribute says whether it applies here.
+      header.toggleAttribute("data-search-floating", Boolean(target));
+      const search = header.querySelector(".site-header__search");
+      if (target && search) {
+        let pageSearchVisible = false;
+        const apply = () =>
+          // Never hide the header search out from under someone typing in it.
+          header.toggleAttribute(
+            "data-search-hidden",
+            pageSearchVisible && !search.contains(document.activeElement),
+          );
         let observer: IntersectionObserver | undefined;
+        let measured = -1;
         const observe = () => {
+          if (header.offsetHeight === measured) return;
+          measured = header.offsetHeight;
           observer?.disconnect();
           observer = new IntersectionObserver(
-            ([entry]) => {
-              // Never hide the header search out from under someone typing in it.
-              if (entry.isIntersecting && search?.contains(document.activeElement)) return;
-              header.toggleAttribute("data-search-hidden", entry.isIntersecting);
+            (entries) => {
+              pageSearchVisible = entries.at(-1)!.isIntersecting;
+              apply();
             },
-            { rootMargin: `-${header.offsetHeight}px 0px 0px 0px` },
+            { rootMargin: `-${measured}px 0px 0px 0px` },
           );
           observer.observe(target);
         };
         observe();
-        window.addEventListener("resize", observe, { signal });
-        signal.addEventListener("abort", () => observer?.disconnect());
+        // The header's height changes with fonts, wrapping and rotation, not
+        // only on window resize; rebuild only when it actually changes.
+        const sizeWatch = new ResizeObserver(observe);
+        sizeWatch.observe(header);
+        // Focus leaving lands after focusout, so re-check on the next task.
+        search.addEventListener("focusout", () => setTimeout(apply), { signal });
+        signal.addEventListener("abort", () => {
+          observer?.disconnect();
+          sizeWatch.disconnect();
+        });
       } else {
-        // No page search to defer to: show the header's as a normal row.
         header.removeAttribute("data-search-hidden");
-        header.removeAttribute("data-hide-search-while-visible");
       }
 
       // <details> opens and closes itself; this adds tap-outside, Escape, and

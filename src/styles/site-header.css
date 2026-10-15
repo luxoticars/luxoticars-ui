@@ -150,8 +150,10 @@
     display: none;
   }
 
-  /* With the menu links hidden, the menu button takes their place. */
-  .site-header--with-search:not([data-search-hidden]) .site-header__menu {
+  /* With the menu links hidden, the menu button takes their place. An open
+     menu stays, so scrolling never pulls it out from under the visitor. */
+  .site-header--with-search:not([data-search-hidden]) .site-header__menu,
+  .site-header--with-search .site-header__menu[open] {
     display: block;
   }
 }
@@ -213,13 +215,17 @@
   color: var(--_muted);
 }
 
+/* Same visually hidden rule as .footer__external-note. */
 .site-header__external-note {
   position: absolute;
   width: 1px;
   height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
+  border: 0;
 }
 
 .site-header__menu-link:last-child {
@@ -265,7 +271,7 @@
 
   /* A page with no search field of its own shows this one all the time, so
      there it is a second row of the bar and takes up real space. */
-  .site-header:not([data-hide-search-while-visible]) .site-header__search {
+  .site-header:not([data-search-floating]) .site-header__search {
     position: static;
     order: 1;
     flex-basis: 100%;
