@@ -1,0 +1,252 @@
+---
+/*
+  Imported in the frontmatter, not through an `@import` in a scoped <style>,
+  for the reason given in Logo.astro: Storybook lifts a scoped style block as
+  literal text and the `@import` 404s. The `site-header` block namespaces it.
+*/
+import "../styles/site-header.css";
+import type { FooterLink } from "../types";
+import Logo from "./Logo.astro";
+
+export type Props = {
+  /** Menu links, in order. @default Buy, Reviews, About */
+  links?: FooterLink[];
+  /** Wordmark text. @default "Luxoticars" */
+  siteTitle?: string;
+  /** Where the wordmark links. @default "/" */
+  homeHref?: string;
+  /** Label of the call-to-action button. Below 30rem only its first word shows. @default "Advertise your car" */
+  ctaLabel?: string;
+  /** Where the call-to-action button goes. @default "https://dash.luxoticars.com" */
+  ctaHref?: string;
+  /**
+   * Selector of the page's own search field. While it is on screen the header
+   * hides the search in its `search` slot, so the page never shows two search
+   * bars at once. Only matters when the `search` slot is filled.
+   */
+  hideSearchWhileVisible?: string;
+};
+
+const {
+  links = [
+    { label: "Buy", href: "/search" },
+    { label: "Reviews", href: "/a/reviews/" },
+    { label: "About", href: "/a/" },
+  ],
+  siteTitle = "Luxoticars",
+  homeHref = "/",
+  ctaLabel = "Advertise your car",
+  ctaHref = "https://dash.luxoticars.com",
+  hideSearchWhileVisible,
+} = Astro.props;
+
+const hasSearch = Astro.slots.has("search");
+const hideSearch = hasSearch ? hideSearchWhileVisible : undefined;
+const [ctaFirst, ...ctaRest] = ctaLabel.trim().split(/\s+/);
+const linkTarget = (link: FooterLink) =>
+  link.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
+---
+
+<header
+  class:list={["site-header", hasSearch && "site-header--with-search"]}
+  data-site-header
+  data-hide-search-while-visible={hideSearch}
+  data-search-floating={hideSearch ? "" : undefined}
+  data-search-hidden={hideSearch ? "" : undefined}
+>
+  <div class="site-header__inner">
+    <div class="site-header__logo">
+      <Logo siteTitle={siteTitle} href={homeHref} accent />
+    </div>
+
+    <nav class="site-header__nav" aria-label="Main">
+      {links.map((link) => (
+        <a href={link.href} class="site-header__link" {...linkTarget(link)}>
+          {link.label}
+          {link.external && <span class="site-header__external-note"> (opens in a new tab)</span>}
+        </a>
+      ))}
+    </nav>
+
+    {hasSearch && (
+      <div class="site-header__search">
+        <slot name="search" />
+      </div>
+    )}
+
+    {/* The full label as the name: on small phones the rest is display:none.
+        No label, no button: an empty pill would be a link with no name. */}
+    {ctaFirst && (
+      <a href={ctaHref} class="site-header__cta" aria-label={ctaRest.length > 0 ? ctaLabel.trim() : undefined}>
+        {ctaFirst}{ctaRest.length > 0 && <span class="site-header__cta-more"> {ctaRest.join(" ")}</span>}
+      </a>
+    )}
+
+    <details class="site-header__menu" data-site-menu>
+      <summary class="site-header__menu-button" aria-label="Menu">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+        </svg>
+      </summary>
+      <nav class="site-header__menu-panel" aria-label="Main">
+        {links.map((link) => (
+        <a href={link.href} class="site-header__menu-link" {...linkTarget(link)}>
+          {link.label}
+          {link.external && <span class="site-header__external-note"> (opens in a new tab)</span>}
+        </a>
+      ))}
+      </nav>
+    </details>
+  </div>
+</header>
+
+<script>
+  // Runs on first load and again after every ClientRouter page swap; each run
+  // drops the previous run's listeners and observers.
+  let teardown = new AbortController();
+
+  function initSiteHeaders() {
+    teardown.abort();
+    teardown = new AbortController();
+    const { signal } = teardown;
+
+    for (const header of document.querySelectorAll<HTMLElement>("[data-site-header]")) {
+      const menu = header.querySelector<HTMLDetailsElement>("[data-site-menu]");
+      const nav = header.querySelector(".site-header__nav");
+      const search = header.querySelector(".site-header__search");
+      // On tablets the links come back into the bar as the search hides, or
+      // as a phone rotates to landscape; an open menu would list them twice.
+      const closeIfLinksShown = () => {
+        if (menu?.open && nav && getComputedStyle(nav).display !== "none") menu.open = false;
+      };
+      window.addEventListener("resize", closeIfLinksShown, { signal });
+
+      // While the page's own search field is on screen, hide the header's.
+      // The header is sticky, so "on screen" means below the header's own
+      // height, which is re-measured whenever the viewport changes.
+      const watchPageSearch = (target: Element) => {
+        if (!search) return;
+        header.setAttribute("data-search-floating", "");
+        let pageSearchVisible = false;
+        const apply = () => {
+          // Never hide the header search out from under someone typing in it.
+          header.toggleAttribute(
+            "data-search-hidden",
+            pageSearchVisible && !search.contains(document.activeElement),
+          );
+          closeIfLinksShown();
+        };
+        let observer: IntersectionObserver | undefined;
+        let measured = -1;
+        const observe = () => {
+          if (header.offsetHeight === measured) return;
+          measured = header.offsetHeight;
+          observer?.disconnect();
+          observer = new IntersectionObserver(
+            // Hand over only once the page search is fully in view, so there
+            // is never a stretch with neither search usable. 0.99, not 1:
+            // subpixel layout can keep the ratio just under 1.
+            (entries) => {
+              pageSearchVisible = entries.at(-1)!.intersectionRatio >= 0.99;
+              apply();
+            },
+            { rootMargin: `-${measured}px 0px 0px 0px`, threshold: [0, 0.99] },
+          );
+          observer.observe(target);
+        };
+        observe();
+        // The header's height changes with fonts, wrapping and rotation, not
+        // only on window resize; rebuild only when it actually changes.
+        const sizeWatch = new ResizeObserver(observe);
+        sizeWatch.observe(header);
+        // Focus leaving lands after focusout, so re-check on the next task.
+        search.addEventListener("focusout", () => setTimeout(apply), { signal });
+        signal.addEventListener("abort", () => {
+          observer?.disconnect();
+          sizeWatch.disconnect();
+        });
+      };
+
+      const selector = header.dataset.hideSearchWhileVisible;
+      // Never the header's own search: watching itself, it would hide and
+      // show itself without end.
+      const find = () => {
+        try {
+          if (!selector) return null;
+          return [...document.querySelectorAll(selector)].find((el) => !header.contains(el)) ?? null;
+        } catch {
+          return null; // An invalid selector must not stop the menu wiring below.
+        }
+      };
+      const target = find();
+      if (target) {
+        watchPageSearch(target);
+      } else {
+        // Not on the page (yet): show the header search as a normal row. The
+        // setting stays on the element, and a page search that appears later,
+        // such as a hydrated island, is picked up when it does.
+        header.removeAttribute("data-search-floating");
+        header.removeAttribute("data-search-hidden");
+        if (selector && search) {
+          const late = new MutationObserver(() => {
+            const found = find();
+            if (!found) return;
+            late.disconnect();
+            watchPageSearch(found);
+          });
+          late.observe(document.body, { childList: true, subtree: true });
+          signal.addEventListener("abort", () => late.disconnect());
+        }
+      }
+
+      // <details> opens and closes itself; this adds tap-outside, Escape,
+      // tabbing out, and closing once a link in the panel is chosen.
+      if (!menu) continue;
+      // Outside on pointerdown: iOS Safari sends no click to the document for
+      // a tap on plain content. Choosing a link still closes on click.
+      document.addEventListener(
+        "pointerdown",
+        (event) => {
+          if (menu.open && !menu.contains(event.target as Node)) menu.open = false;
+        },
+        { signal },
+      );
+      menu.addEventListener(
+        "click",
+        (event) => {
+          if ((event.target as Element).closest("a")) menu.open = false;
+        },
+        { signal },
+      );
+      // Escape while focus is in the menu, or nowhere in particular (Safari
+      // leaves focus on the page when the button is clicked or tapped), so it
+      // never steals an Escape meant for another control on the page.
+      document.addEventListener(
+        "keydown",
+        (event) => {
+          if (event.key !== "Escape" || !menu.open) return;
+          const active = document.activeElement;
+          if (active && active !== document.body && !menu.contains(active)) return;
+          menu.open = false;
+          menu.querySelector("summary")?.focus();
+        },
+        { signal },
+      );
+      // Tabbing out of the menu closes it, so it never sits open over the page.
+      // Only when focus lands somewhere else: Safari drops focus on a plain
+      // click (no relatedTarget), and closing then would swallow a link tap.
+      // Taps and clicks are handled above.
+      menu.addEventListener(
+        "focusout",
+        (event) => {
+          const next = event.relatedTarget as Node | null;
+          if (next && !menu.contains(next)) menu.open = false;
+        },
+        { signal },
+      );
+    }
+  }
+
+  initSiteHeaders();
+  document.addEventListener("astro:after-swap", initSiteHeaders);
+</script>
