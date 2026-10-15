@@ -74,7 +74,8 @@ const linkTarget = (link: FooterLink) =>
       </div>
     )}
 
-    <a href={ctaHref} class="site-header__cta">
+    {/* The full label as the name: on small phones the rest is display:none. */}
+    <a href={ctaHref} class="site-header__cta" aria-label={ctaRest.length > 0 ? ctaLabel.trim() : undefined}>
       {ctaFirst}{ctaRest.length > 0 && <span class="site-header__cta-more"> {ctaRest.join(" ")}</span>}
     </a>
 
@@ -159,8 +160,8 @@ const linkTarget = (link: FooterLink) =>
         header.removeAttribute("data-search-hidden");
       }
 
-      // <details> opens and closes itself; this adds tap-outside, Escape, and
-      // closing once a link in the panel is chosen.
+      // <details> opens and closes itself; this adds tap-outside, Escape,
+      // tabbing out, and closing once a link in the panel is chosen.
       const menu = header.querySelector<HTMLDetailsElement>("[data-site-menu]");
       if (!menu) continue;
       document.addEventListener(
@@ -172,12 +173,26 @@ const linkTarget = (link: FooterLink) =>
         },
         { signal },
       );
-      document.addEventListener(
+      // Escape only while focus is in the menu, so it never steals an Escape
+      // meant for something else on the page.
+      menu.addEventListener(
         "keydown",
         (event) => {
           if (event.key !== "Escape" || !menu.open) return;
           menu.open = false;
           menu.querySelector("summary")?.focus();
+        },
+        { signal },
+      );
+      // Tabbing out of the menu closes it, so it never sits open over the page.
+      // Only when focus lands somewhere else: Safari drops focus on a plain
+      // click (no relatedTarget), and closing then would swallow a link tap.
+      // Clicks are handled above.
+      menu.addEventListener(
+        "focusout",
+        (event) => {
+          const next = event.relatedTarget as Node | null;
+          if (next && !menu.contains(next)) menu.open = false;
         },
         { signal },
       );

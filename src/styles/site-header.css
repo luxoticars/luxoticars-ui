@@ -28,9 +28,10 @@
   font-family: var(--font-futura, inherit);
 }
 
-.site-header *,
-.site-header *::before,
-.site-header *::after {
+.site-header *:not(.site-header__search *),
+.site-header *:not(.site-header__search *)::before,
+.site-header *:not(.site-header__search *)::after {
+  /* Not inside the search slot: that markup is styled for its own box model. */
   box-sizing: border-box;
 }
 
@@ -146,6 +147,12 @@
 /* Below this width the menu and the search do not fit one row, so the search
    takes the menu's place. Without a search the menu always shows. */
 @media (max-width: 74.99rem) {
+  /* Tall enough for the menu button either way, so the bar keeps its height
+     when the search swaps in and the page below does not jump. */
+  .site-header--with-search .site-header__inner {
+    min-height: calc(2.75rem + 1.5rem);
+  }
+
   .site-header--with-search:not([data-search-hidden]) .site-header__nav {
     display: none;
   }

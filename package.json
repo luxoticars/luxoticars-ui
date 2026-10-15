@@ -36,6 +36,7 @@
     "./styles/footer.css": "./src/styles/footer.css",
     "./styles/logo.css": "./src/styles/logo.css",
     "./styles/dialog.css": "./src/styles/dialog.css",
+    "./styles/site-header.css": "./src/styles/site-header.css",
     "./utils/cn": {
       "types": "./src/utils/cn.d.ts",
       "default": "./src/utils/cn.js"
