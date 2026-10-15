@@ -56,6 +56,10 @@ export const socials = [
   },
 ];
 
+/** A wa.me link to the Luxoticars WhatsApp line with `message` typed in. */
+export const whatsappLink = (message) =>
+  `https://wa.me/60378873839?${new URLSearchParams({ text: message })}`;
+
 export const contacts = [
   {
     label: "chai@luxoticars.cc",
@@ -64,7 +68,7 @@ export const contacts = [
   },
   {
     label: "Message on WhatsApp",
-    href: "https://wa.me/60378873839?text=Hi%2C+I%27d+like+to+enquire+about+a+vehicle.",
+    href: whatsappLink("Hi, I'd like to enquire about a vehicle."),
     icon: "whatsapp",
     external: true,
   },
