@@ -1,0 +1,56 @@
+/*
+  Section heading styles. Astro only: `SectionHead.astro` imports this file in
+  its frontmatter, so the rules are global and the `section-head` block
+  namespaces them. Tokens are read with the same fallback chain as
+  site-header.css: the daisyUI/Tailwind name, then tokens.css's, then a literal.
+*/
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  margin-bottom: 2rem;
+  font-family: var(--font-futura, inherit);
+}
+
+.section-head__title {
+  margin: 0;
+  font-family: inherit;
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  color: var(--color-base-content, var(--lux-base-content, oklch(20% 0.018 264)));
+}
+
+.section-head--dark .section-head__title {
+  color: var(--color-neutral-content, var(--lux-neutral-content, oklch(96% 0.003 264.542)));
+}
+
+/* The link a section may put beside its heading, such as "View all". */
+.section-head__link {
+  padding-bottom: 2px;
+  box-shadow: inset 0 -1px 0 currentColor;
+  font-family: var(--font-futura-bold, var(--font-futura, inherit));
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-base-content, var(--lux-base-content, oklch(20% 0.018 264)));
+}
+
+.section-head--dark .section-head__link {
+  color: var(--color-neutral-content, var(--lux-neutral-content, oklch(96% 0.003 264.542)));
+}
+
+.section-head__link:hover {
+  color: var(--color-accent, var(--lux-accent, oklch(52% 0.16 232.661)));
+}
+
+.section-head__link:focus-visible {
+  outline: 2px solid var(--color-accent, var(--lux-accent, oklch(52% 0.16 232.661)));
+  outline-offset: 4px;
+}
