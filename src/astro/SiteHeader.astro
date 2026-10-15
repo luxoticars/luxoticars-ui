@@ -114,6 +114,12 @@ const linkTarget = (link: FooterLink) =>
       const menu = header.querySelector<HTMLDetailsElement>("[data-site-menu]");
       const nav = header.querySelector(".site-header__nav");
       const search = header.querySelector(".site-header__search");
+      // On tablets the links come back into the bar as the search hides, or
+      // as a phone rotates to landscape; an open menu would list them twice.
+      const closeIfLinksShown = () => {
+        if (menu?.open && nav && getComputedStyle(nav).display !== "none") menu.open = false;
+      };
+      window.addEventListener("resize", closeIfLinksShown, { signal });
 
       // While the page's own search field is on screen, hide the header's.
       // The header is sticky, so "on screen" means below the header's own
@@ -128,9 +134,7 @@ const linkTarget = (link: FooterLink) =>
             "data-search-hidden",
             pageSearchVisible && !search.contains(document.activeElement),
           );
-          // On tablets the links come back into the bar as the search hides;
-          // an open menu would then list them twice.
-          if (menu?.open && nav && getComputedStyle(nav).display !== "none") menu.open = false;
+          closeIfLinksShown();
         };
         let observer: IntersectionObserver | undefined;
         let measured = -1;

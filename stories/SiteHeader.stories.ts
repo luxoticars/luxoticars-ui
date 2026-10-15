@@ -15,8 +15,6 @@ export default {
   argTypes: {
     slots: { table: { disable: true } },
   },
-  /* A header spans the page; the default padded canvas would narrow it. */
-  parameters: { layout: "fullscreen" },
 };
 
 /** No search: the menu always shows beside the wordmark. On phones it opens from the menu button. */

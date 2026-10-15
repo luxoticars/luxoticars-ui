@@ -171,6 +171,11 @@
   display: none;
 }
 
+/* Without a call-to-action nothing else pushes the menu button right. */
+.site-header__inner:not(:has(.site-header__cta)) .site-header__menu {
+  margin-left: auto;
+}
+
 .site-header__menu-button {
   display: grid;
   place-items: center;
