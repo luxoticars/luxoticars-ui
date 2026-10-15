@@ -1,5 +1,17 @@
 # @luxoticars/ui
 
+## 0.7.0
+
+### Minor Changes
+
+- 7b35602: Logo: new `accent` prop draws a short accent line under the first letters of the wordmark, stretching across it on hover and on keyboard focus. The line hangs 0.375rem below the wordmark, so leave room for it in the layout. Astro only; `createLogo` is unchanged.
+- 0030bdd: New Astro `SiteHeader`: wordmark, menu, call-to-action button and an optional `search` slot. On phones the menu opens from a button. Astro only; no HTML builder or Marko tag. Its stylesheet is also exported as `styles/site-header.css`.
+
+### Patch Changes
+
+- 0c7c41d: Footer: the Car Reviews link points at `/a/reviews/` (the old `/a/car-reviews/` is a 404), and Lexus replaces Pagani in the default makes, since Pagani has no listings.
+- deb183e: Logo: the © mark sits at the top right of the wordmark instead of the bottom right. It is now a `<sup>` instead of a `<sub>`, so it stays raised even where the logo stylesheet is not loaded.
+
 ## 0.6.0
 
 ### Minor Changes
