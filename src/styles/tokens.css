@@ -40,6 +40,10 @@
 
   --lux-neutral: oklch(12% 0.042 264.695);
   --lux-neutral-content: oklch(96% 0.003 264.542);
+  /* On the neutral background: a hairline, and text one step quieter than
+     neutral-content. Neutral is dark in both themes, so these do not change. */
+  --lux-neutral-line: oklch(100% 0 0 / 0.14);
+  --lux-neutral-muted: oklch(78% 0.012 264.5);
 
   --lux-info: oklch(48% 0.154 245);
   --lux-info-content: oklch(100% 0 0);
