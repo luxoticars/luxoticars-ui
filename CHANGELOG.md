@@ -1,5 +1,14 @@
 # @luxoticars/ui
 
+## 0.8.0
+
+### Minor Changes
+
+- 413b9e5: Tokens: new `--lux-neutral-line` (a hairline) and `--lux-neutral-muted` (quieter text) for use on the dark neutral background. SiteHeader reads them for its border and its muted text, after its own `--site-header-line` / `--site-header-muted` overrides; the values are the ones it used before, so it looks the same.
+- a232384: Tokens: new `--page-max` (80rem) and `--page-gutter` (`clamp(1rem, 4vw, 3rem)`) set the page width and side padding, so a site's own sections can line up with the header and footer. The width includes the padding. Footer: its content now reads them and is `border-box`, so it is 80rem wide with Tailwind's reset or without it (before, a site without the reset got 80rem plus padding). Its side padding grows from 1.5rem/2rem to the new gutter, which is 1rem on small phones and 3rem on wide screens.
+- 1ac3ccd: New Astro `SectionHead`: a section title with an optional link beside it (`linkHref` + `linkLabel`, such as "View all"), and a `dark` tone for the neutral background. The default slot takes anything else that sits beside the title, such as an intro line. Its stylesheet is also exported as `styles/section-head.css`. Astro only; no HTML builder or Marko tag.
+- 9d28040: `data/footer` exports `whatsappLink(message)`: a wa.me link to the Luxoticars WhatsApp line with the message typed in. The Footer's WhatsApp contact is built with it, so the number lives in one place; its link is unchanged.
+
 ## 0.7.0
 
 ### Minor Changes
