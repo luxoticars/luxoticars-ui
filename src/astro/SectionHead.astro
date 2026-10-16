@@ -1,0 +1,29 @@
+---
+/*
+  Imported in the frontmatter, not through an `@import` in a scoped <style>,
+  for the reason given in Logo.astro. The `section-head` block namespaces it.
+*/
+import "../styles/section-head.css";
+
+export type Props = {
+  /** Heading text. */
+  title: string;
+  /** id for the heading, so the section can point `aria-labelledby` at it. */
+  headingId?: string;
+  /** `dark` for sections on the neutral background. @default "light" */
+  tone?: "light" | "dark";
+  /** Adds a link beside the heading, such as "View all". Needs `linkLabel`. */
+  linkHref?: string;
+  /** Text of the link beside the heading. */
+  linkLabel?: string;
+};
+
+const { title, headingId, tone = "light", linkHref, linkLabel } = Astro.props;
+---
+{/* The default slot takes anything else that belongs beside the heading,
+    such as an intro line. */}
+<div class:list={["section-head", tone === "dark" && "section-head--dark"]}>
+  <h2 id={headingId} class="section-head__title">{title}</h2>
+  {linkHref && linkLabel && <a href={linkHref} class="section-head__link">{linkLabel}</a>}
+  <slot />
+</div>
