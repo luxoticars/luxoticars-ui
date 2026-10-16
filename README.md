@@ -169,6 +169,12 @@ Two rules the values encode, worth knowing before you reach for a token:
   silently produces no utility there — that is how the focus ring went missing on the
   dash before it used `ring-accent`.
 
+Besides colour, `tokens.css` sets the page frame: `--page-max` (80rem, padding
+included) and `--page-gutter` (side padding). The header and footer read them, so a
+site's own sections line up with both by using the same two values. Neither is a
+daisyUI token, so components read them with a fallback (`var(--page-max, 80rem)`)
+and still render in the dash.
+
 ## Storybook
 
 Storybook is where components are reviewed and where their documentation lives.
