@@ -254,7 +254,8 @@
   outline-offset: 2px;
 }
 
-@media (max-width: 47.5rem) {
+/* Below 52rem the four links and the button no longer fit beside the wordmark. */
+@media (max-width: 52rem) {
   /* Logo, button and the menu button share one row down to 320px. */
   .site-header__inner {
     column-gap: 0.75rem;
