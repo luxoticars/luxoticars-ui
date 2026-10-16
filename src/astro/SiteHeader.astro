@@ -9,7 +9,7 @@ import type { FooterLink } from "../types";
 import Logo from "./Logo.astro";
 
 export type Props = {
-  /** Menu links, in order. @default Buy, Reviews, About */
+  /** Menu links, in order. @default Buy, Services, Reviews, About */
   links?: FooterLink[];
   /** Wordmark text. @default "Luxoticars" */
   siteTitle?: string;
@@ -30,6 +30,7 @@ export type Props = {
 const {
   links = [
     { label: "Buy", href: "/search" },
+    { label: "Services", href: "/services" },
     { label: "Reviews", href: "/a/reviews/" },
     { label: "About", href: "/a/" },
   ],

@@ -19,6 +19,7 @@ export const brandLinks = [
 
 export const companyLinks = [
   { label: "About Us", href: "/a/" },
+  { label: "Services", href: "/services" },
   { label: "Clients", href: "/a/clients/" },
   { label: "Car Reviews", href: "/a/reviews/" },
 ];
