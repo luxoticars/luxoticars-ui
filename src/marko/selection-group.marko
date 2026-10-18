@@ -79,6 +79,7 @@ div ...attrs class=["selection-group", className]
             ,...option.htmlAttributes
             ,class=["selection-group__link", { "selection-group__link--disabled": option.disabled }]
             ,href=(!option.disabled && option.url)
+            ,aria-current=(option.selected && !option.disabled ? "true" : undefined)
             span.selection-group__control class=`selection-group__control--${type}`
               span.selection-group__mark class={ "selection-group__mark--checked": option.selected } aria-hidden="true"
                 svg viewBox="0 0 24 24" fill="currentColor"

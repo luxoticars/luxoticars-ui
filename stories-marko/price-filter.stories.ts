@@ -44,3 +44,30 @@ export const WithReadonlyPriceGraph: Story = {
 export const WithoutPriceGraph: Story = {
   args: { selectionGroupData, textRangeData: { ...textRangeData, maxField: { ...textRangeData.maxField, value: "" } } },
 };
+
+/**
+ * A real GET form for a page that must work without JavaScript. The range
+ * starts from the text fields' values, the presets are links, and with no
+ * `onPriceRangeChange` the browser submits the form itself.
+ */
+export const AsFormWithoutGraph: Story = {
+  args: {
+    selectionGroupData: {
+      ...selectionGroupData,
+      options: selectionGroupData.options.map((option, i) => ({
+        ...option,
+        url: `https://example.com/search?range=${option.value}`,
+        selected: i === 1,
+      })),
+    },
+    textRangeData: {
+      ...textRangeData,
+      action: "/search",
+      hiddenFields: [["q", "proton"]],
+      minField: { ...textRangeData.minField, value: "25", key: "price_min" },
+      maxField: { ...textRangeData.maxField, value: "60", key: "budget" },
+    },
+    onPriceRangeChange: undefined,
+  },
+  argTypes: { onPriceRangeChange: { action: undefined } },
+};

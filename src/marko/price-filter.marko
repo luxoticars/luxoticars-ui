@@ -5,6 +5,10 @@
   `onSelectionChange` for a preset, `onPriceRangeChange` for the text range and
   the graph. Each part is also a tag of its own and works without the others.
 
+  With a `textRangeData.action` the text range is a real GET form. Pass no
+  `onPriceRangeChange` and the browser submits it, so the filter works before
+  any JavaScript has loaded; pass one and JS intercepts the submit and reports it.
+
   The filter knows nothing about URLs: `onPriceRangeChange` reports the range
   under the parameter names the fields give as `key` (`price_min` and
   `price_max` when they have none), and the parent decides what to do with it.
@@ -45,8 +49,13 @@ export interface Input extends Omit<Marko.HTML.Div, "content"> {
 const/{ selectionGroupData, textRangeData, priceGraphData, onSelectionChange, onPriceRangeChange, class: className, content: _content, ...attrs }=input
 
 // The shared range. `max` undefined is open-ended.
-<let/min=(priceGraphData?.minValue as number | undefined)>
-<let/max=(priceGraphData?.maxValue as number | undefined)>
+// Without a graph the range starts from the text fields' values.
+static function startOf(graph: number | undefined, text: string | undefined) {
+  if (graph !== undefined) return graph
+  return text?.trim() ? Number(text) : undefined
+}
+<let/min=startOf(priceGraphData?.minValue, textRangeData?.minField.value)>
+<let/max=startOf(priceGraphData?.maxValue, textRangeData?.maxField.value)>
 <let/picked=(selectionGroupData?.options.find((option) => option.selected)?.value as string | undefined)>
 
 const/options=(selectionGroupData ? selectionGroupData.options.map((option) => ({ ...option, selected: option.value === picked })) : [])
@@ -85,7 +94,7 @@ div ...attrs class=["price-filter", className]
           min = next.min
           max = next.max
         }
-        ,onChange(range: RangeValues) {
+        ,onChange=(textRangeData.action && !onPriceRangeChange ? undefined : (range: RangeValues) => {
           const next = rangeFrom(range)
           min = next.min
           max = next.max
@@ -94,7 +103,7 @@ div ...attrs class=["price-filter", className]
             { paramKey: textRangeData.minField.key || "price_min", paramValue: next.min },
             { paramKey: textRangeData.maxField.key || "price_max", paramValue: next.max },
           ])
-        }
+        })
   if=priceGraphData
     div.price-filter__section-price
       PriceDistributionGraph
