@@ -35,6 +35,7 @@
     "./styles/tokens.css": "./src/styles/tokens.css",
     "./styles/footer.css": "./src/styles/footer.css",
     "./styles/logo.css": "./src/styles/logo.css",
+    "./styles/pill.css": "./src/styles/pill.css",
     "./styles/dialog.css": "./src/styles/dialog.css",
     "./styles/site-header.css": "./src/styles/site-header.css",
     "./styles/section-head.css": "./src/styles/section-head.css",
