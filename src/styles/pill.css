@@ -46,9 +46,10 @@
 }
 
 @media (hover: hover) {
+  /* A light tint, never the chosen look, so pointing at one pill never
+     hides which one is current. */
   .pill:hover {
-    background: var(--_on);
-    color: var(--_on-text);
+    background: color-mix(in oklab, var(--_on) 8%, var(--_base));
   }
 
   /* A chosen pill is already dark; lighten it a little instead. */
