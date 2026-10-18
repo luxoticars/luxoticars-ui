@@ -12,32 +12,46 @@ export function cardKicker(listing) {
 /**
  * The title without its leading year and make, which the kicker already
  * shows: "2021 Land Rover Range Rover Vogue" becomes "Range Rover Vogue".
- * Makes are matched loosely on hyphens and spaces, so the make
- * "Mercedes-Benz" strips "Mercedes Benz" too. The make is only dropped when
- * something follows it, so the result is never empty.
+ * Only the listing's own year is dropped, so a model number such as the
+ * Peugeot "3008" stays. Makes are matched loosely on hyphens and spaces, so
+ * the make "Mercedes-Benz" strips "Mercedes Benz" too, and only when the
+ * kicker shows it. Each is only dropped when something follows it, and a
+ * blank title reads "Untitled listing", so the card's link always has a name.
  */
 export function cardTitle(listing) {
-  let title = listing.title.trim().replace(/^\d{4}\s+/, "");
+  const full = listing.title.trim();
+  if (!full) return "Untitled listing";
+  let title = full;
+  if (listing.year) title = title.replace(new RegExp(`^${listing.year}\\s+`), "");
   if (listing.make) {
     const make = listing.make.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/[- ]+/g, "[- ]+");
     title = title.replace(new RegExp(`^${make}\\s+`, "i"), "");
   }
-  return title || listing.title.trim();
+  return title || full;
 }
 
 /** "suv" → "SUV", "new" → "New". Only the initialisms are upper-cased; "new" is short but a word. */
 const label = (value) => (["mpv", "suv"].includes(value) ? value.toUpperCase() : value.charAt(0).toUpperCase() + value.slice(1));
 
-/** "5000-10000" → "5,000–10,000 km", "200000+" → "200,000+ km". Anything else is dropped. */
+/**
+ * The mileage band as luxoticars-vi's listing page shows it (formatMileageBand
+ * in its src/utils/specs.ts), so the card and the page agree: bands are
+ * exclusive on the low side except the first, which starts at 0.
+ * "5000-10000" → "5,001 – 10,000 km", "0-5000" → "0 – 5,000 km",
+ * "200000+" → "200,000+ km". Anything else, a reversed band included, is dropped.
+ */
 export function mileageLabel(band) {
-  const number = (value) => Number(value).toLocaleString("en-MY");
+  const km = (value) => value.toLocaleString("en-MY");
   const open = band?.match(/^(\d+)\+$/);
-  if (open) return `${number(open[1])}+ km`;
+  if (open) return `${km(Number(open[1]))}+ km`;
   const closed = band?.match(/^(\d+)-(\d+)$/);
-  return closed ? `${number(closed[1])}–${number(closed[2])} km` : null;
+  if (!closed) return null;
+  const min = Number(closed[1]);
+  const max = Number(closed[2]);
+  return min < max ? `${km(min === 0 ? 0 : min + 1)} – ${km(max)} km` : null;
 }
 
-/** "Recon · SUV · 5,000–10,000 km". The year is in the kicker, so it is not repeated here. */
+/** "Recon · SUV · 5,001 – 10,000 km". The year is in the kicker, so it is not repeated here. */
 export function cardMeta(listing) {
   return [listing.condition && label(listing.condition), listing.car_type && label(listing.car_type), mileageLabel(listing.mileage_band)]
     .filter(Boolean)
@@ -46,10 +60,10 @@ export function cardMeta(listing) {
 
 const amount = new Intl.NumberFormat("en-MY", { maximumFractionDigits: 2 });
 
-/** "MYR 450,000", or "Price on request" when the dealer gave none. */
+/** "MYR 450,000", or "Price on request" when the dealer gave none (or 0). */
 export function cardPrice(listing) {
-  if (listing.price === null || listing.price === undefined) return "Price on request";
-  return `${listing.currency ?? "Currency unspecified"} ${amount.format(listing.price)}`;
+  if (!listing.price) return "Price on request";
+  return `${listing.currency?.trim() || "Currency unspecified"} ${amount.format(listing.price)}`;
 }
 
 /** "Bangsar, W.P. Kuala Lumpur". */

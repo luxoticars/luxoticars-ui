@@ -15,8 +15,9 @@ export const createListingCard = ({
   imageSrc,
   flagSrc,
   headingLevel = 2,
+  idPrefix = "listing-card",
 }) => {
-  const id = `listing-card-${listing.id}`;
+  const id = `${idPrefix}-${listing.id}`;
   const kicker = cardKicker(listing);
   const meta = cardMeta(listing);
   const h = headingLevel === 3 ? "h3" : "h2";
@@ -31,7 +32,7 @@ export const createListingCard = ({
   <div class="listing-card__media" aria-hidden="true">${media}</div>
   <div class="listing-card__body">${kicker ? `
     <p class="listing-card__kicker">${escapeHtml(kicker)}</p>` : ""}
-    <${h} class="listing-card__title" id="${escapeHtml(id)}"><a class="listing-card__link" href="${escapeHtml(href)}" aria-label="${escapeHtml(listing.title.trim())}">${escapeHtml(cardTitle(listing))}</a></${h}>
+    <${h} class="listing-card__title" id="${escapeHtml(id)}"><a class="listing-card__link" href="${escapeHtml(href)}" aria-label="${escapeHtml(listing.title.trim() || cardTitle(listing))}">${escapeHtml(cardTitle(listing))}</a></${h}>
     <p class="listing-card__price">${escapeHtml(cardPrice(listing))}</p>${meta ? `
     <p class="listing-card__meta">${escapeHtml(meta)}</p>` : ""}
     <p class="listing-card__location">${flag}<span>${escapeHtml(cardLocation(listing))}</span></p>

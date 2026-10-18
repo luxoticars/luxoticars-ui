@@ -12,6 +12,12 @@ export interface ListingCardOptions {
   flagSrc?: string | null;
   /** The title's heading level: 2 on a page of results, 3 inside a titled section. @default 2 */
   headingLevel?: 2 | 3;
+  /**
+   * Starts the title's element id (`{idPrefix}-{listing id}`), which names the
+   * card. Give each row its own when one listing can show twice on a page.
+   * @default "listing-card"
+   */
+  idPrefix?: string;
 }
 
 /**

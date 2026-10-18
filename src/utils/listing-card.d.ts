@@ -15,11 +15,11 @@ export interface ListingCardFields {
 
 /** "2021 · Land Rover": the line above the title. Empty when neither is known. */
 export declare function cardKicker(listing: ListingCardFields): string;
-/** The title without its leading year and make. Never empty. */
+/** The title without its leading year and make. Never empty: a blank title reads "Untitled listing". */
 export declare function cardTitle(listing: ListingCardFields): string;
-/** "5000-10000" → "5,000–10,000 km", "200000+" → "200,000+ km"; anything else is `null`. */
+/** As luxoticars-vi shows it: "5000-10000" → "5,001 – 10,000 km", "200000+" → "200,000+ km"; anything else is `null`. */
 export declare function mileageLabel(band: string | null | undefined): string | null;
-/** "Recon · SUV · 5,000–10,000 km". Empty when none is known. */
+/** "Recon · SUV · 5,001 – 10,000 km". Empty when none is known. */
 export declare function cardMeta(listing: ListingCardFields): string;
 /** "MYR 450,000", or "Price on request". */
 export declare function cardPrice(listing: ListingCardFields): string;
