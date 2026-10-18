@@ -5,6 +5,12 @@
   parent feeds the committed values back through `minField.value` and
   `maxField.value`, which discards any draft that no longer matches them.
 
+  With `action` the range is a real GET form: each field submits under its
+  `key`, `hiddenFields` carry the rest of the page's state, and the button is
+  always enabled, so it works before any JavaScript has loaded. When the page
+  has JS and an `onChange` handler, the submit is intercepted and reported
+  through `onChange` instead; without a handler the browser submits the form.
+
   Concise syntax, by repo convention.
 */
 import "../styles/text-range.css"
@@ -43,6 +49,10 @@ export interface Input extends Omit<Marko.HTML.Div, "content" | "onChange" | "on
   submitButtonHtmlAttributes?: Record<string, unknown>
   /** One message for every failure, or one per code. With none, no message shows. */
   validationMessages?: ValidationMessages
+  /** Makes the range a GET form that submits to this URL. Each field is sent under its `key`. */
+  action?: string
+  /** Fields sent along with the range, for example the rest of a search. Form mode only. */
+  hiddenFields?: Array<[name: string, value: string]>
   /** Fires when a field loses focus and the range is valid. */
   onBlur?: (range: RangeValues) => void
   /** Fires when the range is submitted and valid. */
@@ -54,7 +64,7 @@ export interface Input extends Omit<Marko.HTML.Div, "content" | "onChange" | "on
 static type Draft = { base: string; min?: string; max?: string }
 static type Check = { base: string; code: string }
 
-const/{ minField, maxField, middleLabel, prefixLabel, suffixLabel, submitButtonAccessibilityText, submitButtonHtmlAttributes, validationMessages, onBlur, onChange, class: className, content: _content, ...attrs }=input
+const/{ minField, maxField, middleLabel, prefixLabel, suffixLabel, submitButtonAccessibilityText, submitButtonHtmlAttributes, validationMessages, action, hiddenFields, onBlur, onChange, class: className, content: _content, ...attrs }=input
 
 const/committedMin=minField.value ?? ""
 const/committedMax=maxField.value ?? ""
@@ -71,7 +81,10 @@ const/maxText=live?.max ?? committedMax
 const/code=(check && check.base === baseKey ? check.code : "valid")
 const/invalid=invalidFields(code)
 const/message=validationMessage(validationMessages, code)
-const/submitEnabled=(code === "valid" && (minText.trim() !== "" || maxText.trim() !== "" || committedMin.trim() !== "" || committedMax.trim() !== ""))
+const/formMode=!!action
+const/Root=(formMode ? "form" : "div")
+// In form mode the button stays enabled: it must work before JS has loaded.
+const/submitEnabled=(formMode || code === "valid" && (minText.trim() !== "" || maxText.trim() !== "" || committedMin.trim() !== "" || committedMax.trim() !== ""))
 
 static function fieldClass(fieldInvalid: boolean) {
   return ["text-range__field", { "text-range__field--invalid": fieldInvalid }]
@@ -85,7 +98,8 @@ define/TextField|input: { field: Field; text: string; invalid: boolean; side: "m
       ,...input.field.htmlAttributes
       ,type="text"
       ,inputmode="decimal"
-      ,pattern="\\d*"
+      ,name=(formMode ? input.field.key : undefined)
+      ,pattern=(formMode ? undefined : "\\d*")
       ,maxlength=13
       ,autocomplete="off"
       ,placeholder=input.field.label
@@ -99,7 +113,8 @@ define/TextField|input: { field: Field; text: string; invalid: boolean; side: "m
         if (result.success) onBlur?.({ minValue: minText, maxValue: maxText })
       }
       ,onKeyUp(event) {
-        if (event.key !== "Enter") return
+        // In form mode Enter submits the form itself.
+        if (formMode || event.key !== "Enter") return
         const result = validateRange(minText, maxText, currency)
         check = { base: baseKey, code: result.code }
         if (result.success) onChange?.({ minValue: minText, maxValue: maxText })
@@ -107,19 +122,35 @@ define/TextField|input: { field: Field; text: string; invalid: boolean; side: "m
     if=(!prefixLabel && suffixLabel)
       span.text-range__affix -- ${suffixLabel}
 
-div ...attrs class=["text-range", className]
+${Root}
+  ,...attrs
+  ,class=["text-range", className]
+  ,action=action
+  ,method=(formMode ? "get" : undefined)
+  ,onSubmit(event: SubmitEvent) {
+    if (!formMode) return
+    const result = validateRange(minText, maxText, currency)
+    check = { base: baseKey, code: result.code }
+    // An invalid range never submits; a handler takes over from the browser.
+    if (!result.success || onChange) event.preventDefault()
+    if (result.success) onChange?.({ minValue: minText, maxValue: maxText })
+  }
   div.text-range__container
+    if=hiddenFields
+      for|[name, value]| of=hiddenFields by=([name, value]) => `${name}=${value}`
+        input type="hidden" name=name value=value
     TextField field=minField text=minText invalid=invalid.min side="min"
     if=middleLabel
       span.text-range__separator -- ${middleLabel}
     TextField field=maxField text=maxText invalid=invalid.max side="max"
     button.text-range__submit
       ,...submitButtonHtmlAttributes
-      ,type="button"
+      ,type=(formMode ? "submit" : "button")
       ,title=submitButtonAccessibilityText
       ,aria-label=submitButtonAccessibilityText
       ,disabled=!submitEnabled
       ,onClick() {
+        if (formMode) return
         const result = validateRange(minText, maxText, currency)
         check = { base: baseKey, code: result.code }
         if (result.success) onChange?.({ minValue: minText, maxValue: maxText })
