@@ -4,8 +4,9 @@
   through `onBlur`, and the button or Enter reports it through `onChange`. The
   parent feeds the committed values back through `minField.value` and
   `maxField.value`. Each field's draft is kept until its own committed value
-  changes to something else, so committing one field never discards what is
-  being typed in the other.
+  changes to something else, or the parent has committed the draft itself, so
+  committing one field never discards what is being typed in the other and a
+  later reset never brings a cleared draft back.
 
   With `action` the range is a real GET form: each field submits under its
   `key`, `hiddenFields` carry the rest of the page's state, and the button is
@@ -82,6 +83,10 @@ const/currency=prefixLabel || suffixLabel || ""
 // began, or has caught up with what was typed.
 const/minText=(minDraft && (minDraft.base === committedMin || minDraft.text === committedMin) ? minDraft.text : committedMin)
 const/maxText=(maxDraft && (maxDraft.base === committedMax || maxDraft.text === committedMax) ? maxDraft.text : committedMax)
+// Once the parent has committed a draft it is spent. Without this, a later reset
+// of the committed value to what it was before typing would match the draft's
+// base again and bring the cleared text back.
+script -- if (minDraft && minDraft.text === committedMin) minDraft = null; if (maxDraft && maxDraft.text === committedMax) maxDraft = null
 const/code=(check && check.base === baseKey ? check.code : "valid")
 const/invalid=invalidFields(code)
 const/message=validationMessage(validationMessages, code)
