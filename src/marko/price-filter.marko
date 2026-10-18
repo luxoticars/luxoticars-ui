@@ -1,0 +1,121 @@
+/*
+  Composes a selection group of preset ranges, a min/max text range and a price
+  distribution graph around one shared range. Picking a preset, committing the
+  text range or releasing a graph knob updates all three and is reported:
+  `onSelectionChange` for a preset, `onPriceRangeChange` for the text range and
+  the graph. Each part is also a tag of its own and works without the others.
+
+  With a `textRangeData.action` the text range is a real GET form. Pass no
+  `onPriceRangeChange` and the browser submits it, so the filter works before
+  any JavaScript has loaded; pass one and JS intercepts the submit and reports it.
+
+  The filter knows nothing about URLs: `onPriceRangeChange` reports the range
+  under the parameter names the fields give as `key` (`price_min` and
+  `price_max` when they have none), and the parent decides what to do with it.
+
+  Concise syntax, by repo convention.
+*/
+import "../styles/price-filter.css"
+import { parseOptionValue } from "../utils/price-range.js"
+import type { Input as GraphInput, SelectedRange } from "./price-distribution-graph.marko"
+import type { Input as GroupInput, SelectEvent } from "./selection-group.marko"
+import type { Input as TextRangeInput, RangeValues } from "./text-range.marko"
+import PriceDistributionGraph from "./price-distribution-graph.marko"
+import SelectionGroup from "./selection-group.marko"
+import TextRange from "./text-range.marko"
+
+export interface PriceParam {
+  paramKey: string
+  paramValue: number | undefined
+}
+
+export type PriceParamChangeEvent = PriceParam[]
+
+export interface Input extends Omit<Marko.HTML.Div, "content"> {
+  /** The preset ranges. An option's `value` is `"min-max"`, or `"min"` for an open-ended range. */
+  selectionGroupData?: GroupInput
+  /** The min and max fields. */
+  textRangeData?: TextRangeInput
+  /** The distribution graph. Its `minValue` and `maxValue` are the starting range. */
+  priceGraphData?: GraphInput
+  /** Fires when a preset is picked or cleared. */
+  onSelectionChange?: (event: SelectEvent) => void
+  /** Fires when the text range is submitted or a graph knob is released. */
+  onPriceRangeChange?: (event: PriceParamChangeEvent) => void
+  /** Not supported: the filter renders no body content. */
+  content?: never
+}
+
+const/{ selectionGroupData, textRangeData, priceGraphData, onSelectionChange, onPriceRangeChange, class: className, content: _content, ...attrs }=input
+
+// The shared range. `max` undefined is open-ended.
+// Without a graph the range starts from the text fields' values.
+static function startOf(graph: number | undefined, text: string | undefined) {
+  if (graph !== undefined) return graph
+  return text?.trim() ? Number(text) : undefined
+}
+<let/min=startOf(priceGraphData?.minValue, textRangeData?.minField.value)>
+<let/max=startOf(priceGraphData?.maxValue, textRangeData?.maxField.value)>
+<let/picked=(selectionGroupData?.options.find((option) => option.selected)?.value as string | undefined)>
+
+const/options=(selectionGroupData ? selectionGroupData.options.map((option) => ({ ...option, selected: option.value === picked })) : [])
+
+static function rangeFrom(range: RangeValues) {
+  return { min: Number(range.minValue ?? 0), max: range.maxValue ? Number(range.maxValue) : undefined }
+}
+
+div ...attrs class=["price-filter", className]
+  if=selectionGroupData
+    SelectionGroup
+      ,...selectionGroupData
+      ,options=options
+      ,onSelect(event: SelectEvent) {
+        if (!event.selected) {
+          picked = undefined
+          min = 0
+          max = undefined
+          onSelectionChange?.({ value: undefined, url: event.url, selected: true })
+          return
+        }
+        const range = parseOptionValue(event.value)
+        picked = event.value
+        min = range.min
+        max = range.max
+        onSelectionChange?.({ value: event.value, url: event.url, selected: true })
+      }
+  if=textRangeData
+    div.price-filter__section
+      TextRange
+        ,...textRangeData
+        ,minField={ ...textRangeData.minField, value: min ? String(min) : "" }
+        ,maxField={ ...textRangeData.maxField, value: max !== undefined ? String(max) : "" }
+        ,onBlur(range: RangeValues) {
+          const next = rangeFrom(range)
+          min = next.min
+          max = next.max
+        }
+        ,onChange=(textRangeData.action && !onPriceRangeChange ? undefined : (range: RangeValues) => {
+          const next = rangeFrom(range)
+          min = next.min
+          max = next.max
+          picked = undefined
+          onPriceRangeChange?.([
+            { paramKey: textRangeData.minField.key || "price_min", paramValue: next.min },
+            { paramKey: textRangeData.maxField.key || "price_max", paramValue: next.max },
+          ])
+        })
+  if=priceGraphData
+    div.price-filter__section-price
+      PriceDistributionGraph
+        ,...priceGraphData
+        ,minValue=min
+        ,maxValue=max
+        ,onChange(range: SelectedRange) {
+          min = range.min
+          max = range.max
+          picked = undefined
+          onPriceRangeChange?.([
+            { paramKey: textRangeData?.minField.key || "price_min", paramValue: range.min },
+            { paramKey: textRangeData?.maxField.key || "price_max", paramValue: range.max },
+          ])
+        }
