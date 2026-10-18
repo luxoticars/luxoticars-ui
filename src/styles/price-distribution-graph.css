@@ -1,0 +1,166 @@
+/*
+  Price distribution graph styles. BEM: `price-distribution-graph` is the
+  block. Tokens are read `--lux-*` first, then the daisyUI name, then a literal
+  (see program-badge.css).
+*/
+
+.price-distribution-graph {
+  --pdg-blue: var(--lux-info, var(--color-info, oklch(48% 0.154 245)));
+  --pdg-grey: var(--lux-secondary, var(--color-secondary, oklch(45% 0.02 286)));
+  --pdg-paper: var(--lux-base-100, var(--color-base-100, oklch(97.2% 0.004 264.7)));
+  width: 10.625rem;
+  margin: 0 0 0.625rem 0.625rem;
+}
+
+.price-distribution-graph__title {
+  padding: 0 0 1rem;
+  color: var(--pdg-grey);
+}
+
+.price-distribution-graph__chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 2px;
+  width: 9.375rem;
+  height: 5.3125rem;
+  margin: 0;
+  transform: translateX(0.75rem);
+}
+
+.price-distribution-graph__bar {
+  width: 6px;
+  border-radius: 2.5px;
+  background: var(--pdg-grey);
+  opacity: 0.8;
+}
+
+.price-distribution-graph__bar--enabled {
+  background: var(--pdg-blue);
+  opacity: 1;
+}
+
+.price-distribution-graph__sliders-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 4px;
+}
+
+.price-distribution-graph__sliders-control {
+  position: relative;
+  min-height: 30px;
+}
+
+.price-distribution-graph__sliders-readonly {
+  position: relative;
+  height: 16px;
+}
+
+.price-distribution-graph__sliders-readonly > span {
+  top: 10px;
+}
+
+.price-distribution-graph__track-highlight {
+  position: relative;
+  top: 4px;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    var(--pdg-grey) var(--min),
+    var(--pdg-blue) calc(var(--min) + 2px),
+    var(--pdg-blue) calc(var(--max) - 2px),
+    var(--pdg-grey) var(--max)
+  );
+  transition: background 120ms linear;
+}
+
+.price-distribution-graph__range-value {
+  position: absolute;
+  top: 25px;
+  width: 40px;
+  transform: translateX(-50%);
+  transition:
+    left 0.3s,
+    transform 0.3s;
+  font-size: 0.75rem;
+  color: var(--pdg-grey);
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Both range inputs sit over one track; only their thumbs take the pointer. */
+.price-distribution-graph__slider {
+  appearance: none;
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  margin: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+.price-distribution-graph__slider::-webkit-slider-thumb {
+  appearance: none;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--pdg-blue);
+  border-radius: 50%;
+  background: var(--pdg-paper);
+  box-shadow: 0 0 0 2px var(--pdg-paper);
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.price-distribution-graph__slider::-moz-range-thumb {
+  appearance: none;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--pdg-blue);
+  border-radius: 50%;
+  background: var(--pdg-paper);
+  box-shadow: 0 0 0 2px var(--pdg-paper);
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.price-distribution-graph__slider::-webkit-slider-thumb:hover {
+  background: var(--pdg-blue);
+}
+
+.price-distribution-graph__slider::-moz-range-thumb:hover {
+  background: var(--pdg-blue);
+}
+
+.price-distribution-graph__slider:focus-visible {
+  outline: none;
+}
+
+.price-distribution-graph__slider:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--pdg-blue);
+  outline-offset: 2px;
+}
+
+.price-distribution-graph__slider:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--pdg-blue);
+  outline-offset: 2px;
+}
+
+/* Knobs one or two buckets apart would overlap, so each thumb is nudged away. */
+.price-distribution-graph__slider--close.price-distribution-graph__slider--min::-webkit-slider-thumb {
+  transform: translateX(var(--slider-thumb-translate-min, -4px));
+}
+
+.price-distribution-graph__slider--close.price-distribution-graph__slider--min::-moz-range-thumb {
+  transform: translateX(var(--slider-thumb-translate-min, -4px));
+}
+
+.price-distribution-graph__slider--close.price-distribution-graph__slider--max::-webkit-slider-thumb {
+  transform: translateX(var(--slider-thumb-translate-max, 4px));
+}
+
+.price-distribution-graph__slider--close.price-distribution-graph__slider--max::-moz-range-thumb {
+  transform: translateX(var(--slider-thumb-translate-max, 4px));
+}

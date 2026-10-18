@@ -1,0 +1,9 @@
+/* Price filter layout: spacing between its parts. */
+
+.price-filter__section {
+  margin-top: 1.5rem;
+}
+
+.price-filter__section-price {
+  margin-top: 0.5rem;
+}

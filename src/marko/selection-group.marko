@@ -1,0 +1,103 @@
+/*
+  A group of checkboxes or radios. Selection is controlled: each option says
+  whether it is `selected`, and a change is reported through `onSelect` for the
+  parent to apply. An option with an absolute http(s) `url` renders as a link
+  instead, with the box drawn but not interactive.
+
+  Concise syntax, by repo convention. The stylesheet is imported rather than
+  sitting beside the tag as style.css, as in program-badge.marko.
+*/
+import "../styles/selection-group.css"
+import { isHyperlink } from "../utils/price-range.js"
+
+export interface Option {
+  /** Reported on selection. Also the input's `value`. */
+  value: string
+  /** The visible label. */
+  label?: string
+  /** Whether the option is selected. */
+  selected?: boolean
+  disabled?: boolean
+  /** Reported on selection. An absolute http(s) URL turns the option into a link. */
+  url?: string
+  /** Secondary text after the label, for example a result count. */
+  count?: string
+  /** What screen readers hear in place of `count`. */
+  countAccessibilityText?: string
+  /** A second line of text under the label. */
+  accessoryLabel?: string
+  /** Extra text for screen readers after the label. */
+  accessibilityText?: string
+  /** Extra attributes for the option's input, or for its link. */
+  htmlAttributes?: Record<string, unknown>
+}
+
+export interface SelectEvent {
+  value?: string
+  url?: string
+  /** Always true for radios, which cannot be cleared by clicking them. */
+  selected: boolean
+}
+
+export interface Input extends Omit<Marko.HTML.Div, "content" | "onSelect"> {
+  /** The options, in order. */
+  options: Option[]
+  /** @default "checkbox" */
+  type?: "checkbox" | "radio"
+  /** A name for the group, read by screen readers. Rendered as a hidden legend. */
+  fieldsetLabel?: string
+  /** Fires when the user changes an option that is not a link. */
+  onSelect?: (event: SelectEvent) => void
+  /** Not supported: the group renders no body content. */
+  content?: never
+}
+
+const/{ options, type = "checkbox", fieldsetLabel, onSelect, class: className, content: _content, ...attrs }=input
+id/groupName
+
+define/OptionText|input: { option: Option }|
+  -- ${input.option.label}
+  if=input.option.count
+    span.selection-group__count aria-hidden="true" -- ${input.option.count}
+    span.selection-group__clipped -- ${input.option.countAccessibilityText}
+  if=input.option.accessoryLabel
+    p.selection-group__accessory -- ${input.option.accessoryLabel}
+  if=input.option.accessibilityText
+    span.selection-group__clipped -- ${input.option.accessibilityText}
+
+div ...attrs class=["selection-group", className]
+  fieldset.selection-group__fieldset
+    if=fieldsetLabel
+      legend.selection-group__clipped -- ${fieldsetLabel}
+    for|option| of=options by="value"
+      id/optionId
+      const/linked=isHyperlink(option.url)
+      div.selection-group__field
+        if=linked
+          const/Link=(option.disabled ? "span" : "a")
+          ${Link}
+            ,...option.htmlAttributes
+            ,class=["selection-group__link", { "selection-group__link--disabled": option.disabled }]
+            ,href=(!option.disabled && option.url)
+            span.selection-group__control class=`selection-group__control--${type}`
+              span.selection-group__mark class={ "selection-group__mark--checked": option.selected } aria-hidden="true"
+                svg viewBox="0 0 24 24" fill="currentColor"
+                  path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"
+            span.selection-group__label
+              OptionText option=option
+        else
+          span.selection-group__control class=`selection-group__control--${type}`
+            input.selection-group__input
+              ,...option.htmlAttributes
+              ,id=optionId
+              ,type=type
+              ,name=groupName
+              ,value=option.value
+              ,disabled=option.disabled
+              ,checked=option.selected
+              ,checkedChange(checked) { onSelect?.({ value: option.value, url: option.url, selected: type === "radio" ? true : checked }) }
+            span.selection-group__mark aria-hidden="true"
+              svg viewBox="0 0 24 24" fill="currentColor"
+                path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"
+          label.selection-group__label for=optionId class={ "selection-group__label--disabled": option.disabled }
+            OptionText option=option
