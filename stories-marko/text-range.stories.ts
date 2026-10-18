@@ -23,6 +23,8 @@ export default {
     suffixLabel: { control: "text", description: "Shown after each value. Ignored when `prefixLabel` is set." },
     submitButtonAccessibilityText: { control: "text", description: "The submit button's title and accessible name." },
     validationMessages: { control: "object", description: "One message, or one per validation code." },
+    action: { control: "text", description: "Makes the range a GET form that submits to this URL, each field under its `key`. The button stays enabled so it works without JS." },
+    hiddenFields: { control: "object", description: "`[name, value]` pairs sent along with the range. Form mode only." },
     onBlur: { action: "blur", description: "Fires when a field loses focus and the range is valid." },
     onChange: { action: "change", description: "Fires when the range is submitted and valid." },
   },
@@ -56,4 +58,14 @@ export const WithStringValidation: Story = {
 
 export const WithoutValidationMessages: Story = {
   args: { ...Default.args, validationMessages: undefined } as Input,
+};
+
+export const AsForm: Story = {
+  args: {
+    ...Default.args,
+    action: "/search",
+    hiddenFields: [["q", "proton"]],
+    minField: { ...textRangeData.minField, key: "price_min" },
+    maxField: { ...textRangeData.maxField, value: "", key: "budget" },
+  } as Input,
 };
