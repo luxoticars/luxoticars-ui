@@ -1,0 +1,22 @@
+/*
+  The Marko twin of `astro/Logo.astro` and `html/logo.js`: the same markup,
+  styled by the same `styles/logo.css`.
+*/
+import "../styles/logo.css"
+
+export interface Input {
+  /** Wordmark text. @default "Luxoticars" */
+  siteTitle?: string
+  /** Where the wordmark links. @default "/" */
+  href?: string
+  /** Wordmark color: `white` for dark backgrounds, `black` for light ones. @default "white" */
+  variant?: "white" | "black"
+  /** Draws a short accent line under the first letters, which stretches across the wordmark on hover. @default false */
+  accent?: boolean
+}
+
+// Home link, not a heading: an h1 here gives every page a second level-1 heading.
+a href=(input.href ?? "/") class=["logo", input.variant === "black" && "logo--black", input.accent && "logo--accent"]
+  span.logo__wordmark
+    -- ${input.siteTitle ?? "Luxoticars"}
+    sup.logo__mark -- ©

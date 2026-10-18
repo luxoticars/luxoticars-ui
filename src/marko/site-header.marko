@@ -8,8 +8,8 @@
   Not here: the Astro prop `hideSearchWhileVisible`, which hides the header's
   search while the page shows its own. No Marko page needs it yet.
 */
-import "../styles/logo.css"
 import "../styles/site-header.css"
+import Logo from "./logo.marko"
 import { resolveSiteHeader } from "../utils/site-header.js"
 import { wireSiteMenu } from "../scripts/site-header-menu.js"
 import type { FooterLink } from "../types"
@@ -35,11 +35,7 @@ const/header=resolveSiteHeader({ links: input.links, ctaLabel: input.ctaLabel })
 header class=["site-header", input.search && "site-header--with-search"] data-site-header
   div.site-header__inner
     div.site-header__logo
-      // Home link, not a heading: see astro/Logo.astro.
-      a href=homeHref class="logo logo--accent"
-        span.logo__wordmark
-          -- ${siteTitle}
-          sup.logo__mark -- ©
+      Logo siteTitle=siteTitle href=homeHref accent
 
     nav/nav class="site-header__nav" aria-label="Main"
       for|link| of=header.links
