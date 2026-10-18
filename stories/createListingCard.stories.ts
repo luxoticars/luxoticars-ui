@@ -38,6 +38,7 @@ export default {
     href: { control: "text" },
     imageSrc: { control: "text" },
     headingLevel: { control: "inline-radio", options: [2, 3] },
+    idPrefix: { control: "text" },
   },
 };
 

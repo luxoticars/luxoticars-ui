@@ -111,9 +111,12 @@
   inset: 0;
 }
 
-/* The card draws the focus ring (:focus-within). */
-.listing-card__link:focus-visible {
-  outline: none;
+/* The card draws the focus ring (:has(.listing-card__link:focus-visible)).
+   Where :has() is missing, the link keeps its own ring. */
+@supports selector(:has(*)) {
+  .listing-card__link:focus-visible {
+    outline: none;
+  }
 }
 
 .listing-card__price {
