@@ -1,6 +1,7 @@
 /*
   What a site header prints, decided once for `astro/SiteHeader.astro` and
-  `marko/site-header.marko`, so the two renderers cannot drift: the default
+  the two Marko headers (`marko/site-header-desktop.marko` and
+  `marko/site-header-mobile.marko`), so the renderers cannot drift: the default
   links, the new-tab attributes of an external link, and how the
   call-to-action label splits (below 30rem only its first word shows).
 */

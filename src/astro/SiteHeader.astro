@@ -94,7 +94,7 @@ const header = resolveSiteHeader({ links, ctaLabel });
 </header>
 
 <script>
-  import { wireSiteMenu } from "../scripts/site-header-menu.js";
+  import { closeMenuWhenLinksShow, wireSiteMenu } from "../scripts/site-header-menu.js";
 
   // Runs on first load and again after every ClientRouter page swap; each run
   // drops the previous run's listeners and observers.
@@ -110,7 +110,8 @@ const header = resolveSiteHeader({ links, ctaLabel });
       const nav = header.querySelector(".site-header__nav");
       const search = header.querySelector(".site-header__search");
       // Also closes the menu when a resize brings the links back into the bar.
-      const closeIfLinksShown = menu ? wireSiteMenu(menu, nav, signal) : () => {};
+      if (menu) wireSiteMenu(menu, signal);
+      const closeIfLinksShown = menu ? closeMenuWhenLinksShow(menu, nav, signal) : () => {};
 
       // While the page's own search field is on screen, hide the header's.
       // The header is sticky, so "on screen" means below the header's own

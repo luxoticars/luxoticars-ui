@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { resolveSiteHeader, SITE_HEADER_LINKS } from "../src/utils/site-header.js";
 
 /* The resolver decides what both site headers print (astro/SiteHeader.astro
-   and marko/site-header.marko), so they cannot disagree. */
+   and the two Marko headers in marko/), so they cannot disagree. */
 
 test("defaults: Buy, Reviews, About and the Advertise button", () => {
   const header = resolveSiteHeader();

@@ -1,18 +1,26 @@
 import type { Meta, StoryObj } from "@storybook/marko";
-import SiteHeader, { type Input } from "../src/marko/site-header.marko";
+import SiteHeader, { type Input } from "../src/marko/site-header-desktop.marko";
 
 /**
- * `<site-header>` for Marko 6 apps, the twin of the Astro `SiteHeader`. It is
- * discovered through the package's marko.json, so it needs no import:
+ * `<site-header-desktop>` for Marko 6 apps, the twin of the Astro
+ * `SiteHeader`: the links sit in the bar, and a narrow window gets the menu
+ * button. Phones get `<site-header-mobile>` instead, picked by the app from
+ * the User-Agent. Both are discovered through the package's marko.json, so
+ * they need no import:
  *
  * ```marko
- * site-header
- *   @search
- *     my-search-field
+ * if=(device === "mobile")
+ *   site-header-mobile
+ *     @search
+ *       my-search-field
+ * else
+ *   site-header-desktop
+ *     @search
+ *       my-search-field
  * ```
  */
 export default {
-  title: "Components/site-header",
+  title: "Components/site-header-desktop",
   component: SiteHeader,
   tags: ["autodocs"],
   argTypes: {

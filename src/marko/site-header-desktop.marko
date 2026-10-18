@@ -1,9 +1,14 @@
 /*
-  The Marko twin of `astro/SiteHeader.astro`: the same markup, styled by the
-  same `styles/site-header.css` and `styles/logo.css`. What varies with the
-  input (links, new-tab attributes, the call-to-action split) comes from
-  `resolveSiteHeader()`, and the phone menu is wired by `wireSiteMenu()`; the
-  Astro component uses both too, so the two renderers cannot drift.
+  The desktop (dWeb) header: the Marko twin of `astro/SiteHeader.astro`, with
+  the same markup, styled by the same `styles/site-header.css` and
+  `styles/logo.css`. What varies with the input (links, new-tab attributes,
+  the call-to-action split) comes from `resolveSiteHeader()`, and the menu is
+  wired by `wireSiteMenu()`; the Astro component uses both too, so the
+  renderers cannot drift. A narrow desktop window still gets the menu button,
+  and widening it again closes an open menu (`closeMenuWhenLinksShow()`).
+
+  Phones get `<site-header-mobile>`, which has no links in its bar and ships
+  less script. The app picks one per request, from the User-Agent.
 
   Not here: the Astro prop `hideSearchWhileVisible`, which hides the header's
   search while the page shows its own. No Marko page needs it yet.
@@ -11,7 +16,7 @@
 import "../styles/site-header.css"
 import Logo from "./logo.marko"
 import { resolveSiteHeader } from "../utils/site-header.js"
-import { wireSiteMenu } from "../scripts/site-header-menu.js"
+import { closeMenuWhenLinksShow, wireSiteMenu } from "../scripts/site-header-menu.js"
 import type { FooterLink } from "../types"
 
 export interface Input {
@@ -65,4 +70,5 @@ header class=["site-header", input.search && "site-header--with-search"] data-si
             if=link.external
               span.site-header__external-note -- ${" (opens in a new tab)"}
 
-script -- wireSiteMenu(menu() as HTMLDetailsElement, nav(), $signal)
+script -- wireSiteMenu(menu() as HTMLDetailsElement, $signal)
+script -- closeMenuWhenLinksShow(menu() as HTMLDetailsElement, nav(), $signal)
