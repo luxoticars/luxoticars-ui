@@ -1,0 +1,72 @@
+/*
+  The Marko twin of `astro/SiteHeader.astro`: the same markup, styled by the
+  same `styles/site-header.css` and `styles/logo.css`. What varies with the
+  input (links, new-tab attributes, the call-to-action split) comes from
+  `resolveSiteHeader()`, and the phone menu is wired by `wireSiteMenu()`; the
+  Astro component uses both too, so the two renderers cannot drift.
+
+  Not here: the Astro prop `hideSearchWhileVisible`, which hides the header's
+  search while the page shows its own. No Marko page needs it yet.
+*/
+import "../styles/logo.css"
+import "../styles/site-header.css"
+import { resolveSiteHeader } from "../utils/site-header.js"
+import { wireSiteMenu } from "../scripts/site-header-menu.js"
+import type { FooterLink } from "../types"
+
+export interface Input {
+  /** Menu links, in order. @default Buy, Reviews, About */
+  links?: FooterLink[]
+  /** Wordmark text. @default "Luxoticars" */
+  siteTitle?: string
+  /** Where the wordmark links. @default "/" */
+  homeHref?: string
+  /** Label of the call-to-action button. Below 30rem only its first word shows. @default "Advertise your car" */
+  ctaLabel?: string
+  /** Where the call-to-action button goes. @default "https://dash.luxoticars.com" */
+  ctaHref?: string
+  /** The search field shown in the bar, as `@search`. */
+  search?: Marko.AttrTag<{ content: Marko.Body }>
+}
+
+const/{ siteTitle = "Luxoticars", homeHref = "/", ctaHref = "https://dash.luxoticars.com" }=input
+const/header=resolveSiteHeader({ links: input.links, ctaLabel: input.ctaLabel })
+
+header class=["site-header", input.search && "site-header--with-search"] data-site-header
+  div.site-header__inner
+    div.site-header__logo
+      // Home link, not a heading: see astro/Logo.astro.
+      a href=homeHref class="logo logo--accent"
+        span.logo__wordmark
+          -- ${siteTitle}
+          sup.logo__mark -- ©
+
+    nav/nav class="site-header__nav" aria-label="Main"
+      for|link| of=header.links
+        a href=link.href class="site-header__link" target=link.target rel=link.rel
+          -- ${link.label}
+          if=link.external
+            span.site-header__external-note -- ${" (opens in a new tab)"}
+
+    if=input.search
+      div.site-header__search
+        ${input.search.content}
+
+    if=header.cta
+      a href=ctaHref class="site-header__cta" aria-label=header.cta.label
+        -- ${header.cta.first}
+        if=header.cta.rest
+          span.site-header__cta-more -- ${header.cta.rest}
+
+    details/menu class="site-header__menu" data-site-menu
+      summary class="site-header__menu-button" aria-label="Menu"
+        svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"
+          path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+      nav class="site-header__menu-panel" aria-label="Main"
+        for|link| of=header.links
+          a href=link.href class="site-header__menu-link" target=link.target rel=link.rel
+            -- ${link.label}
+            if=link.external
+              span.site-header__external-note -- ${" (opens in a new tab)"}
+
+script -- wireSiteMenu(menu() as HTMLDetailsElement, nav(), $signal)
