@@ -1,0 +1,105 @@
+/*
+  Text range styles. BEM: `text-range` is the block. Tokens are read `--lux-*`
+  first, then the daisyUI name, then a literal (see program-badge.css).
+*/
+
+.text-range {
+  --tr-ink: var(--lux-base-content, var(--color-base-content, oklch(20% 0.018 264)));
+  --tr-field: var(--lux-base-200, var(--color-base-200, oklch(93% 0.005 264.7)));
+  --tr-line: var(--lux-secondary, var(--color-secondary, oklch(45% 0.02 286)));
+  --tr-error: var(--lux-error, var(--color-error, oklch(57% 0.194 13.428)));
+  --tr-focus: var(--lux-accent, var(--color-accent, oklch(52% 0.16 232.661)));
+  width: 100%;
+}
+
+.text-range__container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.text-range__field {
+  display: flex;
+  flex: 2;
+  align-items: center;
+  box-sizing: border-box;
+  min-width: 4.375rem;
+  height: 2.125rem;
+  padding-inline: 0.25rem;
+  border: 1px solid var(--tr-line);
+  border-radius: 0.5rem;
+  background: var(--tr-field);
+}
+
+.text-range__field:focus-within {
+  outline: 2px solid var(--tr-focus);
+  outline-offset: 1px;
+}
+
+.text-range__field--invalid {
+  border-color: var(--tr-error);
+}
+
+.text-range__affix {
+  flex: none;
+  font-size: 0.6875rem;
+  color: var(--tr-ink);
+}
+
+.text-range__control {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding-inline: 0.25rem;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--tr-ink);
+  font: inherit;
+}
+
+.text-range__control::placeholder {
+  color: var(--tr-line);
+}
+
+.text-range__separator {
+  display: inline-block;
+  padding: 0.25rem;
+}
+
+.text-range__submit {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--tr-field);
+  color: var(--tr-ink);
+  cursor: pointer;
+}
+
+.text-range__submit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.text-range__submit:focus-visible {
+  outline: 2px solid var(--tr-focus);
+  outline-offset: 2px;
+}
+
+.text-range__submit svg {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+.text-range__error {
+  flex-basis: 100%;
+  min-height: 1rem;
+  line-height: 1rem;
+  color: var(--tr-error);
+}
