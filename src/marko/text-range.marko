@@ -1,0 +1,162 @@
+/*
+  A min and a max field with a submit button. The fields keep what the user is
+  typing until it is committed: leaving a field with a valid range reports it
+  through `onBlur`, and the button or Enter reports it through `onChange`. The
+  parent feeds the committed values back through `minField.value` and
+  `maxField.value`, which discards any draft that no longer matches them.
+
+  With `action` the range is a real GET form: each field submits under its
+  `key`, `hiddenFields` carry the rest of the page's state, and the button is
+  always enabled, so it works before any JavaScript has loaded. When the page
+  has JS and an `onChange` handler, the submit is intercepted and reported
+  through `onChange` instead; without a handler the browser submits the form.
+
+  Concise syntax, by repo convention.
+*/
+import "../styles/text-range.css"
+import { invalidFields, validateRange, validationMessage } from "../utils/price-range.js"
+import type { ValidationMessages } from "../utils/price-range.js"
+
+export interface Field {
+  /** The placeholder. */
+  label: string
+  /** The committed value, as typed text. */
+  value?: string
+  /** What screen readers hear for the field. */
+  accessibilityText?: string
+  /** The key the parent uses for this value in its own parameters. */
+  key?: string
+  /** Extra attributes for the field's input. */
+  htmlAttributes?: Record<string, unknown>
+}
+
+export interface RangeValues {
+  minValue?: string
+  maxValue?: string
+}
+
+export interface Input extends Omit<Marko.HTML.Div, "content" | "onChange" | "onBlur"> {
+  minField: Field
+  maxField: Field
+  /** Shown between the two fields, for example "to". */
+  middleLabel?: string
+  /** Shown before each value, for example "$". */
+  prefixLabel?: string
+  /** Shown after each value, for example "€". Ignored when `prefixLabel` is set. */
+  suffixLabel?: string
+  /** The submit button's title and accessible name. */
+  submitButtonAccessibilityText?: string
+  submitButtonHtmlAttributes?: Record<string, unknown>
+  /** One message for every failure, or one per code. With none, no message shows. */
+  validationMessages?: ValidationMessages
+  /** Makes the range a GET form that submits to this URL. Each field is sent under its `key`. */
+  action?: string
+  /** Fields sent along with the range, for example the rest of a search. Form mode only. */
+  hiddenFields?: Array<[name: string, value: string]>
+  /** Fires when a field loses focus and the range is valid. */
+  onBlur?: (range: RangeValues) => void
+  /** Fires when the range is submitted and valid. */
+  onChange?: (range: RangeValues) => void
+  /** Not supported: the range renders no body content. */
+  content?: never
+}
+
+static type Draft = { base: string; min?: string; max?: string }
+static type Check = { base: string; code: string }
+
+const/{ minField, maxField, middleLabel, prefixLabel, suffixLabel, submitButtonAccessibilityText, submitButtonHtmlAttributes, validationMessages, action, hiddenFields, onBlur, onChange, class: className, content: _content, ...attrs }=input
+
+const/committedMin=minField.value ?? ""
+const/committedMax=maxField.value ?? ""
+const/baseKey=`${committedMin}|${committedMax}`
+const/currency=prefixLabel || suffixLabel || ""
+
+// What the user has typed since the last committed values, and the outcome of
+// the last check. Both are only kept while the committed values are unchanged.
+<let/draft=(null as Draft | null)>
+<let/check=(null as Check | null)>
+const/live=(draft && draft.base === baseKey ? draft : null)
+const/minText=live?.min ?? committedMin
+const/maxText=live?.max ?? committedMax
+const/code=(check && check.base === baseKey ? check.code : "valid")
+const/invalid=invalidFields(code)
+const/message=validationMessage(validationMessages, code)
+const/formMode=!!action
+const/Root=(formMode ? "form" : "div")
+// In form mode the button stays enabled: it must work before JS has loaded.
+const/submitEnabled=(formMode || code === "valid" && (minText.trim() !== "" || maxText.trim() !== "" || committedMin.trim() !== "" || committedMax.trim() !== ""))
+
+static function fieldClass(fieldInvalid: boolean) {
+  return ["text-range__field", { "text-range__field--invalid": fieldInvalid }]
+}
+
+define/TextField|input: { field: Field; text: string; invalid: boolean; side: "min" | "max" }|
+  span class=fieldClass(input.invalid)
+    if=prefixLabel
+      span.text-range__affix -- ${prefixLabel}
+    input.text-range__control
+      ,...input.field.htmlAttributes
+      ,type="text"
+      ,inputmode="decimal"
+      ,name=(formMode ? input.field.key : undefined)
+      ,pattern=(formMode ? undefined : "\\d*")
+      ,maxlength=13
+      ,autocomplete="off"
+      ,placeholder=input.field.label
+      ,aria-label=input.field.accessibilityText
+      ,aria-invalid=(input.invalid && "true")
+      ,value=input.text
+      ,valueChange(value) { draft = { base: baseKey, min: input.side === "min" ? value : minText, max: input.side === "max" ? value : maxText } }
+      ,onBlur() {
+        const result = validateRange(minText, maxText, currency)
+        check = { base: baseKey, code: result.code }
+        if (result.success) onBlur?.({ minValue: minText, maxValue: maxText })
+      }
+      ,onKeyUp(event) {
+        // In form mode Enter submits the form itself.
+        if (formMode || event.key !== "Enter") return
+        const result = validateRange(minText, maxText, currency)
+        check = { base: baseKey, code: result.code }
+        if (result.success) onChange?.({ minValue: minText, maxValue: maxText })
+      }
+    if=(!prefixLabel && suffixLabel)
+      span.text-range__affix -- ${suffixLabel}
+
+${Root}
+  ,...attrs
+  ,class=["text-range", className]
+  ,action=action
+  ,method=(formMode ? "get" : undefined)
+  ,onSubmit(event: SubmitEvent) {
+    if (!formMode) return
+    const result = validateRange(minText, maxText, currency)
+    check = { base: baseKey, code: result.code }
+    // An invalid range never submits; a handler takes over from the browser.
+    if (!result.success || onChange) event.preventDefault()
+    if (result.success) onChange?.({ minValue: minText, maxValue: maxText })
+  }
+  div.text-range__container
+    if=hiddenFields
+      for|[name, value]| of=hiddenFields by=([name, value]) => `${name}=${value}`
+        input type="hidden" name=name value=value
+    TextField field=minField text=minText invalid=invalid.min side="min"
+    if=middleLabel
+      span.text-range__separator -- ${middleLabel}
+    TextField field=maxField text=maxText invalid=invalid.max side="max"
+    button.text-range__submit
+      ,...submitButtonHtmlAttributes
+      ,type=(formMode ? "submit" : "button")
+      ,title=submitButtonAccessibilityText
+      ,aria-label=submitButtonAccessibilityText
+      ,disabled=!submitEnabled
+      ,onClick() {
+        if (formMode) return
+        const result = validateRange(minText, maxText, currency)
+        check = { base: baseKey, code: result.code }
+        if (result.success) onChange?.({ minValue: minText, maxValue: maxText })
+      }
+      svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+        path d="M2 8h11M9 4l4 4-4 4"
+    div.text-range__error role="alert" aria-live="assertive"
+      if=message
+        -- ${message}
