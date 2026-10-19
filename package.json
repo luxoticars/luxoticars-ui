@@ -39,6 +39,7 @@
     "./styles/logo.css": "./src/styles/logo.css",
     "./styles/dialog.css": "./src/styles/dialog.css",
     "./styles/site-header.css": "./src/styles/site-header.css",
+    "./styles/pill.css": "./src/styles/pill.css",
     "./styles/section-head.css": "./src/styles/section-head.css",
     "./utils/cn": {
       "types": "./src/utils/cn.d.ts",
