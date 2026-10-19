@@ -37,10 +37,15 @@
     "./styles/tokens.css": "./src/styles/tokens.css",
     "./styles/footer.css": "./src/styles/footer.css",
     "./styles/logo.css": "./src/styles/logo.css",
+    "./styles/listing-card.css": "./src/styles/listing-card.css",
     "./styles/dialog.css": "./src/styles/dialog.css",
     "./styles/site-header.css": "./src/styles/site-header.css",
     "./styles/pill.css": "./src/styles/pill.css",
     "./styles/section-head.css": "./src/styles/section-head.css",
+    "./utils/listing-card": {
+      "types": "./src/utils/listing-card.d.ts",
+      "default": "./src/utils/listing-card.js"
+    },
     "./utils/cn": {
       "types": "./src/utils/cn.d.ts",
       "default": "./src/utils/cn.js"
