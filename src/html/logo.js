@@ -21,5 +21,5 @@ export const createLogo = ({
   variant = "white",
 } = {}) =>
   `<a href="${escapeHtml(href)}" class="logo${variant === "black" ? " logo--black" : ""}">
-  <span class="logo__wordmark">${escapeHtml(siteTitle)}<sup class="logo__mark">&copy;</sup></span>
+  <span class="logo__wordmark">${escapeHtml(siteTitle)}<sub class="logo__mark">&copy;</sub></span>
 </a>`;
