@@ -1,6 +1,6 @@
 {
   "name": "@luxoticars/ui",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "Accessible components for HTML, Astro, Marko and Tailwind CSS.",
   "private": true,
   "repository": {
