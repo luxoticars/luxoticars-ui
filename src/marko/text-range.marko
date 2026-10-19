@@ -3,7 +3,10 @@
   typing until it is committed: leaving a field with a valid range reports it
   through `onBlur`, and the button or Enter reports it through `onChange`. The
   parent feeds the committed values back through `minField.value` and
-  `maxField.value`, which discards any draft that no longer matches them.
+  `maxField.value`. Each field's draft is kept until its own committed value
+  changes to something else, or the parent has committed the draft itself, so
+  committing one field never discards what is being typed in the other and a
+  later reset never brings a cleared draft back.
 
   With `action` the range is a real GET form: each field submits under its
   `key`, `hiddenFields` carry the rest of the page's state, and the button is
@@ -61,7 +64,7 @@ export interface Input extends Omit<Marko.HTML.Div, "content" | "onChange" | "on
   content?: never
 }
 
-static type Draft = { base: string; min?: string; max?: string }
+static type Draft = { base: string; text: string }
 static type Check = { base: string; code: string }
 
 const/{ minField, maxField, middleLabel, prefixLabel, suffixLabel, submitButtonAccessibilityText, submitButtonHtmlAttributes, validationMessages, action, hiddenFields, onBlur, onChange, class: className, content: _content, ...attrs }=input
@@ -73,11 +76,17 @@ const/currency=prefixLabel || suffixLabel || ""
 
 // What the user has typed since the last committed values, and the outcome of
 // the last check. Both are only kept while the committed values are unchanged.
-<let/draft=(null as Draft | null)>
+<let/minDraft=(null as Draft | null)>
+<let/maxDraft=(null as Draft | null)>
 <let/check=(null as Check | null)>
-const/live=(draft && draft.base === baseKey ? draft : null)
-const/minText=live?.min ?? committedMin
-const/maxText=live?.max ?? committedMax
+// A draft holds while its field's committed value is what it was when typing
+// began, or has caught up with what was typed.
+const/minText=(minDraft && (minDraft.base === committedMin || minDraft.text === committedMin) ? minDraft.text : committedMin)
+const/maxText=(maxDraft && (maxDraft.base === committedMax || maxDraft.text === committedMax) ? maxDraft.text : committedMax)
+// Once the parent has committed a draft it is spent. Without this, a later reset
+// of the committed value to what it was before typing would match the draft's
+// base again and bring the cleared text back.
+script -- if (minDraft && minDraft.text === committedMin) minDraft = null; if (maxDraft && maxDraft.text === committedMax) maxDraft = null
 const/code=(check && check.base === baseKey ? check.code : "valid")
 const/invalid=invalidFields(code)
 const/message=validationMessage(validationMessages, code)
@@ -106,7 +115,10 @@ define/TextField|input: { field: Field; text: string; invalid: boolean; side: "m
       ,aria-label=input.field.accessibilityText
       ,aria-invalid=(input.invalid && "true")
       ,value=input.text
-      ,valueChange(value) { draft = { base: baseKey, min: input.side === "min" ? value : minText, max: input.side === "max" ? value : maxText } }
+      ,valueChange(value) {
+        if (input.side === "min") minDraft = { base: committedMin, text: value }
+        else maxDraft = { base: committedMax, text: value }
+      }
       ,onBlur() {
         const result = validateRange(minText, maxText, currency)
         check = { base: baseKey, code: result.code }

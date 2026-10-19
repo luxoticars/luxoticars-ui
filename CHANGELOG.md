@@ -1,5 +1,29 @@
 # @luxoticars/ui
 
+## 0.10.3
+
+### Patch Changes
+
+- 2884dcf: `<price-distribution-graph>` no longer lets its two value labels run into each other when the knobs sit close together and the prices are long, as with six-digit prices: it pushes them apart. A new `compactLabels` option shortens them (`RM100k` for `RM100000`), and `labels.currencyCaption` (for example "Amounts in RM") shows the currency once under bare-number labels. Each knob's value now includes the currency for screen readers, and the visible labels next to the knobs are hidden from them to avoid reading each value twice.
+
+## 0.10.2
+
+### Patch Changes
+
+- 3b57490: `<text-range>` no longer loses what is being typed in one field when the other field is committed. Typing a minimum, moving to the maximum and typing there used to drop the maximum if the parent updated in between.
+
+## 0.10.1
+
+### Patch Changes
+
+- 045cd37: `<price-filter>` now works as a plain form: without a graph its range starts from the text fields' values, and when it has a form `action` and no `onPriceRangeChange` the browser submits the form itself instead of the filter swallowing the submit. A selected link option in `<selection-group>` now carries `aria-current="true"`, so screen readers announce it as the current choice.
+
+## 0.10.0
+
+### Minor Changes
+
+- f2879e1: `<text-range>` can be a real GET form. Give it an `action` and each field submits under its `key`, `hiddenFields` carry the rest of the page's state, and the submit button stays enabled, so the range works before any JavaScript has loaded. With JS and an `onChange` handler the submit is intercepted and reported through `onChange` as before.
+
 ## 0.9.0
 
 ### Minor Changes
