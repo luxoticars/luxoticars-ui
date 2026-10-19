@@ -3,6 +3,9 @@
   snap to the edges of the buckets and stay at least one bucket apart. With
   `showKnobs` off it is a read-only picture of the current range.
 
+  The value labels under the knobs are hidden from assistive technology, because
+  each knob announces its own value with the currency; without knobs they are read.
+
   Every position, lit bar and label is derived from the selection, so there is
   no DOM patching. A knob the user has moved is kept until the parent hands back
   new `minValue` or `maxValue`, which discards it; with no parent updating them
@@ -30,6 +33,12 @@ export interface Labels {
   graphTitle?: string
   /** What screen readers hear for the whole graph. */
   accessibilityText?: string
+  /**
+   * Shown once, under the value labels, for example "Amounts in RM". When set, the
+   * labels show the bare numbers, which keeps them short; screen readers still hear
+   * the currency in each knob's value.
+   */
+  currencyCaption?: string
   minKnobAccessibilityText?: string
   maxKnobAccessibilityText?: string
   minKnobHtmlAttributes?: Record<string, unknown>
@@ -98,8 +107,10 @@ const/nudge=knobNudge(gap, buckets.length)
 const/minLabel=minTouched ? minBoundary : (minValue ?? 0)
 const/maxLabel=(openEnded && maxIdx === lastIdx && lastBucket ? `${lastBucket.min}+` : (!maxTouched && maxValue ? maxValue : maxBoundary))
 const/currency=currencySymbol || currencyCode || ""
-const/minDisplay=formatPrice(minLabel, currency, currencyPosition, compactLabels)
-const/maxDisplay=formatPrice(maxLabel, currency, currencyPosition, compactLabels)
+// With a currency caption the labels are bare numbers, and the caption names the currency once.
+const/shownCurrency=(labels?.currencyCaption ? "" : currency)
+const/minDisplay=formatPrice(minLabel, shownCurrency, currencyPosition, compactLabels)
+const/maxDisplay=formatPrice(maxLabel, shownCurrency, currencyPosition, compactLabels)
 // Long labels with the knobs close together are pushed apart so they do not overlap.
 const/spread=labelSpread(minDisplay, maxDisplay, minIdx, maxIdx, lastIdx, buckets.length)
 const/trackStyle=`--min: ${(minIdx / lastIdx) * 100}%; --max: ${(maxIdx / lastIdx) * 100}%`
@@ -145,11 +156,11 @@ div ...attrs class=["price-distribution-graph", className] role="group" aria-lab
               ,value=minIdx
               ,autocomplete="off"
               ,aria-orientation="horizontal"
-              ,aria-valuetext=`${minLabel}`
+              ,aria-valuetext=formatPrice(minLabel, currency, currencyPosition)
               ,aria-label=labels?.minKnobAccessibilityText
               ,valueChange(value) { drag = move(drag, baseKey, "min", Number(value), minIdx, maxIdx, lastIdx, minTouched, maxTouched) }
               ,onChange() { onChange?.({ min: minTouched ? minBoundary : (minValue || minBoundary), max: maxTouched ? (maxBoundary === OPEN_END ? undefined : maxBoundary) : (maxValue || (maxBoundary === OPEN_END ? undefined : maxBoundary)) }) }
-            span.price-distribution-graph__range-value data-testid="price-knob-min-val" style={ left: labelLeft("min", minIdx, maxIdx, lastIdx, buckets.length, spread) }
+            span.price-distribution-graph__range-value data-testid="price-knob-min-val" aria-hidden="true" style={ left: labelLeft("min", minIdx, maxIdx, lastIdx, buckets.length, spread) }
               span -- ${minDisplay}
             input.price-distribution-graph__slider
               ,...labels?.maxKnobHtmlAttributes
@@ -161,11 +172,11 @@ div ...attrs class=["price-distribution-graph", className] role="group" aria-lab
               ,value=maxIdx
               ,autocomplete="off"
               ,aria-orientation="horizontal"
-              ,aria-valuetext=`${maxLabel}`
+              ,aria-valuetext=formatPrice(maxLabel, currency, currencyPosition)
               ,aria-label=labels?.maxKnobAccessibilityText
               ,valueChange(value) { drag = move(drag, baseKey, "max", Number(value), minIdx, maxIdx, lastIdx, minTouched, maxTouched) }
               ,onChange() { onChange?.({ min: minTouched ? minBoundary : (minValue || minBoundary), max: maxTouched ? (maxBoundary === OPEN_END ? undefined : maxBoundary) : (maxValue || (maxBoundary === OPEN_END ? undefined : maxBoundary)) }) }
-            span.price-distribution-graph__range-value data-testid="price-knob-max-val" style={ left: labelLeft("max", minIdx, maxIdx, lastIdx, buckets.length, spread) }
+            span.price-distribution-graph__range-value data-testid="price-knob-max-val" aria-hidden="true" style={ left: labelLeft("max", minIdx, maxIdx, lastIdx, buckets.length, spread) }
               span -- ${maxDisplay}
       else
         div.price-distribution-graph__sliders-readonly
@@ -174,3 +185,5 @@ div ...attrs class=["price-distribution-graph", className] role="group" aria-lab
             span -- ${minDisplay}
           span.price-distribution-graph__range-value data-testid="price-knob-max-val" style={ left: labelLeft("max", minIdx, maxIdx, lastIdx, buckets.length, spread) }
             span -- ${maxDisplay}
+    if=labels?.currencyCaption
+      div.price-distribution-graph__currency -- ${labels.currencyCaption}

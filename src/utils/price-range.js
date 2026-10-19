@@ -211,10 +211,12 @@ export function compactNumber(value) {
 }
 
 /**
- * Formats a price with its currency before or after it. With `compact`, the
- * number is shortened (a trailing "+", as on an open-ended last bucket, is kept).
+ * Formats a price with its currency before or after it, or the bare number when
+ * the currency is empty. With `compact`, the number is shortened (a trailing
+ * "+", as on an open-ended last bucket, is kept).
  */
 export function formatPrice(value, currency, position, compact = false) {
   const text = compact ? (typeof value === "string" && value.endsWith("+") ? `${compactNumber(value.slice(0, -1))}+` : compactNumber(value)) : value;
+  if (!currency) return String(text);
   return position === "before" ? `${currency}${text}` : `${text} ${currency}`;
 }

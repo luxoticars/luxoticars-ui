@@ -58,3 +58,8 @@ const largePrices = {
 export const LargePrices: Story = { args: largePrices };
 
 export const LargePricesCompactLabels: Story = { args: { ...largePrices, compactLabels: true } };
+
+/** The labels are bare numbers and the currency is named once under them; each knob still announces "RM 100000". */
+export const LargePricesCurrencyCaption: Story = {
+  args: { ...largePrices, compactLabels: true, labels: { ...largePrices.labels, currencyCaption: "Amounts in RM" } },
+};

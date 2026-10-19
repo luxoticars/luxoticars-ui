@@ -163,6 +163,10 @@ test("formatPrice: compact shortens the number and keeps an open-end plus", () =
   assert.equal(formatPrice("1500000+", "RM", "before", true), "RM1.5M+");
   assert.equal(formatPrice(100000, "RM", "before"), "RM100000");
   assert.equal(formatPrice(300000, "MYR", "after", true), "300k MYR");
+  // With no currency the label is the bare number, however the currency is positioned.
+  assert.equal(formatPrice(300000, "", "before", true), "300k");
+  assert.equal(formatPrice(300000, "", "after"), "300000");
+  assert.equal(formatPrice("1500000+", "", "before", true), "1.5M+");
 });
 
 test("labelSpread: nothing when the labels fit, a push outward when long labels sit close together, capped", () => {

@@ -76,5 +76,5 @@ export declare function labelLeft(
 export declare function isBarEnabled(bucket: PriceBucket, minValue: number, maxValue: number): boolean;
 /** 100000 as "100k", 1500000 as "1.5M"; below 1,000 it is left alone. */
 export declare function compactNumber(value: string | number): string;
-/** Formats a price with its currency before or after it; `compact` shortens the number. */
+/** Formats a price with its currency before or after it, or the bare number when the currency is empty; `compact` shortens the number. */
 export declare function formatPrice(value: string | number, currency: string, position: CurrencyPosition, compact?: boolean): string;
