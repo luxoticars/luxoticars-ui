@@ -1,5 +1,16 @@
 # @luxoticars/ui
 
+## 0.11.0
+
+### Minor Changes
+
+- 9ed7465: Add a shared listing card: `createListingCard()` (HTML) and `styles/listing-card.css`, with the text rules in `utils/listing-card` (year and make above a shortened title, price, condition · body · mileage, location). The search results and the home page's Just listed row can now show the same card instead of one copy each.
+- 44a6e31: Add `styles/pill.css`: the rounded choice link used for body types on the home page and filter values on the search page. `pill` is 44px tall, `pill--sm` 32px; the current choice is marked with `aria-current` or `pill--selected`.
+
+### Patch Changes
+
+- 35351a2: The Footer's brand links swap Maserati, McLaren and Bugatti (one car listed each) for Toyota, Mercedes-Benz and Land Rover, so they follow what is in stock.
+
 ## 0.10.3
 
 ### Patch Changes
