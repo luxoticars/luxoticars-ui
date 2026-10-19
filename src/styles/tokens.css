@@ -145,3 +145,30 @@
   --lux-error-content: oklch(27% 0.105 12.094);
   --radius-field: 0.5rem;
 }
+
+/* @theme puts the --color-* aliases on :root only, so they resolve there once
+   and a nested [data-theme] element inherits the root's values. Declaring them
+   again on every theme element makes them resolve against that element's own
+   --lux-* values, so a light canvas inside a dark page gets light colours. */
+[data-theme] {
+  --color-base-100: var(--lux-base-100);
+  --color-base-200: var(--lux-base-200);
+  --color-base-300: var(--lux-base-300);
+  --color-base-content: var(--lux-base-content);
+  --color-primary: var(--lux-primary);
+  --color-primary-content: var(--lux-primary-content);
+  --color-secondary: var(--lux-secondary);
+  --color-secondary-content: var(--lux-secondary-content);
+  --color-accent: var(--lux-accent);
+  --color-accent-content: var(--lux-accent-content);
+  --color-neutral: var(--lux-neutral);
+  --color-neutral-content: var(--lux-neutral-content);
+  --color-info: var(--lux-info);
+  --color-info-content: var(--lux-info-content);
+  --color-success: var(--lux-success);
+  --color-success-content: var(--lux-success-content);
+  --color-warning: var(--lux-warning);
+  --color-warning-content: var(--lux-warning-content);
+  --color-error: var(--lux-error);
+  --color-error-content: var(--lux-error-content);
+}
