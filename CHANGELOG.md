@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.10.2
+
+### Patch Changes
+
+- 3b57490: `<text-range>` no longer loses what is being typed in one field when the other field is committed. Typing a minimum, moving to the maximum and typing there used to drop the maximum if the parent updated in between.
+
 ## 0.10.1
 
 ### Patch Changes
