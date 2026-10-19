@@ -8,12 +8,12 @@ export const brandLinks = [
   { label: "Ferrari",      href: "/search?q=Ferrari" },
   { label: "Lamborghini",  href: "/search?q=Lamborghini" },
   { label: "Rolls-Royce",  href: "/search?q=Rolls-Royce" },
-  { label: "Maserati",     href: "/search?q=Maserati" },
-  { label: "McLaren",      href: "/search?q=McLaren" },
+  { label: "Toyota",       href: "/search?q=Toyota" },
+  { label: "Mercedes-Benz", href: "/search?q=Mercedes-Benz" },
   { label: "Porsche",      href: "/search?q=Porsche" },
   { label: "Bentley",      href: "/search?q=Bentley" },
   { label: "Aston Martin", href: "/search?q=Aston+Martin" },
-  { label: "Bugatti",      href: "/search?q=Bugatti" },
+  { label: "Land Rover",   href: "/search?q=Land+Rover" },
   { label: "Lexus",        href: "/search?q=Lexus" },
 ];
 
