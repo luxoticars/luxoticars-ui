@@ -152,8 +152,8 @@ const MAX_SHIFT_LONG = { 1: 3.3, 2: 2.3, 3: 1.8, 4: 1.4 };
 const MAX_SHIFT_END = { 1: 2.5, 2: 2.2, 3: 1.6 };
 const MAX_SHIFT_END_LONG = { 1: 2.8, 2: 2.5, 3: 1.9, 4: 1.5 };
 
-/** The CSS `left` of the min or max value label for the knobs' current indexes. */
-export function labelLeft(type, minIdx, maxIdx, lastIdx, bucketCount) {
+/** Where a value label sits before any spreading: a percentage of the track, plus a px offset. */
+function labelPosition(type, minIdx, maxIdx, lastIdx, bucketCount) {
   const gap = maxIdx - minIdx;
   const long = bucketCount > 16;
   if (type === "min") {
@@ -161,12 +161,40 @@ export function labelLeft(type, minIdx, maxIdx, lastIdx, bucketCount) {
     const table = maxIdx === lastIdx ? (long ? MIN_SHIFT_END_LONG : MIN_SHIFT_END) : long ? MIN_SHIFT_LONG : MIN_SHIFT;
     const shift = table[gap] ?? 1;
     const base = pct * 0.15;
-    return `calc(${pct}% + (${shift < 0 ? shift * base : 8 - base}px))`;
+    return { pct, px: shift < 0 ? shift * base : 8 - base };
   }
   const pct = (maxIdx / lastIdx) * 100;
   const table = maxIdx === lastIdx ? (long ? MAX_SHIFT_END_LONG : MAX_SHIFT_END) : long ? MAX_SHIFT_LONG : MAX_SHIFT;
   const shift = table[gap] ?? 1;
-  return `calc(${pct}% + (${8 * shift - pct * 0.15}px))`;
+  return { pct, px: 8 * shift - pct * 0.15 };
+}
+
+/** The CSS `left` of the min or max value label for the knobs' current indexes; `spread` pushes it further out (see {@link labelSpread}). */
+export function labelLeft(type, minIdx, maxIdx, lastIdx, bucketCount, spread = 0) {
+  const { pct, px } = labelPosition(type, minIdx, maxIdx, lastIdx, bucketCount);
+  return `calc(${pct}% + (${type === "min" ? px - spread : px + spread}px))`;
+}
+
+// Rough width of a value label at the graph's 12px type, the width of the
+// track the labels are placed along, and the least space left between labels.
+const LABEL_CHAR_PX = 7;
+const TRACK_PX = 170;
+const LABEL_GAP_PX = 6;
+const MAX_SPREAD_PX = 24;
+
+/**
+ * How far to push the two value labels apart, each way, in px, when long
+ * labels (six-digit prices) would run into each other after the usual
+ * placement. Zero when they already fit, as with short labels.
+ */
+export function labelSpread(minText, maxText, minIdx, maxIdx, lastIdx, bucketCount) {
+  const centre = (type) => {
+    const { pct, px } = labelPosition(type, minIdx, maxIdx, lastIdx, bucketCount);
+    return (pct / 100) * TRACK_PX + px;
+  };
+  const halves = ((String(minText).length + String(maxText).length) * LABEL_CHAR_PX) / 2;
+  const overlap = halves + LABEL_GAP_PX - (centre("max") - centre("min"));
+  return Math.min(MAX_SPREAD_PX, Math.max(0, overlap / 2));
 }
 
 /** A bar is lit when its bucket overlaps the selected range. */
@@ -174,7 +202,21 @@ export function isBarEnabled(bucket, minValue, maxValue) {
   return minValue < (bucket.max ?? OPEN_END) && maxValue > (bucket.min ?? 0);
 }
 
-/** Formats a price with its currency before or after it. */
-export function formatPrice(value, currency, position) {
-  return position === "before" ? `${currency}${value}` : `${value} ${currency}`;
+/** 100000 as "100k", 1500000 as "1.5M"; below 1,000 it is left alone. */
+export function compactNumber(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n) || Math.abs(n) < 1000) return String(value);
+  const [divisor, suffix] = Math.abs(n) < 1_000_000 ? [1000, "k"] : [1_000_000, "M"];
+  return `${Math.round((n / divisor) * 10) / 10}${suffix}`;
+}
+
+/**
+ * Formats a price with its currency before or after it, or the bare number when
+ * the currency is empty. With `compact`, the number is shortened (a trailing
+ * "+", as on an open-ended last bucket, is kept).
+ */
+export function formatPrice(value, currency, position, compact = false) {
+  const text = compact ? (typeof value === "string" && value.endsWith("+") ? `${compactNumber(value.slice(0, -1))}+` : compactNumber(value)) : value;
+  if (!currency) return String(text);
+  return position === "before" ? `${currency}${text}` : `${text} ${currency}`;
 }

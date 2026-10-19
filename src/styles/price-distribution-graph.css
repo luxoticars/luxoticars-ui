@@ -164,3 +164,10 @@
 .price-distribution-graph__slider--close.price-distribution-graph__slider--max::-moz-range-thumb {
   transform: translateX(var(--slider-thumb-translate-max, 4px));
 }
+
+/* The currency named once, under the value labels, when they are bare numbers. */
+.price-distribution-graph__currency {
+  margin-top: 0.875rem;
+  font-size: 0.6875rem;
+  color: var(--pdg-grey);
+}

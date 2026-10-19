@@ -4,6 +4,7 @@ import {
   OPEN_END,
   calculateBoundaries,
   closestLowerBoundary,
+  compactNumber,
   closestUpperBoundary,
   formatPrice,
   initialKnobs,
@@ -12,6 +13,7 @@ import {
   isHyperlink,
   knobNudge,
   labelLeft,
+  labelSpread,
   parseAmount,
   parseOptionValue,
   restrictKnob,
@@ -142,4 +144,39 @@ test("labelLeft: the labels sit at their knob, shifted apart when the knobs are 
   // Knobs one bucket apart: min shifts left, max shifts right.
   assert.match(labelLeft("min", 0, 1, 15, 15), /^calc\(0% \+ \(-?0px\)\)$|^calc\(0% \+ \(0px\)\)$/);
   assert.equal(labelLeft("max", 0, 1, 15, 15), `calc(${(1 / 15) * 100}% + (${24 - (1 / 15) * 100 * 0.15}px))`);
+});
+
+test("compactNumber: thousands as k, millions as M, one decimal at most, small numbers untouched", () => {
+  assert.equal(compactNumber(999), "999");
+  assert.equal(compactNumber(1000), "1k");
+  assert.equal(compactNumber(100000), "100k");
+  assert.equal(compactNumber(123456), "123.5k");
+  assert.equal(compactNumber(999999), "1000k");
+  assert.equal(compactNumber(1_000_000), "1M");
+  assert.equal(compactNumber(1_500_000), "1.5M");
+  assert.equal(compactNumber("250000"), "250k");
+  assert.equal(compactNumber("abc"), "abc");
+});
+
+test("formatPrice: compact shortens the number and keeps an open-end plus", () => {
+  assert.equal(formatPrice(100000, "RM", "before", true), "RM100k");
+  assert.equal(formatPrice("1500000+", "RM", "before", true), "RM1.5M+");
+  assert.equal(formatPrice(100000, "RM", "before"), "RM100000");
+  assert.equal(formatPrice(300000, "MYR", "after", true), "300k MYR");
+  // With no currency the label is the bare number, however the currency is positioned.
+  assert.equal(formatPrice(300000, "", "before", true), "300k");
+  assert.equal(formatPrice(300000, "", "after"), "300000");
+  assert.equal(formatPrice("1500000+", "", "before", true), "1.5M+");
+});
+
+test("labelSpread: nothing when the labels fit, a push outward when long labels sit close together, capped", () => {
+  // The reference's own case: "$0" and "$25" on adjacent knobs already fit with the usual placement.
+  assert.equal(labelSpread("$0", "$25", 0, 1, 14, 15), 0);
+  assert.equal(labelSpread("$100", "$300", 5, 8, 14, 14), 0);
+  const long = labelSpread("RM100000", "RM300000", 5, 8, 14, 14);
+  assert.ok(long > 5 && long < 24, `spread ${long}`);
+  assert.ok(labelSpread("RM100k", "RM300k", 5, 8, 14, 14) < long);
+  assert.equal(labelSpread("R".repeat(40), "R".repeat(40), 5, 6, 14, 14), 24);
+  assert.notEqual(labelLeft("max", 5, 8, 14, 14, 10), labelLeft("max", 5, 8, 14, 14, 0));
+  assert.equal(labelLeft("min", 5, 8, 14, 14, 0), labelLeft("min", 5, 8, 14, 14));
 });

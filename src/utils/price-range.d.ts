@@ -56,12 +56,25 @@ export declare function restrictKnob(
   lastIdx: number,
 ): number;
 export declare function knobNudge(gap: number, bucketCount: number): { min: number; max: number } | null;
+/** How far to push the two value labels apart, each way, in px, when long labels would run into each other; 0 when they fit. */
+export declare function labelSpread(
+  minText: string | number,
+  maxText: string | number,
+  minIdx: number,
+  maxIdx: number,
+  lastIdx: number,
+  bucketCount: number,
+): number;
 export declare function labelLeft(
   type: "min" | "max",
   minIdx: number,
   maxIdx: number,
   lastIdx: number,
   bucketCount: number,
+  spread?: number,
 ): string;
 export declare function isBarEnabled(bucket: PriceBucket, minValue: number, maxValue: number): boolean;
-export declare function formatPrice(value: string | number, currency: string, position: CurrencyPosition): string;
+/** 100000 as "100k", 1500000 as "1.5M"; below 1,000 it is left alone. */
+export declare function compactNumber(value: string | number): string;
+/** Formats a price with its currency before or after it, or the bare number when the currency is empty; `compact` shortens the number. */
+export declare function formatPrice(value: string | number, currency: string, position: CurrencyPosition, compact?: boolean): string;
