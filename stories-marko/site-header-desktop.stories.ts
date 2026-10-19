@@ -23,6 +23,7 @@ export default {
   title: "Components/site-header-desktop",
   component: SiteHeader,
   tags: ["autodocs"],
+  parameters: { bleed: true },
   argTypes: {
     siteTitle: { control: "text" },
     homeHref: { control: "text" },

@@ -15,6 +15,8 @@ import "./preview.css";
 const withTheme: Decorator = (story, context) => {
   context.canvasElement.dataset.theme = context.globals.theme;
   context.canvasElement.classList.add("lux-canvas");
+  // A page-wide part (a header) is drawn edge to edge, as on a real page.
+  context.canvasElement.classList.toggle("lux-canvas--bleed", context.parameters.bleed === true);
   return story();
 };
 
