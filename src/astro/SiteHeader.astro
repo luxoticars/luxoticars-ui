@@ -6,6 +6,7 @@
 */
 import "../styles/site-header.css";
 import type { FooterLink } from "../types";
+import { resolveSiteHeader } from "../utils/site-header.js";
 import Logo from "./Logo.astro";
 
 export type Props = {
@@ -28,23 +29,17 @@ export type Props = {
 };
 
 const {
-  links = [
-    { label: "Buy", href: "/search" },
-    { label: "Reviews", href: "/a/reviews/" },
-    { label: "About", href: "/a/" },
-  ],
+  links,
   siteTitle = "Luxoticars",
   homeHref = "/",
-  ctaLabel = "Advertise your car",
+  ctaLabel,
   ctaHref = "https://dash.luxoticars.com",
   hideSearchWhileVisible,
 } = Astro.props;
 
 const hasSearch = Astro.slots.has("search");
 const hideSearch = hasSearch ? hideSearchWhileVisible : undefined;
-const [ctaFirst, ...ctaRest] = ctaLabel.trim().split(/\s+/);
-const linkTarget = (link: FooterLink) =>
-  link.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
+const header = resolveSiteHeader({ links, ctaLabel });
 ---
 
 <header
@@ -60,8 +55,8 @@ const linkTarget = (link: FooterLink) =>
     </div>
 
     <nav class="site-header__nav" aria-label="Main">
-      {links.map((link) => (
-        <a href={link.href} class="site-header__link" {...linkTarget(link)}>
+      {header.links.map((link) => (
+        <a href={link.href} class="site-header__link" target={link.target} rel={link.rel}>
           {link.label}
           {link.external && <span class="site-header__external-note"> (opens in a new tab)</span>}
         </a>
@@ -74,11 +69,9 @@ const linkTarget = (link: FooterLink) =>
       </div>
     )}
 
-    {/* The full label as the name: on small phones the rest is display:none.
-        No label, no button: an empty pill would be a link with no name. */}
-    {ctaFirst && (
-      <a href={ctaHref} class="site-header__cta" aria-label={ctaRest.length > 0 ? ctaLabel.trim() : undefined}>
-        {ctaFirst}{ctaRest.length > 0 && <span class="site-header__cta-more"> {ctaRest.join(" ")}</span>}
+    {header.cta && (
+      <a href={ctaHref} class="site-header__cta" aria-label={header.cta.label}>
+        {header.cta.first}{header.cta.rest && <span class="site-header__cta-more">{header.cta.rest}</span>}
       </a>
     )}
 
@@ -89,8 +82,8 @@ const linkTarget = (link: FooterLink) =>
         </svg>
       </summary>
       <nav class="site-header__menu-panel" aria-label="Main">
-        {links.map((link) => (
-        <a href={link.href} class="site-header__menu-link" {...linkTarget(link)}>
+        {header.links.map((link) => (
+        <a href={link.href} class="site-header__menu-link" target={link.target} rel={link.rel}>
           {link.label}
           {link.external && <span class="site-header__external-note"> (opens in a new tab)</span>}
         </a>
@@ -101,6 +94,8 @@ const linkTarget = (link: FooterLink) =>
 </header>
 
 <script>
+  import { closeMenuWhenLinksShow, wireSiteMenu } from "../scripts/site-header-menu.js";
+
   // Runs on first load and again after every ClientRouter page swap; each run
   // drops the previous run's listeners and observers.
   let teardown = new AbortController();
@@ -114,12 +109,9 @@ const linkTarget = (link: FooterLink) =>
       const menu = header.querySelector<HTMLDetailsElement>("[data-site-menu]");
       const nav = header.querySelector(".site-header__nav");
       const search = header.querySelector(".site-header__search");
-      // On tablets the links come back into the bar as the search hides, or
-      // as a phone rotates to landscape; an open menu would list them twice.
-      const closeIfLinksShown = () => {
-        if (menu?.open && nav && getComputedStyle(nav).display !== "none") menu.open = false;
-      };
-      window.addEventListener("resize", closeIfLinksShown, { signal });
+      // Also closes the menu when a resize brings the links back into the bar.
+      if (menu) wireSiteMenu(menu, signal);
+      const closeIfLinksShown = menu ? closeMenuWhenLinksShow(menu, nav, signal) : () => {};
 
       // While the page's own search field is on screen, hide the header's.
       // The header is sticky, so "on screen" means below the header's own
@@ -198,52 +190,6 @@ const linkTarget = (link: FooterLink) =>
           signal.addEventListener("abort", () => late.disconnect());
         }
       }
-
-      // <details> opens and closes itself; this adds tap-outside, Escape,
-      // tabbing out, and closing once a link in the panel is chosen.
-      if (!menu) continue;
-      // Outside on pointerdown: iOS Safari sends no click to the document for
-      // a tap on plain content. Choosing a link still closes on click.
-      document.addEventListener(
-        "pointerdown",
-        (event) => {
-          if (menu.open && !menu.contains(event.target as Node)) menu.open = false;
-        },
-        { signal },
-      );
-      menu.addEventListener(
-        "click",
-        (event) => {
-          if ((event.target as Element).closest("a")) menu.open = false;
-        },
-        { signal },
-      );
-      // Escape while focus is in the menu, or nowhere in particular (Safari
-      // leaves focus on the page when the button is clicked or tapped), so it
-      // never steals an Escape meant for another control on the page.
-      document.addEventListener(
-        "keydown",
-        (event) => {
-          if (event.key !== "Escape" || !menu.open) return;
-          const active = document.activeElement;
-          if (active && active !== document.body && !menu.contains(active)) return;
-          menu.open = false;
-          menu.querySelector("summary")?.focus();
-        },
-        { signal },
-      );
-      // Tabbing out of the menu closes it, so it never sits open over the page.
-      // Only when focus lands somewhere else: Safari drops focus on a plain
-      // click (no relatedTarget), and closing then would swallow a link tap.
-      // Taps and clicks are handled above.
-      menu.addEventListener(
-        "focusout",
-        (event) => {
-          const next = event.relatedTarget as Node | null;
-          if (next && !menu.contains(next)) menu.open = false;
-        },
-        { signal },
-      );
     }
   }
 

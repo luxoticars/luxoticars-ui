@@ -1,0 +1,47 @@
+/*
+  The phone (mWeb) header. Same look and input as `<site-header-desktop>`,
+  and the same `resolveSiteHeader()` and `wireSiteMenu()`, but the links live
+  only in the menu: there is no row of links in the bar, so no resize check
+  to take them back out, and the browser gets less HTML and less script. The
+  menu button shows at every width, so a phone in landscape keeps it.
+
+  The app picks this one per request when the User-Agent is a phone.
+*/
+import "../styles/site-header.css"
+import Logo from "./logo.marko"
+import { resolveSiteHeader } from "../utils/site-header.js"
+import { wireSiteMenu } from "../scripts/site-header-menu.js"
+import type { Input as DesktopInput } from "./site-header-desktop.marko"
+
+export type Input = DesktopInput
+
+const/{ siteTitle = "Luxoticars", homeHref = "/", ctaHref = "https://dash.luxoticars.com" }=input
+const/header=resolveSiteHeader({ links: input.links, ctaLabel: input.ctaLabel })
+
+header class=["site-header", "site-header--mobile", input.search && "site-header--with-search"] data-site-header
+  div.site-header__inner
+    div.site-header__logo
+      Logo siteTitle=siteTitle href=homeHref accent
+
+    if=input.search
+      div.site-header__search
+        ${input.search.content}
+
+    if=header.cta
+      a href=ctaHref class="site-header__cta" aria-label=header.cta.label
+        -- ${header.cta.first}
+        if=header.cta.rest
+          span.site-header__cta-more -- ${header.cta.rest}
+
+    details/menu class="site-header__menu" data-site-menu
+      summary class="site-header__menu-button" aria-label="Menu"
+        svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"
+          path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+      nav class="site-header__menu-panel" aria-label="Main"
+        for|link| of=header.links
+          a href=link.href class="site-header__menu-link" target=link.target rel=link.rel
+            -- ${link.label}
+            if=link.external
+              span.site-header__external-note -- ${" (opens in a new tab)"}
+
+script -- wireSiteMenu(menu() as HTMLDetailsElement, $signal)
