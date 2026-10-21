@@ -23,7 +23,7 @@
    renders correctly in an app that defines none of them. An app that does
    define them (tokens.css, or Tailwind's @theme) overrides the fallback. */
 .footer {
-  --_accent: var(--color-marque-accent, var(--lux-marque-accent, oklch(74% 0.16 232.661)));
+  --_accent: var(--color-marque-accent, var(--lux-marque-accent, oklch(86% 0.127 207.078)));
   --_bg: var(--footer-bg, oklch(0.145 0 0));
   --_fg: var(--footer-fg, oklch(0.87 0 0));
   --_muted: var(--footer-muted, oklch(0.708 0 0));
