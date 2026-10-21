@@ -7,12 +7,13 @@ import { readFileSync } from "node:fs";
    shows a different blue in one component. */
 
 const read = (name) => readFileSync(new URL(`../src/styles/${name}`, import.meta.url), "utf8");
-const token = read("tokens.css").match(/--lux-marque-accent:\s*([^;]+);/)[1];
+const token = read("tokens.css").match(/--lux-marque-accent:\s*([^;]+);/)?.[1];
 
 for (const name of ["logo.css", "footer.css", "site-header.css"]) {
   test(`marque accent: ${name} falls back to the tokens.css value`, () => {
+    assert.ok(token, "tokens.css should define --lux-marque-accent");
     assert.ok(
-      read(name).includes(`var(--color-marque-accent, var(--lux-marque-accent, ${token}))`),
+      read(name).replace(/\s+/g, " ").includes(`var(--color-marque-accent, var(--lux-marque-accent, ${token}))`),
       `${name} should read the marque accent chain ending in ${token}`,
     );
   });

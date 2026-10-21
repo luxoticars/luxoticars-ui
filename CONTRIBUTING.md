@@ -154,6 +154,9 @@ custom properties with literal fallbacks:
 }
 ```
 
+That order suits a token that is the same in every theme. For one that changes
+between themes, read the `--lux-*` name first; `dialog.css` explains why.
+
 A component with an HTML twin puts those rules in `src/styles/<name>.css`
 instead, and the `.astro` file pulls them in:
 
