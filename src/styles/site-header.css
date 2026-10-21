@@ -12,10 +12,10 @@
   --_fg: var(--color-neutral-content, var(--lux-neutral-content, oklch(96% 0.003 264.542)));
   --_muted: var(--site-header-muted, var(--lux-neutral-muted, oklch(78% 0.012 264.5)));
   --_line: var(--site-header-line, var(--lux-neutral-line, oklch(100% 0 0 / 0.14)));
-  /* No --lux-* step: tokens.css's light accent is a dark blue meant for text
-     on light canvases, and this one sits on the dark bar. Same literal as
-     logo.css, whose accent line it matches. */
-  --_accent: var(--color-marque-accent, oklch(0.74 0.16 232.661));
+  /* --lux-marque-accent, not --lux-accent: tokens.css's light accent is a
+     dark blue meant for text on light canvases, and this one sits on the
+     dark bar. Same chain as logo.css, whose accent line it matches. */
+  --_accent: var(--color-marque-accent, var(--lux-marque-accent, oklch(74% 0.16 232.661)));
   --_primary: var(--color-primary, var(--lux-primary, oklch(86% 0.127 207.078)));
   --_primary-content: var(--color-primary-content, var(--lux-primary-content, oklch(25% 0.09 281.288)));
 
