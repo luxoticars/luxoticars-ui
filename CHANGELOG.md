@@ -1,5 +1,28 @@
 # @luxoticars/ui
 
+## 0.12.0
+
+### Minor Changes
+
+- a453585: Add `<site-header-desktop>`, `<site-header-mobile>` and `<logo>`, the Marko twins of the Astro `SiteHeader` and `Logo`: same styles, with the header's search field passed as `@search`. The app picks the header per request: the phone one keeps the links in its menu only, so it ships less HTML and script. All of them take their links, new-tab attributes and button label from `resolveSiteHeader()`, and wire the menu with `wireSiteMenu()`, so they cannot drift. The Astro header's output is unchanged.
+- 1207227: Add the Malaysian state flags shown beside a listing's location, as `@luxoticars/ui/flags/states/<slug>.svg`, and `stateFlagSlug()` from `@luxoticars/ui/utils/state-flag`, which maps a listing's `location_state` to its flag. The same 15 flags luxoticars-vi and luxoticars-srp each keep their own copy of.
+
+### Patch Changes
+
+- 960c16d: Move the logo's © mark back to the bottom right of the wordmark, where luxoticars.com shows it. The mark is a `<sub>` again in `Logo.astro` and `createLogo`.
+- a3ab75d: Keep the site header's wordmark, button and menu button on one row at every phone width. Below about 400px the gaps, the wordmark and the button shrink with the bar instead of the button and the menu button dropping to a row of their own.
+
+## 0.11.0
+
+### Minor Changes
+
+- 9ed7465: Add a shared listing card: `createListingCard()` (HTML) and `styles/listing-card.css`, with the text rules in `utils/listing-card` (year and make above a shortened title, price, condition · body · mileage, location). The search results and the home page's Just listed row can now show the same card instead of one copy each.
+- 44a6e31: Add `styles/pill.css`: the rounded choice link used for body types on the home page and filter values on the search page. `pill` is 44px tall, `pill--sm` 32px; the current choice is marked with `aria-current` or `pill--selected`.
+
+### Patch Changes
+
+- 35351a2: The Footer's brand links swap Maserati, McLaren and Bugatti (one car listed each) for Toyota, Mercedes-Benz and Land Rover, so they follow what is in stock.
+
 ## 0.10.3
 
 ### Patch Changes

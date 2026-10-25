@@ -175,6 +175,10 @@ site's own sections line up with both by using the same two values. Neither is a
 daisyUI token, so components read them with a fallback (`var(--page-max, 80rem)`)
 and still render in the dash.
 
+`--lux-marque-accent` (also `--color-marque-accent`) is the brand cyan used by the
+logo, header and footer. It is not a daisyUI token and does not change between
+themes; each component keeps a literal fallback, which a test holds equal to it.
+
 ## Storybook
 
 Storybook is where components are reviewed and where their documentation lives.

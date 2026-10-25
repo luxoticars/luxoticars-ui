@@ -4,5 +4,7 @@ export { createFooter } from "./footer.js";
 export type { FooterOptions } from "./footer.js";
 export { createLogo } from "./logo.js";
 export type { LogoOptions } from "./logo.js";
+export { createListingCard } from "./listing-card.js";
+export type { ListingCardOptions, ListingCardFields } from "./listing-card.js";
 export { createDialog, createDialogTrigger } from "./dialog.js";
 export type { DialogOptions, DialogTriggerOptions } from "./dialog.js";

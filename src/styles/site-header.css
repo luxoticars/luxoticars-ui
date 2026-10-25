@@ -12,16 +12,18 @@
   --_fg: var(--color-neutral-content, var(--lux-neutral-content, oklch(96% 0.003 264.542)));
   --_muted: var(--site-header-muted, var(--lux-neutral-muted, oklch(78% 0.012 264.5)));
   --_line: var(--site-header-line, var(--lux-neutral-line, oklch(100% 0 0 / 0.14)));
-  /* No --lux-* step: tokens.css's light accent is a dark blue meant for text
-     on light canvases, and this one sits on the dark bar. Same literal as
-     logo.css, whose accent line it matches. */
-  --_accent: var(--color-marque-accent, oklch(0.74 0.16 232.661));
+  /* --lux-marque-accent, not --lux-accent: tokens.css's light accent is a
+     dark blue meant for text on light canvases, and this one sits on the
+     dark bar. Same chain as logo.css, whose accent line it matches. */
+  --_accent: var(--color-marque-accent, var(--lux-marque-accent, oklch(86% 0.127 207.078)));
   --_primary: var(--color-primary, var(--lux-primary, oklch(86% 0.127 207.078)));
   --_primary-content: var(--color-primary-content, var(--lux-primary-content, oklch(25% 0.09 281.288)));
 
   position: sticky;
   top: 0;
   z-index: 60;
+  /* The phone sizes below scale with the bar's width (cqi), not the screen's. */
+  container-type: inline-size;
   background-color: var(--_bg);
   border-bottom: 1px solid var(--_line);
   color: var(--_fg);
@@ -171,6 +173,11 @@
   display: none;
 }
 
+/* The phone header has no links in its bar, only the menu, at every width. */
+.site-header--mobile .site-header__menu {
+  display: block;
+}
+
 /* Without a call-to-action nothing else pushes the menu button right. */
 .site-header__inner:not(:has(.site-header__cta)) .site-header__menu {
   margin-left: auto;
@@ -255,9 +262,21 @@
 }
 
 @media (max-width: 47.5rem) {
-  /* Logo, button and the menu button share one row down to 320px. */
+  /* Logo, button and the menu button share one row at every phone width:
+     below about 400px the gaps, the wordmark and the button shrink with the
+     bar, down to a 250px screen, instead of the button
+     and the menu button dropping to a row of their own. */
   .site-header__inner {
-    column-gap: 0.75rem;
+    column-gap: clamp(0.25rem, 2cqi, 0.75rem);
+  }
+
+  .site-header .site-header__logo .logo__wordmark {
+    font-size: clamp(0.75rem, 5cqi, 1.25rem);
+  }
+
+  .site-header__cta {
+    padding-inline: clamp(0.5rem, 4cqi, 1.4rem);
+    font-size: clamp(0.625rem, 3.2cqi, 0.75rem);
   }
 
   .site-header__nav {
@@ -306,17 +325,6 @@
 @media (max-width: 30rem) {
   .site-header__cta-more {
     display: none;
-  }
-}
-
-@media (max-width: 21.25rem) {
-  .site-header__inner {
-    column-gap: 0.5rem;
-  }
-
-  .site-header__cta {
-    padding-inline: 0.75rem;
-    letter-spacing: 0.04em;
   }
 }
 

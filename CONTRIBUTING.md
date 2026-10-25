@@ -150,9 +150,12 @@ custom properties with literal fallbacks:
 
 ```css
 .thing {
-  --_accent: var(--color-marque-accent, oklch(0.74 0.16 232.661));
+  --_accent: var(--color-marque-accent, var(--lux-marque-accent, oklch(86% 0.127 207.078)));
 }
 ```
+
+That order suits a token that is the same in every theme. For one that changes
+between themes, read the `--lux-*` name first; `dialog.css` explains why.
 
 A component with an HTML twin puts those rules in `src/styles/<name>.css`
 instead, and the `.astro` file pulls them in:

@@ -12,3 +12,7 @@
   color: var(--lux-base-content);
   padding: 2rem;
 }
+
+.lux-canvas--bleed {
+  padding: 0;
+}
