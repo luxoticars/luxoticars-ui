@@ -8,4 +8,6 @@
 */
 @import "tailwindcss";
 @import "../src/styles/tokens.css";
+/* The brand typeface. Consumers import this themselves; the package does not ship it. */
+@import "@luxoticars/fonts/fonts.css";
 @source "../src";
