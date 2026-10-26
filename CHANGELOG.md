@@ -1,5 +1,12 @@
 # @luxoticars/ui
 
+## 0.13.0
+
+### Minor Changes
+
+- e6f43dd: The marque accent is now the brand cyan (`oklch(86% 0.127 207.078)`, the same as `--lux-primary`) instead of blue. The logo's accent line and the header and footer accents change colour.
+- a220673: Tokens: new `--lux-marque-accent`, the logo's accent blue, mapped to `--color-marque-accent` in `@theme`. The logo, header and footer read it from there, so changing it in `tokens.css` changes all three. An app that sets `--color-marque-accent` itself (luxoticars-homepage does) keeps its own value. The colour itself is unchanged.
+
 ## 0.12.0
 
 ### Minor Changes
