@@ -25,6 +25,9 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
+      - name: Use HTTPS for GitHub dependencies
+        run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/
+
       - run: npm ci
 
       - run: npx changeset status --since=origin/${{ github.base_ref }}
