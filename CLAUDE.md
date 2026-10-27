@@ -95,6 +95,7 @@ Marko tags are being moved one at a time into this layout, which follows the Mar
 - **Logic stays shared** (`src/utils/*.js` resolvers); only the styles fork. A tag that transforms data has a `helper.ts` with a pure `buildModel`.
 - **Grouping folders** (one level, e.g. `src/marko/site-header/lx-site-header-desktop/`) only group: never give one an `index.marko`, which would turn it into a tag. `npm test` checks this.
 - **Large adaptive components** (header, footer): `index.marko` takes the chosen `entry` and builds the model once; `base.marko` + `base.css` hold the common part; `desktop|tablet|mobile.entry.marko` each import only their own CSS. The consuming app picks the entry per request; this package does not classify devices.
+- **Register each tag in `marko.json`** (`"<lx-logo>": { "template": "./src/marko/lx-logo/index.marko" }`): `exports` serves apps that install the package, but Marko does not look in it for the package's own files, so other tags here (the headers) use `<lx-logo>` with no import only through this entry. `npm test` fails if a tag folder is missing from it.
 - **Exports:** `./marko/lx-*` maps to `src/marko/lx-*/index.marko`. Keep the `./src/marko/*.marko` export too: Marko's compiler imports installed tags through it.
 
 ## After the PR is open

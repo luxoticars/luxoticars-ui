@@ -61,4 +61,4 @@ const/model=buildModel(input)
 `);
   write("stories.ts", stories(name));
 }
-console.log(`Created src/marko/${target}/. Next: fill it in, then \`npm test\`.`);
+console.log(`Created src/marko/${target}/. Next: add "<${name}>": { "template": "./src/marko/${target}/index.marko" } to marko.json, fill the files in, then \`npm test\`.`);

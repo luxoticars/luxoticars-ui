@@ -8,7 +8,6 @@
   The app picks this one per request when the User-Agent is a phone.
 */
 import "../styles/site-header.css"
-import Logo from "./lx-logo/index.marko"
 import { resolveSiteHeader } from "../utils/site-header.js"
 import { wireSiteMenu } from "../scripts/site-header-menu.js"
 import type { Input as DesktopInput } from "./site-header-desktop.marko"
@@ -21,7 +20,7 @@ const/header=resolveSiteHeader({ links: input.links, ctaLabel: input.ctaLabel })
 header class=["site-header", "site-header--mobile", input.search && "site-header--with-search"] data-site-header
   div.site-header__inner
     div.site-header__logo
-      Logo siteTitle=siteTitle href=homeHref accent
+      lx-logo siteTitle=siteTitle href=homeHref accent
 
     if=input.search
       div.site-header__search
