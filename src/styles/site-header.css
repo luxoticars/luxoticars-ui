@@ -51,7 +51,9 @@
   display: flex;
 }
 
-.site-header__logo .logo:focus-visible {
+/* `.lx-logo` is the Marko logo (marko/lx-logo). Drop it with the header fork. */
+.site-header__logo .logo:focus-visible,
+.site-header__logo .lx-logo:focus-visible {
   outline: 2px solid var(--_accent);
   outline-offset: 4px;
   border-radius: 2px;
@@ -270,7 +272,8 @@
     column-gap: clamp(0.25rem, 2cqi, 0.75rem);
   }
 
-  .site-header .site-header__logo .logo__wordmark {
+  .site-header .site-header__logo .logo__wordmark,
+  .site-header .site-header__logo .lx-logo__wordmark {
     font-size: clamp(0.75rem, 5cqi, 1.25rem);
   }
 

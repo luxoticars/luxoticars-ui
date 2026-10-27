@@ -1,7 +1,7 @@
 /*
   The desktop (dWeb) header: the Marko twin of `astro/SiteHeader.astro`, with
   the same markup, styled by the same `styles/site-header.css` and
-  `styles/logo.css`. What varies with the input (links, new-tab attributes,
+  `lx-logo/style.css`. What varies with the input (links, new-tab attributes,
   the call-to-action split) comes from `resolveSiteHeader()`, and the menu is
   wired by `wireSiteMenu()`; the Astro component uses both too, so the
   renderers cannot drift. A narrow desktop window still gets the menu button,
@@ -14,7 +14,7 @@
   search while the page shows its own. No Marko page needs it yet.
 */
 import "../styles/site-header.css"
-import Logo from "./logo.marko"
+import Logo from "./lx-logo/index.marko"
 import { resolveSiteHeader } from "../utils/site-header.js"
 import { closeMenuWhenLinksShow, wireSiteMenu } from "../scripts/site-header-menu.js"
 import type { FooterLink } from "../types"

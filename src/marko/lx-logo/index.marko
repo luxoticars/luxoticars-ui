@@ -1,8 +1,8 @@
 /*
   The Marko twin of `astro/Logo.astro` and `html/logo.js`: the same markup,
-  styled by the same `styles/logo.css`.
+  styled by its own `style.css`, found next to this file by Marko. That file is
+  forked from `styles/logo.css`; `npm test` fails when the source moves on.
 */
-import "../styles/logo.css"
 
 export interface Input {
   /** Wordmark text. @default "Luxoticars" */
@@ -16,7 +16,7 @@ export interface Input {
 }
 
 // Home link, not a heading: an h1 here gives every page a second level-1 heading.
-a href=(input.href ?? "/") class=["logo", input.variant === "black" && "logo--black", input.accent && "logo--accent"]
-  span.logo__wordmark
+a href=(input.href ?? "/") class=["lx-logo", input.variant === "black" && "lx-logo--black", input.accent && "lx-logo--accent"]
+  span.lx-logo__wordmark
     -- ${input.siteTitle ?? "Luxoticars"}
-    sub.logo__mark -- ©
+    sub.lx-logo__mark -- ©
