@@ -44,7 +44,7 @@ if (!adaptive) {
   write("base.css", `${stamp}\n.${name} {\n}\n`);
   for (const v of ["desktop", "tablet", "mobile"]) {
     write(`${v}.entry.marko`, `import Base from "./base.marko"\nimport type { Model } from "./helper"\nimport "./${v}.css"\n\nexport interface Input {\n  model: Model\n}\n\nBase model=input.model variant="${v}"\n`);
-    write(`${v}.css`, `.${name}--${v} {\n}\n`);
+    write(`${v}.css`, `/* Forked from none [source-hash: none] */\n.${name}--${v} {\n}\n`);
   }
   // Entries are imported by path; only index.marko is discovered as a tag.
   write("index.marko", `import { buildModel } from "./helper"

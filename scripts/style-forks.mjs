@@ -22,9 +22,9 @@ const classes = (css) =>
   new Set([...css.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/\.([a-z][\w-]*)/g)].map((m) => m[1]));
 
 /**
- * The stylesheets of every tag under src/marko, one grouping level deep. A
- * tag's `style.css` (simple tags) and `base.css` (adaptive ones) must be
- * stamped; a variant sheet such as `desktop.css` is checked only if it has one.
+ * Every stylesheet of every tag under src/marko, one grouping level deep. Each
+ * must carry a stamp; one with no shared source says `Forked from none
+ * [source-hash: none]`, so a missing stamp is always an error.
  */
 export function findForkFiles(marko = join(root, "src/marko")) {
   const out = [];
@@ -32,10 +32,7 @@ export function findForkFiles(marko = join(root, "src/marko")) {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       if (!entry.isDirectory() || entry.name.startsWith(".") || entry.name === "tags") continue;
       const path = join(dir, entry.name);
-      for (const css of readdirSync(path).filter((f) => f.endsWith(".css"))) {
-        const file = join(path, css);
-        if (css === "style.css" || css === "base.css" || STAMP.test(readFileSync(file, "utf8"))) out.push(file);
-      }
+      for (const css of readdirSync(path).filter((f) => f.endsWith(".css"))) out.push(join(path, css));
       if (depth < 1) visit(path, depth + 1);
     }
   };
@@ -55,7 +52,7 @@ export function checkForks(files = findForkFiles()) {
       continue;
     }
     const [, source, hash] = stamp;
-    if (hash === "none") continue;
+    if (hash === "none" || source === "none") continue;
     if (!existsSync(join(root, source))) {
       problems.push(`${rel}: source ${source} no longer exists.`);
       continue;
