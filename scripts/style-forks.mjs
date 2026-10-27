@@ -21,14 +21,21 @@ export function hashSource(css) {
 const classes = (css) =>
   new Set([...css.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/\.([a-z][\w-]*)/g)].map((m) => m[1]));
 
-/** Every `style.css` under src/marko, one grouping level deep. */
+/**
+ * The stylesheets of every tag under src/marko, one grouping level deep. A
+ * tag's `style.css` (simple tags) and `base.css` (adaptive ones) must be
+ * stamped; a variant sheet such as `desktop.css` is checked only if it has one.
+ */
 export function findForkFiles(marko = join(root, "src/marko")) {
   const out = [];
   const visit = (dir, depth) => {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       if (!entry.isDirectory() || entry.name.startsWith(".") || entry.name === "tags") continue;
       const path = join(dir, entry.name);
-      if (existsSync(join(path, "style.css"))) out.push(join(path, "style.css"));
+      for (const css of readdirSync(path).filter((f) => f.endsWith(".css"))) {
+        const file = join(path, css);
+        if (css === "style.css" || css === "base.css" || STAMP.test(readFileSync(file, "utf8"))) out.push(file);
+      }
       if (depth < 1) visit(path, depth + 1);
     }
   };
@@ -55,7 +62,7 @@ export function checkForks(files = findForkFiles()) {
     }
     const sourceCss = readFileSync(join(root, source), "utf8");
     if (hashSource(sourceCss) === hash) continue;
-    const prefix = /(^|\/)(lx-[\w-]+)\/style\.css$/.exec(rel)?.[2];
+    const prefix = /(^|\/)(lx-[\w-]+)\/[\w.-]+\.css$/.exec(rel)?.[2];
     const own = classes(css);
     const theirs = classes(sourceCss);
     const bem = (name) => (prefix && name === prefix.slice(3) ? prefix : name.replace(/^([\w]+)(?=__|--|$)/, (b) => (b === prefix?.slice(3) ? prefix : b)));
@@ -85,14 +92,17 @@ export function checkGroupFolders(marko = join(root, "src/marko")) {
 }
 
 function stamp(tag) {
-  const file = findForkFiles().find((f) => f.endsWith(`/${tag}/style.css`));
-  if (!file) throw new Error(`No ${tag}/style.css under src/marko`);
+  const files = findForkFiles().filter((f) => f.includes(`/${tag}/`) && STAMP.test(readFileSync(f, "utf8")));
+  if (!files.length) throw new Error(`No stamped stylesheet in ${tag} under src/marko`);
+  for (const file of files) restamp(tag, file);
+}
+
+function restamp(tag, file) {
   const css = readFileSync(file, "utf8");
   const match = css.match(STAMP);
-  if (!match) throw new Error(`${tag}/style.css has no stamp to update`);
   const hash = hashSource(readFileSync(join(root, match[1]), "utf8"));
   writeFileSync(file, css.replace(STAMP, `Forked from ${match[1]} [source-hash: ${hash}]`));
-  console.log(`${tag}: stamped ${match[1]} @ ${hash}`);
+  console.log(`${tag}: stamped ${file.slice(root.length)} ${match[1]} @ ${hash}`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

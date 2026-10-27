@@ -1,7 +1,8 @@
 /*
   The desktop (dWeb) header: the Marko twin of `astro/SiteHeader.astro`, with
-  the same markup, styled by the same `styles/site-header.css` and
-  `lx-logo/style.css`. What varies with the input (links, new-tab attributes,
+  the same markup, styled by the shared `styles/site-header.css`. The logo
+  is the exception: `lx-logo` brings its own forked `style.css`, while the
+  Astro header keeps `styles/logo.css`. What varies with the input (links, new-tab attributes,
   the call-to-action split) comes from `resolveSiteHeader()`, and the menu is
   wired by `wireSiteMenu()`; the Astro component uses both too, so the
   renderers cannot drift. A narrow desktop window still gets the menu button,
