@@ -29,6 +29,7 @@
    ```bash
    npm ci
    npm test                         # the node:test unit tests; must pass
+   npm run test:stories             # every story as a Vitest browser test (npx playwright install chromium once); must pass
    npm i --no-save @astrojs/check @marko/type-check @emnapi/runtime@1.11.3   # NOT dependencies — install transiently, together, never commit; @emnapi/runtime is pruned otherwise and astro check silently checks nothing
    npx astro check                  # must be 0 errors; the Astro type gate
    npx mtc -p tsconfig.marko.json        # the Marko type gate; must be 0 errors
@@ -81,7 +82,7 @@ Read its progress with `get_session` → `post_turn_summary`; that is the only c
 - **PR body attribution:** the 🤖 Generated with Claude Code lines + session URL, per the session's system reminder.
 - **No PR template** exists in the repo — write the body as a normal structured description.
 - **CI reality:** the fork has **no working Actions** — `.github/workflows/storybook.yml` has never triggered once in the fork's history, so do not wait on fork CI or treat its absence as a failure. Upstream runs a Copilot review (`copilot-pull-request-reviewer`) that posts an approval/finding summary.
-- **Stories:** Astro stories live in `stories/`, never beside components. Marko tags in the `lx-` layout keep `stories.ts` beside `index.marko`; `package.json#files` has `!**/{,*.}stories.*`, so they are not shipped. Tags not yet migrated still use `stories-marko/`.
+- **Stories:** Astro stories live in `stories/`, never beside components. Marko tags in the `lx-` layout keep `stories.ts` beside `index.marko`; `package.json#files` has `!**/{,*.}stories.*`, so they are not shipped. `stories-marko/` now holds only the data the price stories share (`price-filter-data.ts`).
 - **Marko tags use concise syntax** and the Marko 6 Tags API only (no `$` scriptlets, `style { }`, `class { }`).
 - **JS + hand-written `.d.ts`** is the typing convention (see `utils/cn`, `data/footer`); every public subpath in `package.json#exports` needs a `types` entry.
 

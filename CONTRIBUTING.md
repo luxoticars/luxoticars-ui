@@ -38,6 +38,24 @@ setup without it: your own fork can host its own Storybook preview.
 
 Keep your fork current with `git fetch upstream && git rebase upstream/main`.
 
+## Component tests
+
+Every story in both Storybooks is also a test (`@storybook/addon-vitest`): it
+renders in headless Chromium, a story's `play` function runs, and an error or a
+failed assertion fails the test. The Astro and Marko Storybooks are one Vitest
+project each (`vitest.astro.config.ts`, `vitest.marko.config.ts`).
+
+```bash
+npx playwright install chromium   # once
+npm run test:stories              # every story, both Storybooks
+npx vitest run --project=storybook-marko    # one Storybook
+```
+
+Add `tags: ["!test"]` to a story, or to its meta, to leave it out; the
+SiteHeader stories are, because the Vitest browser runner cannot run the
+header's TypeScript `<script>`. The addon also adds a test panel to each
+Storybook (`npm run storybook`, `npm run storybook:marko`).
+
 ## Running Storybook
 
 Storybook is how components are reviewed. Start it with:
