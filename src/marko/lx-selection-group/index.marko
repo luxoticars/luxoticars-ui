@@ -4,11 +4,9 @@
   parent to apply. An option with an absolute http(s) `url` renders as a link
   instead, with the box drawn but not interactive.
 
-  Concise syntax, by repo convention. The stylesheet is imported rather than
-  sitting beside the tag as style.css, as lx-program-badge does.
+  Concise syntax, by repo convention. Its stylesheet is `style.css`, found by Marko.
 */
-import "../styles/selection-group.css"
-import { isHyperlink } from "../utils/price-range.js"
+import { isHyperlink } from "../../utils/price-range.js"
 
 export interface Option {
   /** Reported on selection. Also the input's `value`. */
@@ -58,37 +56,37 @@ id/groupName
 define/OptionText|input: { option: Option }|
   -- ${input.option.label}
   if=input.option.count
-    span.selection-group__count aria-hidden="true" -- ${input.option.count}
-    span.selection-group__clipped -- ${input.option.countAccessibilityText}
+    span.lx-selection-group__count aria-hidden="true" -- ${input.option.count}
+    span.lx-selection-group__clipped -- ${input.option.countAccessibilityText}
   if=input.option.accessoryLabel
-    p.selection-group__accessory -- ${input.option.accessoryLabel}
+    p.lx-selection-group__accessory -- ${input.option.accessoryLabel}
   if=input.option.accessibilityText
-    span.selection-group__clipped -- ${input.option.accessibilityText}
+    span.lx-selection-group__clipped -- ${input.option.accessibilityText}
 
-div ...attrs class=["selection-group", className]
-  fieldset.selection-group__fieldset
+div ...attrs class=["lx-selection-group", className]
+  fieldset.lx-selection-group__fieldset
     if=fieldsetLabel
-      legend.selection-group__clipped -- ${fieldsetLabel}
+      legend.lx-selection-group__clipped -- ${fieldsetLabel}
     for|option| of=options by="value"
       id/optionId
       const/linked=isHyperlink(option.url)
-      div.selection-group__field
+      div.lx-selection-group__field
         if=linked
           const/Link=(option.disabled ? "span" : "a")
           ${Link}
             ,...option.htmlAttributes
-            ,class=["selection-group__link", { "selection-group__link--disabled": option.disabled }]
+            ,class=["lx-selection-group__link", { "lx-selection-group__link--disabled": option.disabled }]
             ,href=(!option.disabled && option.url)
             ,aria-current=(option.selected && !option.disabled ? "true" : undefined)
-            span.selection-group__control class=`selection-group__control--${type}`
-              span.selection-group__mark class={ "selection-group__mark--checked": option.selected } aria-hidden="true"
+            span.lx-selection-group__control class=`lx-selection-group__control--${type}`
+              span.lx-selection-group__mark class={ "lx-selection-group__mark--checked": option.selected } aria-hidden="true"
                 svg viewBox="0 0 24 24" fill="currentColor"
                   path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"
-            span.selection-group__label
+            span.lx-selection-group__label
               OptionText option=option
         else
-          span.selection-group__control class=`selection-group__control--${type}`
-            input.selection-group__input
+          span.lx-selection-group__control class=`lx-selection-group__control--${type}`
+            input.lx-selection-group__input
               ,...option.htmlAttributes
               ,id=optionId
               ,type=type
@@ -97,8 +95,8 @@ div ...attrs class=["selection-group", className]
               ,disabled=option.disabled
               ,checked=option.selected
               ,checkedChange(checked) { onSelect?.({ value: option.value, url: option.url, selected: type === "radio" ? true : checked }) }
-            span.selection-group__mark aria-hidden="true"
+            span.lx-selection-group__mark aria-hidden="true"
               svg viewBox="0 0 24 24" fill="currentColor"
                 path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"
-          label.selection-group__label for=optionId class={ "selection-group__label--disabled": option.disabled }
+          label.lx-selection-group__label for=optionId class={ "lx-selection-group__label--disabled": option.disabled }
             OptionText option=option
