@@ -5,9 +5,9 @@ import { resolveSiteHeader, SITE_HEADER_LINKS } from "../src/utils/site-header.j
 /* The resolver decides what both site headers print (astro/SiteHeader.astro
    and the two Marko headers in marko/), so they cannot disagree. */
 
-test("defaults: Buy, Reviews, About and the Advertise button", () => {
+test("defaults: Buy, Services, Reviews, About and the Advertise button", () => {
   const header = resolveSiteHeader();
-  assert.deepEqual(header.links.map((l) => l.label), ["Buy", "Reviews", "About"]);
+  assert.deepEqual(header.links.map((l) => l.label), ["Buy", "Services", "Reviews", "About"]);
   assert.deepEqual(header.cta, { first: "Advertise", rest: " your car", label: "Advertise your car" });
   assert.ok(Object.isFrozen(SITE_HEADER_LINKS));
 });

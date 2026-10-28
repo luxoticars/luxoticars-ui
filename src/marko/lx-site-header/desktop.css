@@ -1,0 +1,130 @@
+/*
+  Forked from src/styles/site-header.css [source-hash: bc5f17f3983c]
+  The desktop bar: links in the bar, and the menu button where they do not
+  fit. Its media queries stay: a narrow desktop window still gets the menu.
+  Block is `lx-site-header`; needs styles/tokens.css.
+*/
+.lx-site-header--desktop .lx-site-header__nav {
+  display: flex;
+  gap: 1.5rem;
+  margin-right: auto;
+}
+
+.lx-site-header--desktop .lx-site-header__link {
+  position: relative;
+  padding-block: 0.25rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--_muted);
+  border-radius: 2px;
+  transition: color 150ms ease-out;
+}
+
+/* The same accent line as under the wordmark, drawn in from the left. */
+.lx-site-header--desktop .lx-site-header__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.125rem;
+  height: 2px;
+  background-color: var(--_accent);
+  scale: 0 1;
+  transform-origin: left;
+  transition: scale 300ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.lx-site-header--desktop .lx-site-header__link:hover {
+  color: var(--_fg);
+}
+
+.lx-site-header--desktop .lx-site-header__link:hover::after {
+  scale: 1 1;
+}
+
+.lx-site-header--desktop .lx-site-header__link:focus-visible {
+  outline: 2px solid var(--_primary);
+  outline-offset: 3px;
+}
+
+/* The menu button shows wherever the menu links do not fit: tablets, when the
+   search has taken the links' place, and narrow windows. */
+.lx-site-header--desktop .lx-site-header__menu {
+  display: none;
+}
+
+/* Below this width the menu and the search do not fit one row, so the search
+   takes the menu's place. Without a search the menu always shows. */
+@media (max-width: 74.99rem) {
+  .lx-site-header--desktop.lx-site-header--with-search .lx-site-header__nav {
+    display: none;
+  }
+
+  /* With the menu links hidden, the menu button takes their place. An open
+     menu stays, so scrolling never pulls it out from under the visitor. */
+  .lx-site-header--desktop.lx-site-header--with-search .lx-site-header__menu {
+    display: block;
+  }
+}
+
+/* Below 52rem the four links and the button no longer fit beside the wordmark. */
+@media (max-width: 52rem) {
+  /* Logo, button and the menu button share one row at every narrow width:
+     the gaps, the wordmark and the button shrink with the bar, down to a
+     250px screen, instead of dropping to a row of their own. */
+  .lx-site-header--desktop .lx-site-header__inner {
+    column-gap: clamp(0.25rem, 2cqi, 0.75rem);
+  }
+
+  .lx-site-header--desktop .lx-site-header__logo .lx-logo__wordmark {
+    font-size: clamp(0.75rem, 5cqi, 1.25rem);
+  }
+
+  .lx-site-header--desktop .lx-site-header__cta {
+    padding-inline: clamp(0.5rem, 4cqi, 1.4rem);
+    font-size: clamp(0.625rem, 3.2cqi, 0.75rem);
+  }
+
+  .lx-site-header--desktop .lx-site-header__nav {
+    display: none;
+  }
+
+  .lx-site-header--desktop .lx-site-header__menu {
+    display: block;
+  }
+}
+
+/* Up to iPad portrait the search does not fit beside the wordmark, button and
+   menu button, so it gets a row of its own, as a second row of the bar. */
+@media (max-width: 52rem) {
+  .lx-site-header--desktop .lx-site-header__search {
+    position: static;
+    order: 1;
+    flex-basis: 100%;
+    max-width: none;
+    padding: 0;
+    background-color: var(--_bg);
+  }
+
+  /* With the search out of the row, the button goes back to the right. */
+  .lx-site-header--desktop .lx-site-header__cta,
+  .lx-site-header--desktop.lx-site-header--with-search .lx-site-header__cta {
+    margin-left: auto;
+  }
+}
+
+/* Beside the wordmark there is only room for one word on a small phone. */
+@media (max-width: 30rem) {
+  .lx-site-header--desktop .lx-site-header__cta-more {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lx-site-header--desktop .lx-site-header__link,
+  .lx-site-header--desktop .lx-site-header__link::after {
+    transition: none;
+  }
+}

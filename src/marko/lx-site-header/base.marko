@@ -1,0 +1,64 @@
+/*
+  What both entries share: the bar's markup and the phone menu. The entry
+  chooses the variant, whether the links also sit in the bar (`barLinks`, desktop
+  only) and, by importing its own stylesheet, how the bar is laid out.
+
+  The menu is wired by `wireSiteMenu()`. With `barLinks`, a window widened
+  until the bar's links show closes an open menu (`closeMenuWhenLinksShow()`).
+
+  Not here: the Astro prop `hideSearchWhileVisible`, which hides the header's
+  search while the page shows its own. No Marko page needs it yet.
+
+  Concise syntax, by repo convention.
+*/
+import type { Model } from "./helper"
+import { closeMenuWhenLinksShow, wireSiteMenu } from "../../scripts/site-header-menu.js"
+import "./base.css"
+
+export interface Input {
+  model: Model
+  variant: "desktop" | "tablet" | "mobile"
+  /** Also list the links in the bar. Desktop only: the phone bar has the menu button alone. */
+  barLinks?: boolean
+  /** The search field shown in the bar, as `@search`. */
+  search?: Marko.AttrTag<{ content: Marko.Body }>
+}
+
+const/{ model, variant, barLinks, search }=input
+
+header class=["lx-site-header", `lx-site-header--${variant}`, search && "lx-site-header--with-search"] data-site-header
+  div.lx-site-header__inner
+    div.lx-site-header__logo
+      lx-logo siteTitle=model.siteTitle href=model.homeHref accent
+
+    if=barLinks
+      nav/nav class="lx-site-header__nav" aria-label="Main"
+        for|link| of=model.links
+          a href=link.href class="lx-site-header__link" target=link.target rel=link.rel
+            -- ${link.label}
+            if=link.external
+              span.lx-site-header__external-note -- ${" (opens in a new tab)"}
+
+    if=search
+      div.lx-site-header__search
+        ${search.content}
+
+    if=model.cta
+      a href=model.ctaHref class="lx-site-header__cta" aria-label=model.cta.label
+        -- ${model.cta.first}
+        if=model.cta.rest
+          span.lx-site-header__cta-more -- ${model.cta.rest}
+
+    details/menu class="lx-site-header__menu" data-site-menu
+      summary class="lx-site-header__menu-button" aria-label="Menu"
+        svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"
+          path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+      nav class="lx-site-header__menu-panel" aria-label="Main"
+        for|link| of=model.links
+          a href=link.href class="lx-site-header__menu-link" target=link.target rel=link.rel
+            -- ${link.label}
+            if=link.external
+              span.lx-site-header__external-note -- ${" (opens in a new tab)"}
+
+script -- wireSiteMenu(menu() as HTMLDetailsElement, $signal)
+script -- if (barLinks) closeMenuWhenLinksShow(menu() as HTMLDetailsElement, nav(), $signal)

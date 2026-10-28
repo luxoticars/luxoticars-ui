@@ -8,6 +8,7 @@
 
 export const SITE_HEADER_LINKS = Object.freeze([
   Object.freeze({ label: "Buy", href: "/search" }),
+  Object.freeze({ label: "Services", href: "/services" }),
   Object.freeze({ label: "Reviews", href: "/a/reviews/" }),
   Object.freeze({ label: "About", href: "/a/" }),
 ]);
