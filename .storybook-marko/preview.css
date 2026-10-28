@@ -6,7 +6,7 @@
   under the Astro preview's ThemeFrame.
 */
 @import "../src/styles/tokens.css";
-@import "@luxoticars/fonts/fonts.css";
+@import "../src/styles/fonts.css";
 
 .lux-canvas {
   background: var(--lux-base-100);

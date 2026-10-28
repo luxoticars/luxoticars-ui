@@ -1,0 +1,31 @@
+/*
+ * The Luxoticars brand typeface.
+ *
+ * The family name below is deliberately neutral so swapping the files never touches
+ * a consumer's CSS. Only `--font-futura` is public API. The typeface is Jost
+ * (OFL-1.1, src/fonts/Jost-OFL.txt); "Futura" in the names is historical.
+ *
+ * Consumers: import this file, then preload the weights the first screen uses, e.g.
+ *   <link rel="preload" as="font" type="font/woff2" crossorigin href="…/jost-400.woff2">
+ * (`crossorigin` is required on font preloads even when the file is same-origin.)
+ */
+
+@font-face {
+  font-family: "Lx-Futura";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/jost-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Lx-Futura";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/jost-700.woff2") format("woff2");
+}
+
+:root {
+  --font-futura: "Lx-Futura", system-ui, sans-serif;
+}
