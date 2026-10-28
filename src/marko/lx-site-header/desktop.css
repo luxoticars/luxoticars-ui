@@ -69,7 +69,9 @@
   }
 }
 
-/* Below 52rem the four links and the button no longer fit beside the wordmark. */
+/* Below 52rem the four links and the button no longer fit beside the wordmark,
+   and up to iPad portrait the search does not fit beside the wordmark, button
+   and menu button either. */
 @media (max-width: 52rem) {
   /* Logo, button and the menu button share one row at every narrow width:
      the gaps, the wordmark and the button shrink with the bar, down to a
@@ -94,11 +96,8 @@
   .lx-site-header--desktop .lx-site-header__menu {
     display: block;
   }
-}
 
-/* Up to iPad portrait the search does not fit beside the wordmark, button and
-   menu button, so it gets a row of its own, as a second row of the bar. */
-@media (max-width: 52rem) {
+  /* The search gets a row of its own, as a second row of the bar. */
   .lx-site-header--desktop .lx-site-header__search {
     position: static;
     order: 1;
