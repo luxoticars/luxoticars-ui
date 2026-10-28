@@ -91,7 +91,7 @@ Marko tags are being moved one at a time into this layout, which follows the Mar
 
 - **Folder per tag, prefixed `lx-`:** `src/marko/lx-logo/index.marko` is `<lx-logo>`. Scaffold with `npm run new:tag lx-name` (`--adaptive` for the large-component layout).
 - **Own CSS, not shared with Astro:** `style.css` beside `index.marko` is found by Marko, with no import. It is forked from the shared `src/styles/*.css` and starts with a stamp, `Forked from <source> [source-hash: …]`. `npm test` fails when the source changes; port what applies, then `npm run styles:stamp -- lx-name`.
-- **BEM block = the tag name** (`.lx-logo`, `.lx-logo__wordmark`). Read `--lux-*` tokens only: no colour literals, no daisyUI/Tailwind names, no fallbacks. These tags need `styles/tokens.css`.
+- **BEM block = the tag name** (`.lx-logo`, `.lx-logo__wordmark`). Read `--lux-*` tokens only: no colour literals, no daisyUI/Tailwind names, no fallbacks. The footer is the one exception: it keeps its grey literals behind their `--footer-*` overrides. These tags need `styles/tokens.css`.
 - **VRT baselines beside the tag:** a tag's screenshots live in `src/marko/lx-logo/__screenshots__/`, chosen by `vrt/stories.spec.ts` from the story's `importPath`; other stories use `vrt/__screenshots__/`. `package.json#files` excludes `__screenshots__`. Baselines are only valid from `scripts/vrt.sh` (Linux image), never a Mac.
 - **Logic stays shared** (`src/utils/*.js` resolvers); only the styles fork. A tag that transforms data has a `helper.ts` with a pure `buildModel`.
 - **Grouping folders** (one level, e.g. `src/marko/site-header/lx-site-header-desktop/`) only group: never give one an `index.marko`, which would turn it into a tag. `npm test` checks this.

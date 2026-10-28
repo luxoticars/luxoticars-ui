@@ -3,16 +3,20 @@
   Marko-only: the Astro and HTML footers keep the shared stylesheet. What both
   entries share, with the small-screen baseline: one column, a stacked masthead
   and a stacked bottom bar. The desktop entry adds its wider layouts in its own
-  stylesheet. Needs styles/tokens.css: --lux-* only. Block is `lx-site-footer`,
+  stylesheet. Needs styles/tokens.css for the accent. Block is `lx-site-footer`,
   the tag's own name.
+
+  The one exception to "--lux-* tokens only": the footer keeps its grey literals
+  (the same values as footer.css, each behind its --footer-* override), so it
+  stays grey, not the navy of --lux-neutral.
 */
 
 .lx-site-footer {
   --_accent: var(--lux-marque-accent);
-  --_bg: var(--lux-neutral);
-  --_fg: var(--lux-neutral-content);
-  --_muted: var(--lux-neutral-muted);
-  --_hairline: var(--lux-neutral-line);
+  --_bg: var(--footer-bg, oklch(0.145 0 0));
+  --_fg: var(--footer-fg, oklch(0.87 0 0));
+  --_muted: var(--footer-muted, oklch(0.708 0 0));
+  --_hairline: var(--footer-hairline, oklch(0.269 0 0));
 
   position: relative;
   overflow: hidden;
