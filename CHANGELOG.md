@@ -1,5 +1,19 @@
 # @luxoticars/ui
 
+## 0.14.0
+
+### Minor Changes
+
+- 1fb5acc: Breaking (Marko): `<logo>` is now `<lx-logo>`, its block class is `lx-logo` and it ships its own `style.css`, so it needs `styles/tokens.css` and no longer reads Tailwind/daisyUI colour names. `marko/logo` becomes `marko/lx-logo`. Adds `npm run new:tag`, and `npm test` now fails when a Marko tag's forked CSS falls behind the shared stylesheet it came from.
+- 1311c47: Breaking (Marko): `<program-badge>` is now `<lx-program-badge>`, its block class is `lx-program-badge` and it ships its own `style.css`, so it needs `styles/tokens.css` and no longer reads Tailwind/daisyUI colour names or fallbacks. `marko/program-badge` becomes `marko/lx-program-badge`. The Astro `ProgramBadge` is unchanged.
+- d471086: Breaking (Marko): `<text-range>` is now `<lx-text-range>`, its block class is `lx-text-range` and its stylesheet moves beside the tag as `style.css`, so it needs `styles/tokens.css` and no longer reads Tailwind/daisyUI colour names or fallbacks. `marko/text-range` becomes `marko/lx-text-range`.
+- dd4761c: Ship the brand typeface (Jost, OFL-1.1) with the package instead of the `@luxoticars/fonts` dev dependency. Import `@luxoticars/ui/styles/fonts.css` to define `--font-futura`; the font files are exported under `@luxoticars/ui/fonts/*` for preloading.
+
+### Patch Changes
+
+- bc4dc98: Fix `<lx-program-badge>`: it used `$` scriptlets, which the Marko Tags API rejects, so the tag failed to compile. Back to `const/` tag variables, and `npm test` now fails if any Marko tag uses a `$` scriptlet.
+- 19e2de6: Fix `<lx-program-badge>` so it compiles under the Marko tags API. Derived state uses `const/` instead of `$` scriptlets; the rendered badge is unchanged.
+
 ## 0.13.0
 
 ### Minor Changes
