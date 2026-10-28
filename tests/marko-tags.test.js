@@ -34,3 +34,17 @@ test("every registered tag exists", () => {
     assert.ok(existsSync(join(root, entry.template)), `${key}: ${entry.template} does not exist`);
   }
 });
+
+test("no Marko tag uses a `$` scriptlet: the Tags API rejects it and the build fails", () => {
+  const files = [];
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const path = join(dir, entry.name);
+      if (entry.isDirectory()) walk(path);
+      else if (entry.name.endsWith(".marko")) files.push(path);
+    }
+  };
+  walk(join(root, "src/marko"));
+  const offenders = files.filter((file) => /^\s*\$\s/m.test(readFileSync(file, "utf8")));
+  assert.deepEqual(offenders, []);
+});
