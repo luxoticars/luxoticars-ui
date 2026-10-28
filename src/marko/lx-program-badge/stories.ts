@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/marko";
-import ProgramBadge, { type Input } from "../src/marko/program-badge.marko";
-import { cases, markoArgTypes } from "../stories/program-badge-cases";
+import ProgramBadge, { type Input } from "./index.marko";
+import { cases, markoArgTypes } from "../../../stories/program-badge-cases";
 
 /**
- * `<program-badge>` for Marko 6 apps. It is discovered through the package's
+ * `<lx-program-badge>` for Marko 6 apps. It is discovered through the package's
  * marko.json, so it needs no import:
  *
  * ```marko
- * program-badge icon="top-rated-seller" text="Top rated seller"
+ * lx-program-badge icon="top-rated-seller" text="Top rated seller"
  * ```
  *
  * The cases are shared with the Astro stories (stories/program-badge-cases.ts).

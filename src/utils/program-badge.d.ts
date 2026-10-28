@@ -13,6 +13,8 @@ export interface ProgramBadgeOptions {
   iconLabel?: string | false | null;
   /** The caller's classes, in any form `cn()` accepts (Marko's `class` may be an array or object). */
   className?: ClassValue;
+  /** The BEM block the classes are built on. @default "program-badge" */
+  block?: string;
 }
 
 export interface ResolvedProgramBadgeIcon {
@@ -26,7 +28,7 @@ export interface ResolvedProgramBadgeIcon {
 }
 
 export interface ResolvedProgramBadge {
-  /** `program-badge`, then the size modifier, then the caller's classes. */
+  /** The block (`program-badge` by default), then the size modifier, then the caller's classes. */
   className: string;
   text: string | undefined;
   icon: ResolvedProgramBadgeIcon | null;
