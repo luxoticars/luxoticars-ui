@@ -1,6 +1,5 @@
 node_modules/
 storybook-static/
 *.log
-playwright-report/
 test-results/
 .DS_Store

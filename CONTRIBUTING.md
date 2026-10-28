@@ -38,24 +38,6 @@ setup without it: your own fork can host its own Storybook preview.
 
 Keep your fork current with `git fetch upstream && git rebase upstream/main`.
 
-## Visual regression tests
-
-Every story in both Storybooks is screenshotted in dark and light themes at a
-desktop and a mobile size (Playwright, `vrt/stories.spec.ts`). Baselines are
-committed under `vrt/__screenshots__/`.
-
-```bash
-npm run vrt          # build Storybook, compare against the baselines
-npm run vrt:update   # rewrite the baselines after an intended visual change
-```
-
-Docker must be running. The tests execute inside the Playwright Linux image
-(`scripts/vrt.sh`), so font rendering is identical on every machine; baselines
-taken outside it will not match. Review the PNG diffs in `git` before committing
-updated baselines, and pass `-g <name>` to run a subset, for example
-`npm run vrt -- -g program-badge`. A new component's stories are picked up
-automatically; run `npm run vrt:update` to create their baselines.
-
 ## Running Storybook
 
 Storybook is how components are reviewed. Start it with:
