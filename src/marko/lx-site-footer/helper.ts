@@ -76,10 +76,24 @@ export interface ModelInput {
   year?: number
 }
 
+const SAFE_SCHEMES = ["http", "https", "mailto", "tel"]
+
+/**
+ * An href as given when it is a site-relative path, an anchor or an http(s), mailto or
+ * tel URL; `#` for anything else, `javascript:` and `data:` above all. Browsers ignore
+ * whitespace and control characters inside a scheme, so they are dropped before the
+ * scheme is read. Marko escapes attribute values but does not look at URL schemes.
+ */
+export function safeHref(href: string): string {
+  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(href.replace(/[\u0000-\u0020]/g, ""))?.[1]
+  return scheme === undefined || SAFE_SCHEMES.includes(scheme.toLowerCase()) ? href : "#"
+}
+
 const newTab = (link: { external?: boolean }) =>
   link.external ? ({ target: "_blank", rel: "noopener noreferrer" } as const) : {}
 
-const resolveLinks = (links: FooterLink[]): ResolvedLink[] => links.map((link) => ({ ...link, ...newTab(link) }))
+const resolveLinks = (links: FooterLink[]): ResolvedLink[] =>
+  links.map((link) => ({ ...link, href: safeHref(link.href), ...newTab(link) }))
 
 /** Pure and synchronous: what the footer prints, decided once for every entry. */
 export function buildModel(input: ModelInput): Model {
@@ -88,7 +102,7 @@ export function buildModel(input: ModelInput): Model {
   const year = input.year ?? new Date().getFullYear()
   return {
     siteTitle,
-    homeHref: input.homeHref ?? "/",
+    homeHref: safeHref(input.homeHref ?? "/"),
     tagline: input.tagline ?? defaults.tagline,
     brandsHeading: input.brandsHeading ?? "Shop by Brand",
     brandsHeadingId: `${idPrefix}-heading-brands`,
@@ -100,10 +114,11 @@ export function buildModel(input: ModelInput): Model {
     enquiriesText: input.enquiriesText ?? defaults.enquiriesText,
     contacts: (input.contacts ?? defaults.contacts).map((contact) => ({
       ...contact,
+      href: safeHref(contact.href),
       ...newTab(contact),
       svg: CONTACT_ICONS[contact.icon],
     })),
-    socials: input.socials ?? defaults.socials,
+    socials: (input.socials ?? defaults.socials).map((social) => ({ ...social, href: safeHref(social.href) })),
     legalLinks: resolveLinks(input.legalLinks ?? defaults.legalLinks),
     copyright: input.copyright ?? `© ${year} ${siteTitle}. All rights reserved.`,
   }
