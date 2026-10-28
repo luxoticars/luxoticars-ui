@@ -1,47 +1,21 @@
-/*
-  Prints what `resolveProgramBadge()` decides, and nothing else. Every value
-  below that varies with the input (classes, role, aria-*, text, paths) comes
-  from the resolver; the fixed parts (lx-program-badge__icon, lx-program-badge__text,
-  viewBox) are the markup contract. The resolver is shared with
-  `astro/ui/ProgramBadge.astro`, so the two renderers decide the same things;
-  only the block name and the stylesheet (`style.css`, found by Marko) differ.
-
-  Concise syntax, by repo convention.
-*/
 import { resolveProgramBadge } from "../../utils/program-badge.js"
 import type { ProgramBadgeIcon, ProgramBadgeSize } from "../../types"
 
 export interface Input extends Omit<Marko.HTML.Span, "content"> {
-  /** Visible label. `false` counts as not set, so `text=(cond && "…")` works. */
   text?: string | false
-  /** A built-in icon. `false` counts as not set, so `icon=(cond && "…")` works. */
   icon?: ProgramBadgeIcon | false
-  /** Icon size in px; also sets the text size and gap. `false` counts as not set, so `size=(cond && 24)` works. @default 16 */
   size?: ProgramBadgeSize | false
-  /**
-   * What screen readers hear for an icon-only badge. Ignored when `text` is set.
-   * `false` counts as not set, so `iconLabel=(cond && "…")` works.
-   * @default the icon's own label, e.g. "Top rated seller"
-   */
   iconLabel?: string | false
-  /** Not supported: the badge renders no body content. */
   content?: never
 }
 
-/*
-  `class` and `content` come out of the spread. The resolver owns the merged
-  class, and Marko 6 native tags accept `content` as an attribute, so
-  spreading it would render body content this tag does not support.
-*/
-const/{ text, icon, size, iconLabel, class: className, content: _content, ...attrs }=input
-const/block="lx-program-badge"
-const/badge=resolveProgramBadge({ text, icon, size, iconLabel, className, block })
+$ const { text, icon, size, iconLabel, class: className, content: _content, ...attrs } = input
+$ const block = "lx-program-badge"
+$ const badge = resolveProgramBadge({ text, icon, size, iconLabel, className, block })
 
 if=badge
   span ...attrs class=badge.className
     if=badge.icon
-      // Marko's SVG typings have no `focusable`, so it is spread in: written
-      // as an attribute it fails the type gate (TS2353).
       svg
         ,class=`${block}__icon`
         ,viewBox="0 0 24 24"
