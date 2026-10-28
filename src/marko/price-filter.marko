@@ -19,10 +19,10 @@ import "../styles/price-filter.css"
 import { parseOptionValue } from "../utils/price-range.js"
 import type { Input as GraphInput, SelectedRange } from "./price-distribution-graph.marko"
 import type { Input as GroupInput, SelectEvent } from "./selection-group.marko"
-import type { Input as TextRangeInput, RangeValues } from "./text-range.marko"
+import type { Input as TextRangeInput, RangeValues } from "./lx-text-range/index.marko"
 import PriceDistributionGraph from "./price-distribution-graph.marko"
 import SelectionGroup from "./selection-group.marko"
-import TextRange from "./text-range.marko"
+import TextRange from "./lx-text-range/index.marko"
 
 export interface PriceParam {
   paramKey: string

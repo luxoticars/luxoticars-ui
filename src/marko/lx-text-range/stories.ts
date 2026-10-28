@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/marko";
-import TextRange, { type Input } from "../src/marko/text-range.marko";
-import { textRangeData } from "./price-filter-data";
+import TextRange, { type Input } from "./index.marko";
+import { textRangeData } from "../../../stories-marko/price-filter-data";
 
 /**
- * `<text-range>` for Marko 6 apps: a min and a max field with a submit button.
+ * `<lx-text-range>` for Marko 6 apps: a min and a max field with a submit button.
  * Leaving a field with a valid range fires `onBlur`; the button or Enter fires
  * `onChange`. An invalid range shows its message and does not fire.
  *
  * ```marko
- * text-range minField=min maxField=max prefixLabel="$" onChange(range) { … }
+ * lx-text-range minField=min maxField=max prefixLabel="$" onChange(range) { … }
  * ```
  */
 export default {

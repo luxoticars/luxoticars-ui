@@ -1,25 +1,27 @@
 /*
-  Text range styles. BEM: `text-range` is the block. Tokens are read `--lux-*`
-  first, then the daisyUI name, then a literal (see program-badge.css).
+  Forked from none [source-hash: none]
+  Marko-only: no other renderer has a text range, so this is the tag's own
+  stylesheet, moved from styles/text-range.css. Needs styles/tokens.css.
+  Block is `lx-text-range`, the tag's own name.
 */
 
-.text-range {
-  --tr-ink: var(--lux-base-content, var(--color-base-content, oklch(20% 0.018 264)));
-  --tr-field: var(--lux-base-200, var(--color-base-200, oklch(93% 0.005 264.7)));
-  --tr-line: var(--lux-secondary, var(--color-secondary, oklch(45% 0.02 286)));
-  --tr-error: var(--lux-error, var(--color-error, oklch(57% 0.194 13.428)));
-  --tr-focus: var(--lux-accent, var(--color-accent, oklch(52% 0.16 232.661)));
+.lx-text-range {
+  --tr-ink: var(--lux-base-content);
+  --tr-field: var(--lux-base-200);
+  --tr-line: var(--lux-secondary);
+  --tr-error: var(--lux-error);
+  --tr-focus: var(--lux-accent);
   width: 100%;
 }
 
-.text-range__container {
+.lx-text-range__container {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.25rem;
 }
 
-.text-range__field {
+.lx-text-range__field {
   display: flex;
   flex: 2;
   align-items: center;
@@ -32,22 +34,22 @@
   background: var(--tr-field);
 }
 
-.text-range__field:focus-within {
+.lx-text-range__field:focus-within {
   outline: 2px solid var(--tr-focus);
   outline-offset: 1px;
 }
 
-.text-range__field--invalid {
+.lx-text-range__field--invalid {
   border-color: var(--tr-error);
 }
 
-.text-range__affix {
+.lx-text-range__affix {
   flex: none;
   font-size: 0.6875rem;
   color: var(--tr-ink);
 }
 
-.text-range__control {
+.lx-text-range__control {
   flex: 1;
   min-width: 0;
   height: 100%;
@@ -59,16 +61,16 @@
   font: inherit;
 }
 
-.text-range__control::placeholder {
+.lx-text-range__control::placeholder {
   color: var(--tr-line);
 }
 
-.text-range__separator {
+.lx-text-range__separator {
   display: inline-block;
   padding: 0.25rem;
 }
 
-.text-range__submit {
+.lx-text-range__submit {
   display: grid;
   flex: none;
   place-items: center;
@@ -82,22 +84,22 @@
   cursor: pointer;
 }
 
-.text-range__submit:disabled {
+.lx-text-range__submit:disabled {
   opacity: 0.5;
   cursor: default;
 }
 
-.text-range__submit:focus-visible {
+.lx-text-range__submit:focus-visible {
   outline: 2px solid var(--tr-focus);
   outline-offset: 2px;
 }
 
-.text-range__submit svg {
+.lx-text-range__submit svg {
   width: 0.625rem;
   height: 0.625rem;
 }
 
-.text-range__error {
+.lx-text-range__error {
   flex-basis: 100%;
   min-height: 1rem;
   line-height: 1rem;

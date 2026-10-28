@@ -4,7 +4,7 @@
 */
 import type { Input as GraphInput } from "../src/marko/price-distribution-graph.marko";
 import type { Input as GroupInput } from "../src/marko/selection-group.marko";
-import type { Input as TextRangeInput } from "../src/marko/text-range.marko";
+import type { Input as TextRangeInput } from "../src/marko/lx-text-range/index.marko";
 
 export const priceRanges: GraphInput["priceRanges"] = [
   { min: 0, max: 50, count: 2500 },
