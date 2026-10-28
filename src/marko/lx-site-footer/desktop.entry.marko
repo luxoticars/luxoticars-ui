@@ -1,0 +1,11 @@
+import Base from "./base.marko"
+import type { Model } from "./helper"
+import "./desktop.css"
+
+export interface Input {
+  model: Model
+  /** Replaces the built-in wordmark, as `@logo`. */
+  logo?: Marko.AttrTag<{ content: Marko.Body }>
+}
+
+Base model=input.model variant="desktop" logo=input.logo

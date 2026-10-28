@@ -70,6 +70,7 @@
     },
     "./astro/*.astro": "./src/astro/*.astro",
     "./astro/*": "./src/astro/*.astro",
+    "./marko/lx-site-footer/*.entry.marko": "./src/marko/lx-site-footer/*.entry.marko",
     "./marko/lx-site-header/*.entry.marko": "./src/marko/lx-site-header/*.entry.marko",
     "./marko/lx-*": "./src/marko/lx-*/index.marko",
     "./marko/*.marko": "./src/marko/*.marko",

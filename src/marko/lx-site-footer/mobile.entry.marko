@@ -1,0 +1,11 @@
+import Base from "./base.marko"
+import type { Model } from "./helper"
+
+/* The base is the phone footer: one column, a stacked masthead and bottom bar. */
+export interface Input {
+  model: Model
+  /** Replaces the built-in wordmark, as `@logo`. */
+  logo?: Marko.AttrTag<{ content: Marko.Body }>
+}
+
+Base model=input.model variant="mobile" logo=input.logo
