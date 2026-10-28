@@ -35,16 +35,30 @@ test("every registered tag exists", () => {
   }
 });
 
-test("no Marko tag uses a `$` scriptlet: the Tags API rejects it and the build fails", () => {
-  const files = [];
-  const walk = (dir) => {
-    for (const entry of readdirSync(dir, { withFileTypes: true })) {
-      const path = join(dir, entry.name);
-      if (entry.isDirectory()) walk(path);
-      else if (entry.name.endsWith(".marko")) files.push(path);
-    }
-  };
-  walk(join(root, "src/marko"));
-  const offenders = files.filter((file) => /^\s*\$\s/m.test(readFileSync(file, "utf8")));
-  assert.deepEqual(offenders, []);
+/* Storybook builds Marko with the tags API, which rejects `$` scriptlets.
+   That build runs only on main, so a scriptlet reaches production before CI
+   sees it. This catches the same failure in `npm test`. */
+function markoFiles(dir) {
+  const found = [];
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    if (e.name.startsWith(".")) continue;
+    const path = join(dir, e.name);
+    if (e.isDirectory()) found.push(...markoFiles(path));
+    else if (e.name.endsWith(".marko")) found.push(path);
+  }
+  return found;
+}
+
+test("marko templates use the tags API, not $ scriptlets", () => {
+  for (const file of markoFiles(join(root, "src/marko"))) {
+    const lines = readFileSync(file, "utf8").split("\n");
+    lines.forEach((line, i) => {
+      // `${Tag}` is a dynamic tag, which the tags API allows. A scriptlet is `$` not followed by `{`.
+      assert.doesNotMatch(
+        line,
+        /^\s*\$(?!\{)/,
+        `${file}:${i + 1} uses a $ scriptlet, which the tags API rejects`,
+      );
+    });
+  }
 });
