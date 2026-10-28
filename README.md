@@ -109,14 +109,14 @@ uses them with no import. Marko is an optional peer dependency (`marko@^6`):
 install it in the app, not through this package.
 
 ```marko
-program-badge icon="top-rated-seller" text="Top rated seller"
+lx-program-badge icon="top-rated-seller" text="Top rated seller"
 ```
 
 Tags can also be imported by path, which is the way out if another installed
 package exports a tag with the same name (Marko uses the first one it finds):
 
 ```marko
-import ProgramBadge from "@luxoticars/ui/marko/program-badge.marko"
+import ProgramBadge from "@luxoticars/ui/marko/lx-program-badge"
 
 ProgramBadge icon="top-rated-seller"
 ```

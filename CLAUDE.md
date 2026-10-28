@@ -4,7 +4,7 @@
 
 ## What's in the package
 
-- **Up to three renderers, one component:** an HTML string-builder (`src/html/`, e.g. `createButton`) for markup-only contexts, an Astro component (`src/astro/`, e.g. `astro/ui/Button`), and a Marko 6 tag (`src/marko/`, e.g. `<program-badge>`, discovered via `marko.json`). All read from the same design tokens and utils; a component's decisions live in one resolver under `src/utils/`. `ProgramBadge` has no HTML builder yet.
+- **Up to three renderers, one component:** an HTML string-builder (`src/html/`, e.g. `createButton`) for markup-only contexts, an Astro component (`src/astro/`, e.g. `astro/ui/Button`), and a Marko 6 tag (`src/marko/`, e.g. `<lx-program-badge>`, discovered via `marko.json`). All read from the same design tokens and utils; a component's decisions live in one resolver under `src/utils/`. `ProgramBadge` has no HTML builder yet.
 - **`src/index.js`** — entry for the HTML API. **`src/astro/*.astro`** — entry per Astro component, exported via `package.json#exports` subpaths (`./astro/*`).
 - **`src/styles/tokens.css`** — the design tokens, exported as `./styles/tokens.css`.
 - **`src/utils/cn`** — class-name merge helper (`clsx` + `tailwind-merge`), and **`src/data/footer`** — shared footer data. Both are JS with hand-written `.d.ts` siblings (see typing convention below).

@@ -182,3 +182,11 @@ test("text only: iconLabel is ignored, because there is no icon to name", () => 
   assert.deepEqual(resolveProgramBadge({ text: "x", iconLabel: "Penjual terbaik" }), resolveProgramBadge({ text: "x" }));
   assert.deepEqual(resolveProgramBadge({ text: "x", iconLabel: "" }), resolveProgramBadge({ text: "x" }));
 });
+
+test("block: the class names follow the caller's block, so a renderer can own its stylesheet", () => {
+  assert.equal(
+    resolveProgramBadge({ text: "x", size: 24, className: "mt-2", block: "lx-program-badge" }).className,
+    "lx-program-badge lx-program-badge--24 mt-2",
+  );
+  assert.equal(resolveProgramBadge({ text: "x" }).className, "program-badge");
+});

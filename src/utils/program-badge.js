@@ -22,7 +22,9 @@ const fail = (message) => {
    so each option below treats it like `undefined` rather than as a value. */
 const isUnset = (value) => value == null || value === false;
 
-export function resolveProgramBadge({ text, icon, size, iconLabel, className } = {}) {
+/* `block` is the BEM block the classes are built on. The Astro and HTML renderers use the
+   default; the Marko tag passes its own (`lx-program-badge`), which has its own stylesheet. */
+export function resolveProgramBadge({ text, icon, size, iconLabel, className, block = "program-badge" } = {}) {
   /* A numeric string counts: an HTML attribute or a Storybook control may send "24". */
   const px = Number(isUnset(size) ? 16 : size);
   if (!SIZES.includes(px)) fail(`unknown size "${size}". Use one of: ${SIZES.join(", ")}.`);
@@ -43,7 +45,7 @@ export function resolveProgramBadge({ text, icon, size, iconLabel, className } =
   if (!hasIcon && !label) return null;
 
   return {
-    className: cn("program-badge", px === 24 && "program-badge--24", className),
+    className: cn(block, px === 24 && `${block}--24`, className),
     text: label || undefined,
     icon: hasIcon ? resolveIcon(PROGRAM_BADGE_ICONS[icon], label, iconLabel) : null,
   };

@@ -1,18 +1,15 @@
 /*
   Prints what `resolveProgramBadge()` decides, and nothing else. Every value
   below that varies with the input (classes, role, aria-*, text, paths) comes
-  from the resolver; the fixed parts (program-badge__icon, program-badge__text,
-  viewBox) are the markup contract both renderers share. The resolver is shared
-  with `astro/ui/ProgramBadge.astro`, so the two renderers cannot drift.
+  from the resolver; the fixed parts (lx-program-badge__icon, lx-program-badge__text,
+  viewBox) are the markup contract. The resolver is shared with
+  `astro/ui/ProgramBadge.astro`, so the two renderers decide the same things;
+  only the block name and the stylesheet (`style.css`, found by Marko) differ.
 
-  Concise syntax, by repo convention. The stylesheet is imported instead of
-  sitting beside the tag as an auto-discovered style.css because the Astro
-  renderer shares it, and sharing across templates is the case Marko's
-  styling guide gives for an imported stylesheet.
+  Concise syntax, by repo convention.
 */
-import "../styles/program-badge.css"
-import { resolveProgramBadge } from "../utils/program-badge.js"
-import type { ProgramBadgeIcon, ProgramBadgeSize } from "../types"
+import { resolveProgramBadge } from "../../utils/program-badge.js"
+import type { ProgramBadgeIcon, ProgramBadgeSize } from "../../types"
 
 export interface Input extends Omit<Marko.HTML.Span, "content"> {
   /** Visible label. `false` counts as not set, so `text=(cond && "…")` works. */
@@ -37,7 +34,8 @@ export interface Input extends Omit<Marko.HTML.Span, "content"> {
   spreading it would render body content this tag does not support.
 */
 const/{ text, icon, size, iconLabel, class: className, content: _content, ...attrs }=input
-const/badge=resolveProgramBadge({ text, icon, size, iconLabel, className })
+const/block="lx-program-badge"
+const/badge=resolveProgramBadge({ text, icon, size, iconLabel, className, block })
 
 if=badge
   span ...attrs class=badge.className
@@ -45,7 +43,7 @@ if=badge
       // Marko's SVG typings have no `focusable`, so it is spread in: written
       // as an attribute it fails the type gate (TS2353).
       svg
-        ,class="program-badge__icon"
+        ,class=`${block}__icon`
         ,viewBox="0 0 24 24"
         ,fill="currentColor"
         ,...{ focusable: "false" }
@@ -55,4 +53,4 @@ if=badge
         for|shape| of=badge.icon.paths
           path d=shape.d fill-rule=shape.fillRule
     if=badge.text
-      span.program-badge__text -- ${badge.text}
+      span class=`${block}__text` -- ${badge.text}

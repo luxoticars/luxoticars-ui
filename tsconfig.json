@@ -6,6 +6,9 @@
     "stories",
     ".storybook"
   ],
+  // Marko stories sit beside their tags and import `.marko`, which `astro check`
+  // cannot resolve; the Marko type gate (tsconfig.marko.json) checks them.
+  "exclude": ["src/marko/**/stories.ts"],
   "compilerOptions": {
     "allowJs": true,
     "checkJs": false
