@@ -1,8 +1,19 @@
 # Publishes the Storybook to GitHub Pages so maintainers can review components
-# in a browser without checking the repo out. It runs on pushes to main only,
-# not on pull requests: a PR build only proved `npm ci && npm run
+# in a browser without checking the repo out. The site tracks released
+# versions, not every merge to main. It runs when a GitHub Release is
+# published, and when someone starts it by hand (workflow_dispatch). It does
+# not run on pull requests: a PR build only proved `npm ci && npm run
 # build-storybook` works, which the author already runs locally (see
 # CLAUDE.md), and `npm test` does not need it.
+#
+# Releases here are created by the Release workflow (changesets/action with
+# create-github-releases). That workflow uses the built-in GITHUB_TOKEN, and
+# GitHub does not start other workflows from events that token creates, so
+# `release: published` never runs for those releases. Release calls this
+# workflow (workflow_call) after a successful publish. `release: published`
+# still covers a release created by a person or a custom token. Do not also
+# create those releases with a custom token while Release keeps the call,
+# or the site would deploy twice.
 #
 # This workflow does nothing until Pages is turned on for the repository:
 # Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
@@ -18,14 +29,17 @@
 # CNAME file in the repo is ignored, so the domain is set under
 # Settings -> Pages -> Custom domain, not in this repo.
 #
-# Forks: enable Pages the same way on your own fork to get your own preview at
-# https://<your-user>.github.io/luxoticars-ui/ without touching the upstream site.
+# Forks: enable Pages the same way, then run this workflow by hand
+# (Actions -> Storybook -> Run workflow). That publishes
+# https://<your-user>.github.io/luxoticars-ui/ without touching the upstream
+# site. A push to a fork's main does not deploy.
 name: Storybook
 
 on:
-  push:
-    branches: [main]
+  release:
+    types: [published]
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -33,7 +47,8 @@ permissions:
   id-token: write
 
 # Let a running deploy finish rather than cancelling it, so Pages is never left
-# serving a half-published build.
+# serving a half-published build. A workflow_call from Release uses this same
+# group, so a manual run waits for an in-progress release deploy, and the reverse.
 concurrency:
   group: pages
   cancel-in-progress: false

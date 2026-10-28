@@ -24,10 +24,12 @@ setup without it: your own fork can host its own Storybook preview.
    npm install
    ```
 
-3. Enable Pages on your fork so you get a shareable preview URL. In your fork:
-   **Settings → Pages → Build and deployment → Source: GitHub Actions**. Pushing
-   to your fork's `main` then publishes to
-   `https://<your-user>.github.io/luxoticars-ui/`.
+3. Enable Pages on your fork so you can publish a shareable preview. In your
+   fork: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+   Then run **Actions → Storybook → Run workflow** on the branch you want to
+   preview. That publishes to
+   `https://<your-user>.github.io/luxoticars-ui/`. A push to `main` does not
+   deploy Storybook; upstream deploys when a release is published.
 
    This is the reason to fork rather than branch. GitHub serves one Pages site
    per repository, so branches cannot each have their own preview. A fork gets
@@ -274,9 +276,11 @@ Maintainers only; the steps are automatic apart from the merge.
    update a **Version Packages** PR. It bumps `package.json`, updates
    `package-lock.json` and writes `CHANGELOG.md`.
 2. Review the version and changelog, then merge that PR.
-3. The workflow builds Storybook, runs `npm run release` (which checks that
-   every `exports` entry resolves and has types, then creates the `vX.Y.Z` tag),
-   pushes the tag and creates the GitHub Release.
+3. The workflow builds Storybook only on that publish (a Version Packages
+   update does not), then runs `npm run release` (which checks that every
+   `exports` entry resolves and has types, then creates the `vX.Y.Z` tag),
+   pushes the tag and creates the GitHub Release. The Storybook workflow
+   deploys the docs site for that release.
 
 One-time repository setup: **Settings → Actions → General → Workflow
 permissions → Allow GitHub Actions to create and approve pull requests**.
