@@ -8,15 +8,34 @@
 const IDENTIFIER = /^[A-Za-z_$][\w$]*$/;
 const LINE_LIMIT = 80;
 
-/** A JS literal, not JSON: object keys are bare where they can be. */
-function literal(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(literal).join(", ")}]`;
-  if (value && typeof value === "object") {
-    const entries = Object.entries(value).filter(([, v]) => v !== undefined && typeof v !== "function");
-    if (!entries.length) return "{}";
-    return `{ ${entries.map(([k, v]) => `${IDENTIFIER.test(k) ? k : JSON.stringify(k)}: ${literal(v)}`).join(", ")} }`;
+const MAX_DEPTH = 6;
+
+function isPlain(value: object): boolean {
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
+/**
+ * A JS literal, not JSON: object keys are bare where they can be. `undefined` for
+ * what cannot be written as a literal: functions, class instances such as a Marko
+ * template, anything circular or nested deeper than a story would pass.
+ */
+function literal(value: unknown, depth = 0, seen = new WeakSet<object>()): string | undefined {
+  if (typeof value === "function" || typeof value === "symbol" || typeof value === "bigint") return undefined;
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (depth >= MAX_DEPTH || seen.has(value)) return undefined;
+  if (!Array.isArray(value) && !isPlain(value)) return undefined;
+  seen.add(value);
+  try {
+    if (Array.isArray(value)) return `[${value.map((item) => literal(item, depth + 1, seen) ?? "undefined").join(", ")}]`;
+    const entries = Object.entries(value).flatMap(([key, item]) => {
+      const text = literal(item, depth + 1, seen);
+      return text === undefined ? [] : [`${IDENTIFIER.test(key) ? key : JSON.stringify(key)}: ${text}`];
+    });
+    return entries.length ? `{ ${entries.join(", ")} }` : "{}";
+  } finally {
+    seen.delete(value);
   }
-  return JSON.stringify(value) ?? "undefined";
 }
 
 function attribute(name: string, value: unknown): string | undefined {
@@ -24,7 +43,8 @@ function attribute(name: string, value: unknown): string | undefined {
   if (value === true) return name;
   if (typeof value === "string") return `${name}=${JSON.stringify(value)}`;
   if (typeof value === "number" || typeof value === "boolean") return `${name}=${value}`;
-  return `${name}=${literal(value)}`;
+  const text = literal(value);
+  return text === undefined ? undefined : `${name}=${text}`;
 }
 
 /** `src/marko/lx-logo/stories.ts` is `lx-logo`; `stories-marko/price-filter.stories.ts` is `price-filter`. */

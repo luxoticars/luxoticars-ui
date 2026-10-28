@@ -1,7 +1,7 @@
 /*
   Site header styles. Astro only: `SiteHeader.astro` imports this file in its
   frontmatter, so the rules are global and the `site-header` block namespaces
-  them. Class names are BEM, as in footer.css.
+  them. The Marko header (`marko/lx-site-header`) has its own forked stylesheets. Class names are BEM, as in footer.css.
 
   Every token is read with a fallback chain: the daisyUI/Tailwind name first
   (luxoticars-dash), then tokens.css's `--lux-*` name (apps without Tailwind),
@@ -51,9 +51,7 @@
   display: flex;
 }
 
-/* `.lx-logo` is the Marko logo (marko/lx-logo). Drop it with the header fork. */
-.site-header__logo .logo:focus-visible,
-.site-header__logo .lx-logo:focus-visible {
+.site-header__logo .logo:focus-visible {
   outline: 2px solid var(--_accent);
   outline-offset: 4px;
   border-radius: 2px;
@@ -272,8 +270,7 @@
     column-gap: clamp(0.25rem, 2cqi, 0.75rem);
   }
 
-  .site-header .site-header__logo .logo__wordmark,
-  .site-header .site-header__logo .lx-logo__wordmark {
+  .site-header .site-header__logo .logo__wordmark {
     font-size: clamp(0.75rem, 5cqi, 1.25rem);
   }
 

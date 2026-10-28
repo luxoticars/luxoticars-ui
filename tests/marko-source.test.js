@@ -26,3 +26,13 @@ test("markoSnippet: objects are JS literals, and a long tag wraps one attribute 
     'lx-text-range\n  ,minField={ label: "Min", value: "" }\n  ,maxField={ label: "Max", "data-x": 1 }\n  ,prefixLabel="$"',
   );
 });
+
+test("markoSnippet: circular values, class instances and functions are left out, not recursed into", () => {
+  const circular = { name: "x" };
+  circular.self = circular;
+  class Template {}
+  assert.equal(
+    markoSnippet("lx-site-header", { entry: new Template(), loop: circular, onClick: () => {}, siteTitle: "Acme" }),
+    'lx-site-header loop={ name: "x" } siteTitle="Acme"',
+  );
+});

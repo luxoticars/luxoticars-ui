@@ -6,5 +6,6 @@
   "<lx-price-filter>": { "template": "./src/marko/lx-price-filter/index.marko" },
   "<lx-program-badge>": { "template": "./src/marko/lx-program-badge/index.marko" },
   "<lx-selection-group>": { "template": "./src/marko/lx-selection-group/index.marko" },
+  "<lx-site-header>": { "template": "./src/marko/lx-site-header/index.marko" },
   "<lx-text-range>": { "template": "./src/marko/lx-text-range/index.marko" }
 }

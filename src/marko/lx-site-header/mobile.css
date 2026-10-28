@@ -1,0 +1,45 @@
+/*
+  Forked from src/styles/site-header.css [source-hash: bc5f17f3983c]
+  The phone bar: the menu button alone, at every width, no links in the bar.
+  No media queries: the sizes scale with the bar's width (cqi). Unlike the
+  desktop bar, the call-to-action always shows its first word only.
+  Block is `lx-site-header`; needs styles/tokens.css.
+*/
+.lx-site-header--mobile .lx-site-header__menu {
+  display: block;
+}
+
+/* Logo, button and the menu button share one row at every phone width: the
+   gaps, the wordmark and the button shrink with the bar, down to a 250px
+   screen, instead of dropping to a row of their own. */
+.lx-site-header--mobile .lx-site-header__inner {
+  column-gap: clamp(0.25rem, 2cqi, 0.75rem);
+}
+
+.lx-site-header--mobile .lx-site-header__logo .lx-logo__wordmark {
+  font-size: clamp(0.75rem, 5cqi, 1.25rem);
+}
+
+.lx-site-header--mobile .lx-site-header__cta {
+  margin-left: auto;
+  padding-inline: clamp(0.5rem, 4cqi, 1.4rem);
+  font-size: clamp(0.625rem, 3.2cqi, 0.75rem);
+}
+
+.lx-site-header--mobile.lx-site-header--with-search .lx-site-header__cta {
+  margin-left: auto;
+}
+
+.lx-site-header--mobile .lx-site-header__cta-more {
+  display: none;
+}
+
+/* The search gets a row of its own, as a second row of the bar. */
+.lx-site-header--mobile .lx-site-header__search {
+  position: static;
+  order: 1;
+  flex-basis: 100%;
+  max-width: none;
+  padding: 0;
+  background-color: var(--_bg);
+}

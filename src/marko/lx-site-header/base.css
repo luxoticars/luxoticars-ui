@@ -1,0 +1,194 @@
+/*
+  Forked from src/styles/site-header.css [source-hash: bc5f17f3983c]
+  Marko-only: the Astro header keeps the shared stylesheet. What both entries
+  share; each entry's own stylesheet lays the bar out. Needs styles/tokens.css:
+  --lux-* only. Block is `lx-site-header`, the tag's own name. The Astro-only
+  data-search-hidden and data-search-floating states are not ported: the Marko
+  header has no hideSearchWhileVisible.
+*/
+.lx-site-header {
+  --_bg: var(--lux-neutral);
+  --_fg: var(--lux-neutral-content);
+  --_muted: var(--lux-neutral-muted);
+  --_line: var(--lux-neutral-line);
+  /* --lux-marque-accent, not --lux-accent: tokens.css's light accent is a
+     dark blue meant for text on light canvases, and this one sits on the
+     dark bar. */
+  --_accent: var(--lux-marque-accent);
+  --_primary: var(--lux-primary);
+  --_primary-content: var(--lux-primary-content);
+
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  /* The phone sizes scale with the bar's width (cqi), not the screen's. */
+  container-type: inline-size;
+  background-color: var(--_bg);
+  border-bottom: 1px solid var(--_line);
+  color: var(--_fg);
+  font-family: var(--font-futura, inherit);
+}
+
+.lx-site-header *:not(.lx-site-header__search *),
+.lx-site-header *:not(.lx-site-header__search *)::before,
+.lx-site-header *:not(.lx-site-header__search *)::after {
+  /* Not inside the search slot: that markup is styled for its own box model. */
+  box-sizing: border-box;
+}
+
+.lx-site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem 1.5rem;
+  max-width: var(--page-max, 80rem);
+  margin-inline: auto;
+  padding: 0.75rem var(--page-gutter, clamp(1rem, 4vw, 3rem));
+}
+
+.lx-site-header__logo {
+  display: flex;
+}
+
+.lx-site-header__logo .lx-logo:focus-visible {
+  outline: 2px solid var(--_accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.lx-site-header__search {
+  flex: 1 1 18rem;
+  min-width: 0;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.lx-site-header__cta {
+  margin-left: auto;
+  padding: 0.4rem 1.4rem;
+  border-radius: 9999px;
+  background-color: var(--_primary);
+  color: var(--_primary-content);
+  font-family: var(--font-futura-bold, var(--font-futura, inherit));
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    scale 150ms ease-out,
+    box-shadow 300ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.lx-site-header__cta:hover {
+  box-shadow: 0 0 1.25rem -0.25rem var(--_primary);
+}
+
+.lx-site-header__cta:active {
+  scale: 0.96;
+}
+
+.lx-site-header__cta:focus-visible {
+  outline: 2px solid var(--_primary);
+  outline-offset: 3px;
+}
+
+.lx-site-header--with-search .lx-site-header__cta {
+  margin-left: 0;
+}
+
+/* Tall enough for the menu button and the search alike, so the bar keeps its
+   height when they swap with the links and the page below does not jump. */
+.lx-site-header--with-search .lx-site-header__inner {
+  min-height: calc(2.75rem + 1.5rem);
+}
+
+/* Without a call-to-action nothing else pushes the menu button right. */
+.lx-site-header__inner:not(:has(.lx-site-header__cta)) .lx-site-header__menu {
+  margin-left: auto;
+}
+
+.lx-site-header__menu-button {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-right: -0.625rem;
+  border-radius: 2px;
+  color: var(--_fg);
+  cursor: pointer;
+  list-style: none;
+}
+
+.lx-site-header__menu-button::-webkit-details-marker {
+  display: none;
+}
+
+.lx-site-header__menu-button:focus-visible {
+  outline: 2px solid var(--_primary);
+  outline-offset: -2px;
+}
+
+.lx-site-header__menu[open] .lx-site-header__menu-button {
+  color: var(--_accent);
+}
+
+/* Over the header search, which also sits just under the bar. */
+.lx-site-header__menu-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem var(--page-gutter, clamp(1rem, 4vw, 3rem)) 1rem;
+  background-color: var(--_bg);
+  border-bottom: 1px solid var(--_line);
+}
+
+.lx-site-header__menu-link {
+  display: flex;
+  align-items: center;
+  min-height: 3rem;
+  border-bottom: 1px solid var(--_line);
+  font-size: 0.875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--_muted);
+}
+
+/* Visually hidden, still read by screen readers. */
+.lx-site-header__external-note {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.lx-site-header__menu-link:last-child {
+  border-bottom: 0;
+}
+
+.lx-site-header__menu-link:hover,
+.lx-site-header__menu-link:focus-visible {
+  color: var(--_fg);
+}
+
+.lx-site-header__menu-link:focus-visible {
+  outline: 2px solid var(--_primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lx-site-header__cta {
+    transition: none;
+  }
+}
