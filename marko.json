@@ -1,4 +1,5 @@
 {
   "exports": "./src/marko",
-  "script-lang": "ts"
+  "script-lang": "ts",
+  "<lx-logo>": { "template": "./src/marko/lx-logo/index.marko" }
 }

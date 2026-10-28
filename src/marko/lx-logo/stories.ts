@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/marko";
-import Logo, { type Input } from "../src/marko/logo.marko";
+import Logo, { type Input } from "./index.marko";
 
 /**
- * `<logo>` for Marko 6 apps, the twin of the Astro `Logo` and `createLogo`.
- * Discovered through the package's marko.json: `logo variant="black" accent`.
+ * `<lx-logo>` for Marko 6 apps, the twin of the Astro `Logo` and `createLogo`.
+ * Discovered through the package's marko.json: `lx-logo variant="black" accent`.
  */
 export default {
   title: "Components/logo",

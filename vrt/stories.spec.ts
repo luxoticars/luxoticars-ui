@@ -7,6 +7,7 @@ interface Entry {
   type: string;
   title: string;
   name: string;
+  importPath: string;
 }
 
 // The Astro Storybook is the root build; the Marko one is nested under /marko/.
@@ -15,6 +16,16 @@ const storybooks = [
   { renderer: "marko", base: "/marko", dir: "storybook-static/marko" },
 ];
 const themes = ["dark", "light"];
+
+// A tag in the `lx-` layout keeps its baselines beside its stories
+// (src/marko/lx-logo/__screenshots__/); every other story shares vrt/__screenshots__/.
+function snapshotName(renderer: string, story: Entry, theme: string) {
+  const colocated = story.importPath.match(/^\.\/(src\/marko\/.+)\/stories\.ts$/);
+  const file = `${story.id}-${theme}.png`;
+  return colocated
+    ? [...colocated[1].split("/"), "__screenshots__", file]
+    : ["vrt", "__screenshots__", renderer, file];
+}
 
 for (const { renderer, base, dir } of storybooks) {
   const index = JSON.parse(readFileSync(join(import.meta.dirname, "..", dir, "index.json"), "utf8"));
@@ -29,7 +40,7 @@ for (const { renderer, base, dir } of storybooks) {
         await page.waitForSelector("#storybook-root > *, #storybook-root:not(:empty)");
         await page.evaluate(() => document.fonts.ready);
 
-        await expect(page).toHaveScreenshot([renderer, `${story.id}-${theme}.png`], {
+        await expect(page).toHaveScreenshot(snapshotName(renderer, story, theme), {
           fullPage: true,
           animations: "disabled",
         });
