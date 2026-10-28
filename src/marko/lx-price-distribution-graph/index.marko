@@ -11,9 +11,8 @@
   new `minValue` or `maxValue`, which discards it; with no parent updating them
   it simply stays where it was dragged.
 
-  Concise syntax, by repo convention.
+  Concise syntax, by repo convention. Its stylesheet is `style.css`, found by Marko.
 */
-import "../styles/price-distribution-graph.css"
 import {
   OPEN_END,
   calculateBoundaries,
@@ -25,8 +24,8 @@ import {
   labelSpread,
   restrictKnob,
   validBuckets,
-} from "../utils/price-range.js"
-import type { CurrencyPosition, PriceBucket } from "../utils/price-range.js"
+} from "../../utils/price-range.js"
+import type { CurrencyPosition, PriceBucket } from "../../utils/price-range.js"
 
 export interface Labels {
   /** The title above the bars. */
@@ -126,15 +125,15 @@ static function move(drag: Drag | null, baseKey: string, type: "min" | "max", ra
   }
 }
 
-div ...attrs class=["price-distribution-graph", className] role="group" aria-label=labels?.accessibilityText
+div ...attrs class=["lx-price-distribution-graph", className] role="group" aria-label=labels?.accessibilityText
   if=labels?.graphTitle
-    div.price-distribution-graph__title
+    div.lx-price-distribution-graph__title
       span -- ${labels.graphTitle}
   if=buckets.length
-    div.price-distribution-graph__chart data-entries=buckets.length
+    div.lx-price-distribution-graph__chart data-entries=buckets.length
       for|bucket| of=buckets by="min"
-        span.price-distribution-graph__bar
-          ,class={ "price-distribution-graph__bar--enabled": isBarEnabled(bucket, minBoundary, maxBoundary) }
+        span.lx-price-distribution-graph__bar
+          ,class={ "lx-price-distribution-graph__bar--enabled": isBarEnabled(bucket, minBoundary, maxBoundary) }
           ,style={ height: `${Math.ceil(bucket.count * scale) || 1}%` }
           ,data-min=bucket.min
           ,data-max=bucket.max
@@ -143,12 +142,12 @@ div ...attrs class=["price-distribution-graph", className] role="group" aria-lab
           ,aria-label=bucket.accessibilityText
     div
       if=showKnobs
-        div.price-distribution-graph__sliders-container
-          div.price-distribution-graph__sliders-control
-            div.price-distribution-graph__track-highlight style=trackStyle
-            input.price-distribution-graph__slider
+        div.lx-price-distribution-graph__sliders-container
+          div.lx-price-distribution-graph__sliders-control
+            div.lx-price-distribution-graph__track-highlight style=trackStyle
+            input.lx-price-distribution-graph__slider
               ,...labels?.minKnobHtmlAttributes
-              ,class=["price-distribution-graph__slider--min", { "price-distribution-graph__slider--close": !!nudge }]
+              ,class=["lx-price-distribution-graph__slider--min", { "lx-price-distribution-graph__slider--close": !!nudge }]
               ,style=(nudge ? `--slider-thumb-translate-min: ${nudge.min}px` : undefined)
               ,type="range"
               ,min=0
@@ -160,11 +159,11 @@ div ...attrs class=["price-distribution-graph", className] role="group" aria-lab
               ,aria-label=labels?.minKnobAccessibilityText
               ,valueChange(value) { drag = move(drag, baseKey, "min", Number(value), minIdx, maxIdx, lastIdx, minTouched, maxTouched) }
               ,onChange() { onChange?.({ min: minTouched ? minBoundary : (minValue || minBoundary), max: maxTouched ? (maxBoundary === OPEN_END ? undefined : maxBoundary) : (maxValue || (maxBoundary === OPEN_END ? undefined : maxBoundary)) }) }
-            span.price-distribution-graph__range-value data-testid="price-knob-min-val" aria-hidden="true" style={ left: labelLeft("min", minIdx, maxIdx, lastIdx, buckets.length, spread) }
+            span.lx-price-distribution-graph__range-value data-testid="price-knob-min-val" aria-hidden="true" style={ left: labelLeft("min", minIdx, maxIdx, lastIdx, buckets.length, spread) }
               span -- ${minDisplay}
-            input.price-distribution-graph__slider
+            input.lx-price-distribution-graph__slider
               ,...labels?.maxKnobHtmlAttributes
-              ,class=["price-distribution-graph__slider--max", { "price-distribution-graph__slider--close": !!nudge }]
+              ,class=["lx-price-distribution-graph__slider--max", { "lx-price-distribution-graph__slider--close": !!nudge }]
               ,style=(nudge ? `--slider-thumb-translate-max: ${nudge.max}px` : undefined)
               ,type="range"
               ,min=0
@@ -176,14 +175,14 @@ div ...attrs class=["price-distribution-graph", className] role="group" aria-lab
               ,aria-label=labels?.maxKnobAccessibilityText
               ,valueChange(value) { drag = move(drag, baseKey, "max", Number(value), minIdx, maxIdx, lastIdx, minTouched, maxTouched) }
               ,onChange() { onChange?.({ min: minTouched ? minBoundary : (minValue || minBoundary), max: maxTouched ? (maxBoundary === OPEN_END ? undefined : maxBoundary) : (maxValue || (maxBoundary === OPEN_END ? undefined : maxBoundary)) }) }
-            span.price-distribution-graph__range-value data-testid="price-knob-max-val" aria-hidden="true" style={ left: labelLeft("max", minIdx, maxIdx, lastIdx, buckets.length, spread) }
+            span.lx-price-distribution-graph__range-value data-testid="price-knob-max-val" aria-hidden="true" style={ left: labelLeft("max", minIdx, maxIdx, lastIdx, buckets.length, spread) }
               span -- ${maxDisplay}
       else
-        div.price-distribution-graph__sliders-readonly
-          div.price-distribution-graph__track-highlight style=trackStyle
-          span.price-distribution-graph__range-value data-testid="price-knob-min-val" style={ left: labelLeft("min", minIdx, maxIdx, lastIdx, buckets.length, spread) }
+        div.lx-price-distribution-graph__sliders-readonly
+          div.lx-price-distribution-graph__track-highlight style=trackStyle
+          span.lx-price-distribution-graph__range-value data-testid="price-knob-min-val" style={ left: labelLeft("min", minIdx, maxIdx, lastIdx, buckets.length, spread) }
             span -- ${minDisplay}
-          span.price-distribution-graph__range-value data-testid="price-knob-max-val" style={ left: labelLeft("max", minIdx, maxIdx, lastIdx, buckets.length, spread) }
+          span.lx-price-distribution-graph__range-value data-testid="price-knob-max-val" style={ left: labelLeft("max", minIdx, maxIdx, lastIdx, buckets.length, spread) }
             span -- ${maxDisplay}
     if=labels?.currencyCaption
-      div.price-distribution-graph__currency -- ${labels.currencyCaption}
+      div.lx-price-distribution-graph__currency -- ${labels.currencyCaption}
