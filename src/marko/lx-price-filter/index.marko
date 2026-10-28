@@ -13,16 +13,15 @@
   under the parameter names the fields give as `key` (`price_min` and
   `price_max` when they have none), and the parent decides what to do with it.
 
-  Concise syntax, by repo convention.
+  Concise syntax, by repo convention. Its stylesheet is `style.css`, found by Marko.
 */
-import "../styles/price-filter.css"
-import { parseOptionValue } from "../utils/price-range.js"
-import type { Input as GraphInput, SelectedRange } from "./price-distribution-graph.marko"
-import type { Input as GroupInput, SelectEvent } from "./lx-selection-group/index.marko"
-import type { Input as TextRangeInput, RangeValues } from "./lx-text-range/index.marko"
-import PriceDistributionGraph from "./price-distribution-graph.marko"
-import SelectionGroup from "./lx-selection-group/index.marko"
-import TextRange from "./lx-text-range/index.marko"
+import { parseOptionValue } from "../../utils/price-range.js"
+import type { Input as GraphInput, SelectedRange } from "../lx-price-distribution-graph/index.marko"
+import type { Input as GroupInput, SelectEvent } from "../lx-selection-group/index.marko"
+import type { Input as TextRangeInput, RangeValues } from "../lx-text-range/index.marko"
+import PriceDistributionGraph from "../lx-price-distribution-graph/index.marko"
+import SelectionGroup from "../lx-selection-group/index.marko"
+import TextRange from "../lx-text-range/index.marko"
 
 export interface PriceParam {
   paramKey: string
@@ -64,7 +63,7 @@ static function rangeFrom(range: RangeValues) {
   return { min: Number(range.minValue ?? 0), max: range.maxValue ? Number(range.maxValue) : undefined }
 }
 
-div ...attrs class=["price-filter", className]
+div ...attrs class=["lx-price-filter", className]
   if=selectionGroupData
     SelectionGroup
       ,...selectionGroupData
@@ -84,7 +83,7 @@ div ...attrs class=["price-filter", className]
         onSelectionChange?.({ value: event.value, url: event.url, selected: true })
       }
   if=textRangeData
-    div.price-filter__section
+    div.lx-price-filter__section
       TextRange
         ,...textRangeData
         ,minField={ ...textRangeData.minField, value: min ? String(min) : "" }
@@ -105,7 +104,7 @@ div ...attrs class=["price-filter", className]
           ])
         })
   if=priceGraphData
-    div.price-filter__section-price
+    div.lx-price-filter__section-price
       PriceDistributionGraph
         ,...priceGraphData
         ,minValue=min

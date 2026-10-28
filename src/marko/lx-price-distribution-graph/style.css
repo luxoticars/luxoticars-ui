@@ -1,23 +1,24 @@
 /*
-  Price distribution graph styles. BEM: `price-distribution-graph` is the
-  block. Tokens are read `--lux-*` first, then the daisyUI name, then a literal
-  (see program-badge.css).
+  Forked from none [source-hash: none]
+  Marko-only: no other renderer has a price graph, so this is the tag's own
+  stylesheet, moved from styles/price-distribution-graph.css. Needs
+  styles/tokens.css. Block is `lx-price-distribution-graph`, the tag's own name.
 */
 
-.price-distribution-graph {
-  --pdg-blue: var(--lux-info, var(--color-info, oklch(48% 0.154 245)));
-  --pdg-grey: var(--lux-secondary, var(--color-secondary, oklch(45% 0.02 286)));
-  --pdg-paper: var(--lux-base-100, var(--color-base-100, oklch(97.2% 0.004 264.7)));
+.lx-price-distribution-graph {
+  --pdg-blue: var(--lux-info);
+  --pdg-grey: var(--lux-secondary);
+  --pdg-paper: var(--lux-base-100);
   width: 10.625rem;
   margin: 0 0 0.625rem 0.625rem;
 }
 
-.price-distribution-graph__title {
+.lx-price-distribution-graph__title {
   padding: 0 0 1rem;
   color: var(--pdg-grey);
 }
 
-.price-distribution-graph__chart {
+.lx-price-distribution-graph__chart {
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
@@ -28,39 +29,39 @@
   transform: translateX(0.75rem);
 }
 
-.price-distribution-graph__bar {
+.lx-price-distribution-graph__bar {
   width: 6px;
   border-radius: 2.5px;
   background: var(--pdg-grey);
   opacity: 0.8;
 }
 
-.price-distribution-graph__bar--enabled {
+.lx-price-distribution-graph__bar--enabled {
   background: var(--pdg-blue);
   opacity: 1;
 }
 
-.price-distribution-graph__sliders-container {
+.lx-price-distribution-graph__sliders-container {
   display: flex;
   flex-direction: column;
   margin-top: 4px;
 }
 
-.price-distribution-graph__sliders-control {
+.lx-price-distribution-graph__sliders-control {
   position: relative;
   min-height: 30px;
 }
 
-.price-distribution-graph__sliders-readonly {
+.lx-price-distribution-graph__sliders-readonly {
   position: relative;
   height: 16px;
 }
 
-.price-distribution-graph__sliders-readonly > span {
+.lx-price-distribution-graph__sliders-readonly > span {
   top: 10px;
 }
 
-.price-distribution-graph__track-highlight {
+.lx-price-distribution-graph__track-highlight {
   position: relative;
   top: 4px;
   left: 0;
@@ -75,7 +76,7 @@
   transition: background 120ms linear;
 }
 
-.price-distribution-graph__range-value {
+.lx-price-distribution-graph__range-value {
   position: absolute;
   top: 25px;
   width: 40px;
@@ -90,7 +91,7 @@
 }
 
 /* Both range inputs sit over one track; only their thumbs take the pointer. */
-.price-distribution-graph__slider {
+.lx-price-distribution-graph__slider {
   appearance: none;
   position: absolute;
   width: 100%;
@@ -100,7 +101,7 @@
   pointer-events: none;
 }
 
-.price-distribution-graph__slider::-webkit-slider-thumb {
+.lx-price-distribution-graph__slider::-webkit-slider-thumb {
   appearance: none;
   box-sizing: border-box;
   width: 16px;
@@ -113,7 +114,7 @@
   pointer-events: all;
 }
 
-.price-distribution-graph__slider::-moz-range-thumb {
+.lx-price-distribution-graph__slider::-moz-range-thumb {
   appearance: none;
   box-sizing: border-box;
   width: 16px;
@@ -126,47 +127,47 @@
   pointer-events: all;
 }
 
-.price-distribution-graph__slider::-webkit-slider-thumb:hover {
+.lx-price-distribution-graph__slider::-webkit-slider-thumb:hover {
   background: var(--pdg-blue);
 }
 
-.price-distribution-graph__slider::-moz-range-thumb:hover {
+.lx-price-distribution-graph__slider::-moz-range-thumb:hover {
   background: var(--pdg-blue);
 }
 
-.price-distribution-graph__slider:focus-visible {
+.lx-price-distribution-graph__slider:focus-visible {
   outline: none;
 }
 
-.price-distribution-graph__slider:focus-visible::-webkit-slider-thumb {
+.lx-price-distribution-graph__slider:focus-visible::-webkit-slider-thumb {
   outline: 2px solid var(--pdg-blue);
   outline-offset: 2px;
 }
 
-.price-distribution-graph__slider:focus-visible::-moz-range-thumb {
+.lx-price-distribution-graph__slider:focus-visible::-moz-range-thumb {
   outline: 2px solid var(--pdg-blue);
   outline-offset: 2px;
 }
 
 /* Knobs one or two buckets apart would overlap, so each thumb is nudged away. */
-.price-distribution-graph__slider--close.price-distribution-graph__slider--min::-webkit-slider-thumb {
+.lx-price-distribution-graph__slider--close.lx-price-distribution-graph__slider--min::-webkit-slider-thumb {
   transform: translateX(var(--slider-thumb-translate-min, -4px));
 }
 
-.price-distribution-graph__slider--close.price-distribution-graph__slider--min::-moz-range-thumb {
+.lx-price-distribution-graph__slider--close.lx-price-distribution-graph__slider--min::-moz-range-thumb {
   transform: translateX(var(--slider-thumb-translate-min, -4px));
 }
 
-.price-distribution-graph__slider--close.price-distribution-graph__slider--max::-webkit-slider-thumb {
+.lx-price-distribution-graph__slider--close.lx-price-distribution-graph__slider--max::-webkit-slider-thumb {
   transform: translateX(var(--slider-thumb-translate-max, 4px));
 }
 
-.price-distribution-graph__slider--close.price-distribution-graph__slider--max::-moz-range-thumb {
+.lx-price-distribution-graph__slider--close.lx-price-distribution-graph__slider--max::-moz-range-thumb {
   transform: translateX(var(--slider-thumb-translate-max, 4px));
 }
 
 /* The currency named once, under the value labels, when they are bare numbers. */
-.price-distribution-graph__currency {
+.lx-price-distribution-graph__currency {
   margin-top: 0.875rem;
   font-size: 0.6875rem;
   color: var(--pdg-grey);

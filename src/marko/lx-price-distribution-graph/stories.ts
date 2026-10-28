@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/marko";
-import PriceDistributionGraph, { type Input } from "../src/marko/price-distribution-graph.marko";
-import { graphData } from "./price-filter-data";
+import PriceDistributionGraph, { type Input } from "./index.marko";
+import { graphData } from "../../../stories-marko/price-filter-data";
 
 /**
- * `<price-distribution-graph>` for Marko 6 apps: a histogram of listings by
+ * `<lx-price-distribution-graph>` for Marko 6 apps: a histogram of listings by
  * price with two knobs. The knobs snap to the edges of the buckets and stay at
  * least one bucket apart. `onChange` fires when a knob is released.
  *
  * ```marko
- * price-distribution-graph priceRanges=buckets minValue=0 maxValue=250 onChange(range) { … }
+ * lx-price-distribution-graph priceRanges=buckets minValue=0 maxValue=250 onChange(range) { … }
  * ```
  */
 export default {

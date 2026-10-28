@@ -2,6 +2,8 @@
   "exports": "./src/marko",
   "script-lang": "ts",
   "<lx-logo>": { "template": "./src/marko/lx-logo/index.marko" },
+  "<lx-price-distribution-graph>": { "template": "./src/marko/lx-price-distribution-graph/index.marko" },
+  "<lx-price-filter>": { "template": "./src/marko/lx-price-filter/index.marko" },
   "<lx-program-badge>": { "template": "./src/marko/lx-program-badge/index.marko" },
   "<lx-selection-group>": { "template": "./src/marko/lx-selection-group/index.marko" },
   "<lx-text-range>": { "template": "./src/marko/lx-text-range/index.marko" }

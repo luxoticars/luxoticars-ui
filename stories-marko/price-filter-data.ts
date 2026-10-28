@@ -2,7 +2,7 @@
   Sample data shared by the price filter stories, one set per part, so the
   composed filter and each part on its own show the same thing.
 */
-import type { Input as GraphInput } from "../src/marko/price-distribution-graph.marko";
+import type { Input as GraphInput } from "../src/marko/lx-price-distribution-graph/index.marko";
 import type { Input as GroupInput } from "../src/marko/lx-selection-group/index.marko";
 import type { Input as TextRangeInput } from "../src/marko/lx-text-range/index.marko";
 
