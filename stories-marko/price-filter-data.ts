@@ -3,7 +3,7 @@
   composed filter and each part on its own show the same thing.
 */
 import type { Input as GraphInput } from "../src/marko/price-distribution-graph.marko";
-import type { Input as GroupInput } from "../src/marko/selection-group.marko";
+import type { Input as GroupInput } from "../src/marko/lx-selection-group/index.marko";
 import type { Input as TextRangeInput } from "../src/marko/lx-text-range/index.marko";
 
 export const priceRanges: GraphInput["priceRanges"] = [

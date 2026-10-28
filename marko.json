@@ -3,5 +3,6 @@
   "script-lang": "ts",
   "<lx-logo>": { "template": "./src/marko/lx-logo/index.marko" },
   "<lx-program-badge>": { "template": "./src/marko/lx-program-badge/index.marko" },
+  "<lx-selection-group>": { "template": "./src/marko/lx-selection-group/index.marko" },
   "<lx-text-range>": { "template": "./src/marko/lx-text-range/index.marko" }
 }

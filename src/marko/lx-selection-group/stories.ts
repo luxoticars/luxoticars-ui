@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/marko";
-import SelectionGroup, { type Input } from "../src/marko/selection-group.marko";
-import { selectionGroupData } from "./price-filter-data";
+import SelectionGroup, { type Input } from "./index.marko";
+import { selectionGroupData } from "../../../stories-marko/price-filter-data";
 
 /**
- * `<selection-group>` for Marko 6 apps: checkboxes or radios. It is controlled,
+ * `<lx-selection-group>` for Marko 6 apps: checkboxes or radios. It is controlled,
  * so each option's `selected` is the source of truth and `onSelect` reports a
  * change for the parent to apply.
  *
  * ```marko
- * selection-group type="checkbox" options=options onSelect(event) { … }
+ * lx-selection-group type="checkbox" options=options onSelect(event) { … }
  * ```
  *
  * An option whose `url` is an absolute http(s) address renders as a link, with
