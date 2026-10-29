@@ -58,6 +58,17 @@ SiteHeader stories are, because the Vitest browser runner cannot run the
 header's TypeScript `<script>`. The addon also adds a test panel to each
 Storybook (`npm run storybook`, `npm run storybook:marko`).
 
+### Accessibility
+
+`@storybook/addon-a11y` (axe-core) checks each story's rendered DOM, in the
+Accessibility panel and in the same test run. Both previews set
+`parameters.a11y.test` to `"error"`, so a violation fails `npm run test:stories`.
+A story with a known problem it cannot fix yet is marked
+`parameters: { a11y: { test: "todo" } }` with a comment saying why: it still
+shows the violation as a warning in Storybook, but does not fail the run. Remove
+the `todo` once the story passes. Use `"off"` only for a story that shows
+something inaccessible on purpose.
+
 ## Running Storybook
 
 Storybook is how components are reviewed. Start it with:

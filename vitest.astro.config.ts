@@ -13,6 +13,10 @@ const astro = defineConfig({
   plugins: [tailwindcss(), storybookTest({ configDir: ".storybook" })],
   test: {
     name: "storybook-astro",
+    // The stories share one Astro render server, which answers each render
+    // within 5 seconds. Files run in parallel queue up behind its first cold
+    // renders and time out at random, so run them one at a time.
+    fileParallelism: false,
     browser: { enabled: true, headless: true, provider: playwright({}), instances: [{ browser: "chromium" }] },
   },
 });

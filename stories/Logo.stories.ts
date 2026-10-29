@@ -20,20 +20,28 @@ export const Default = {
   args: {
     siteTitle: "Luxoticars",
   },
+  // The default variant is white, and the test run renders the light theme
+  // whatever the globals say, so the wordmark lands on a light background.
+  parameters: { a11y: { test: "todo" } },
 };
 
-/** White wordmark: it is invisible on the default canvas, so give it a dark one. */
+/** White wordmark, for dark backgrounds: the story opens in the dark theme. */
 export const White = {
   args: { variant: "white" },
-  parameters: { backgrounds: { default: "dark" } },
+  globals: { theme: "dark" },
+  // The test run renders the light theme whatever the story's globals say.
+  parameters: { a11y: { test: "todo" } },
 };
 
 /** Black wordmark, for light backgrounds. */
 export const Black = {
   args: { variant: "black" },
+  globals: { theme: "light" },
 };
 
 /** Accent line under "LUX", as the site header uses it. Hover or keyboard focus stretches it. */
 export const Accent = {
   args: { variant: "white", accent: true },
+  globals: { theme: "dark" },
+  parameters: { a11y: { test: "todo" } },
 };
