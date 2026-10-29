@@ -20,4 +20,4 @@ export default {
 type Story = StoryObj<Input>;
 
 /** Black wordmark with the accent line, for light backgrounds. */
-export const BlackWithAccent: Story = { args: { variant: "black", accent: true } };
+export const BlackWithAccent: Story = { args: { variant: "black", accent: true }, globals: { theme: "light" } };

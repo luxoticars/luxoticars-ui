@@ -55,6 +55,7 @@ export default {
   parameters: {
     layout: "fullscreen",
     backgrounds: { disable: true },
+    a11y: { test: "error" },
   },
   globalTypes: {
     theme: {

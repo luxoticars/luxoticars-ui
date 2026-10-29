@@ -138,8 +138,9 @@ div ...attrs class=["lx-price-distribution-graph", className] role="group" aria-
           ,data-min=bucket.min
           ,data-max=bucket.max
           ,data-count=bucket.count
-          ,role="img"
+          ,role=(bucket.accessibilityText ? "img" : undefined)
           ,aria-label=bucket.accessibilityText
+          ,aria-hidden=(bucket.accessibilityText ? undefined : "true")
     div
       if=showKnobs
         div.lx-price-distribution-graph__sliders-container
