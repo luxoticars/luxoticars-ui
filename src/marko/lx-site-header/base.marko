@@ -5,6 +5,10 @@
 
   The menu is wired by `wireSiteMenu()`. With `barLinks`, a window widened
   until the bar's links show closes an open menu (`closeMenuWhenLinksShow()`).
+  With `model.hideOnScroll` the bar slides away on scrolling down, once the app
+  imports the opt-in hide-on-scroll.css (no entry does): that stylesheet does
+  it where the browser has `scroll-state(scrolled)` queries, and
+  `wireHideOnScroll()` gives it the scroll direction everywhere else.
 
   Not here: the Astro prop `hideSearchWhileVisible`, which hides the header's
   search while the page shows its own. No Marko page needs it yet.
@@ -13,6 +17,7 @@
 */
 import type { Model } from "./helper"
 import { closeMenuWhenLinksShow, wireSiteMenu } from "../../scripts/site-header-menu.js"
+import { wireHideOnScroll } from "../../scripts/site-header-hide-on-scroll.js"
 import "./base.css"
 
 export interface Input {
@@ -26,7 +31,7 @@ export interface Input {
 
 const/{ model, variant, barLinks, search }=input
 
-header class=["lx-site-header", `lx-site-header--${variant}`, search && "lx-site-header--with-search"] data-site-header
+header/bar class=["lx-site-header", `lx-site-header--${variant}`, search && "lx-site-header--with-search"] data-site-header data-hide-on-scroll=model.hideOnScroll
   div.lx-site-header__inner
     div.lx-site-header__logo
       lx-logo siteTitle=model.siteTitle href=model.homeHref accent
@@ -62,3 +67,4 @@ header class=["lx-site-header", `lx-site-header--${variant}`, search && "lx-site
 
 script -- wireSiteMenu(menu() as HTMLDetailsElement, $signal)
 script -- if (barLinks) closeMenuWhenLinksShow(menu() as HTMLDetailsElement, nav(), $signal)
+script -- if (model.hideOnScroll) wireHideOnScroll(bar() as HTMLElement, $signal)

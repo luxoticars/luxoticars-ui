@@ -1,0 +1,59 @@
+/*
+  Forked from src/styles/site-header-hide-on-scroll.css [source-hash: 9f4ddb5723d6]
+  Optional, like its source: `<lx-site-header>`'s hide on scroll, kept out of
+  base.css so a page that does not want it never downloads it. No entry
+  imports it; the app does, once, to opt in:
+
+    import "@luxoticars/ui/marko/lx-site-header/hide-on-scroll.css"
+
+  `hideOnScroll` (on by default) only marks the bar with `data-hide-on-scroll`
+  and wires the fallback script; without this file that mark and the script's
+  `data-scroll-dir` change nothing visible, and the bar stays at the top.
+  Block is `lx-site-header`.
+
+  Scrolling down slides the bar up out of view, scrolling up brings it back.
+  It stays put while its menu is open or anything in it has focus, and under
+  reduced motion it never moves at all. Only `translate` changes, so nothing
+  below it reflows.
+
+  Two ways to the same state, sharing the selectors below:
+  - `@container scroll-state(scrolled: bottom)` where the browser has it
+    (Chrome 144+), with :root as the scroll-state container while a header
+    asks for it.
+  - `data-scroll-dir="down"`, set by scripts/site-header-hide-on-scroll.js
+    everywhere else. The script reads `--_scrolled-query` to stay out of the
+    way where the query works.
+  The search is a row of the bar in both entries, never floating under it,
+  so unlike the Astro header it needs no slide of its own.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  .lx-site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"]) {
+    transition: translate 200ms ease-out;
+  }
+
+  .lx-site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"])[data-scroll-dir="down"]:not(:focus-within):not(:has(.lx-site-header__menu[open])) {
+    translate: 0 -100%;
+  }
+}
+
+@supports (container-type: scroll-state) {
+  :root:has(.lx-site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"])) {
+    container-type: scroll-state;
+  }
+
+  /* Matches always, but only where `scrolled` is understood: the script's
+     cue to do nothing. */
+  @container scroll-state(scrolled: none) or scroll-state(scrolled) {
+    .lx-site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"]) {
+      --_scrolled-query: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @container scroll-state(scrolled: bottom) {
+      .lx-site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"]):not(:focus-within):not(:has(.lx-site-header__menu[open])) {
+        translate: 0 -100%;
+      }
+    }
+  }
+}
