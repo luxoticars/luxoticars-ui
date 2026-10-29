@@ -16,14 +16,14 @@
   keeps its sticky place; only `translate` changes, so nothing below it
   reflows.
 
-  Two ways to the same state, sharing the selectors below:
-  - `@container scroll-state(scrolled: bottom)` where the browser has it
-    (Chrome 144+). It needs the page's scroller as a scroll-state container,
+  Two ways to the same slide. The script always sets the attribute; the
+  container query is progressive enhancement where it actually applies, and
+  does not turn the script off.
+  - `data-scroll-dir="down"`, set by scripts/site-header-hide-on-scroll.js.
+  - `@container scroll-state(scrolled: bottom)` where the browser applies that
+    direction query. It needs the page's scroller as a scroll-state container,
     so :root gets one, only while a header asks for it. The header itself
     keeps its inline-size container for the cqi sizes.
-  - `data-scroll-dir="down"`, set by scripts/site-header-hide-on-scroll.js
-    everywhere else. The script reads `--_scrolled-query` to stay out of the
-    way where the query works.
 */
 @media (prefers-reduced-motion: no-preference) {
   .site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"]),
@@ -32,7 +32,10 @@
   }
 
   /* The floating search hangs under the bar, so it slides a step further to
-     leave with it rather than stay behind at the top of the screen. */
+     leave with it rather than stay behind at the top of the screen.
+     The slide uses the individual `translate` property (`translate: 0 -100%`),
+     not `transform`. DevTools Computed `transform` stays `none` by design;
+     check `translate` when debugging. */
   .site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"])[data-scroll-dir="down"]:not(:focus-within):not(:has(.site-header__menu[open])),
   .site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"])[data-scroll-dir="down"]:not(:focus-within):not(:has(.site-header__menu[open])) .site-header__search {
     translate: 0 -100%;
@@ -44,15 +47,9 @@
     container-type: scroll-state;
   }
 
-  /* Matches always, but only where `scrolled` is understood: the script's
-     cue to do nothing. */
-  @container scroll-state(scrolled: none) or scroll-state(scrolled) {
-    .site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"]) {
-      --_scrolled-query: 1;
-    }
-  }
-
   @media (prefers-reduced-motion: no-preference) {
+    /* Same slide: individual `translate`, not `transform`. Computed `transform`
+       stays `none`; check `translate` when debugging. */
     @container scroll-state(scrolled: bottom) {
       .site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"]):not(:focus-within):not(:has(.site-header__menu[open])),
       .site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"]):not(:focus-within):not(:has(.site-header__menu[open])) .site-header__search {

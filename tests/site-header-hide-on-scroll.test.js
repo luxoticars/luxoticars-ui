@@ -1,16 +1,15 @@
-import { test, beforeEach } from "node:test";
+import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   hideOnScrollEnabled,
-  resetHideOnScrollSupport,
   wireHideOnScroll,
 } from "../src/scripts/site-header-hide-on-scroll.js";
 import { buildModel } from "../src/marko/lx-site-header/helper.ts";
 
-/* No DOM in the test deps, so a window, getComputedStyle and a header are
-   faked with just what the script touches. */
+/* No DOM in the test deps, so a window and a header are faked with just what
+   the script touches. `scrolledQuery` is the old stylesheet support cue
+   (`--_scrolled-query`); it must not turn the script off. */
 
-/** `scrolledQuery` is what the stylesheet's support probe left on the header. */
 function setup({ scrolledQuery = "", attr = "" } = {}) {
   const win = new EventTarget();
   win.scrollY = 0;
@@ -35,8 +34,6 @@ function setup({ scrolledQuery = "", attr = "" } = {}) {
   return { header, scrollTo };
 }
 
-beforeEach(() => resetHideOnScrollSupport());
-
 test("on unless the attribute is missing or \"false\"", () => {
   assert.equal(hideOnScrollEnabled(setup().header), true);
   assert.equal(hideOnScrollEnabled(setup({ attr: "true" }).header), true);
@@ -53,20 +50,13 @@ test("off: scrolling leaves the header alone", () => {
   }
 });
 
-test("where the stylesheet hides it on its own, the script does nothing", () => {
+test("a scroll-state support cue does not stop the script setting the direction", () => {
   const { header, scrollTo } = setup({ scrolledQuery: " 1" });
   wireHideOnScroll(header, new AbortController().signal);
   scrollTo(500);
-  assert.equal(header.dataset.scrollDir, undefined);
-});
-
-test("support is read once, from the first header wired", () => {
-  let reads = 0;
-  const { header } = setup();
-  globalThis.getComputedStyle = () => (reads++, { getPropertyValue: () => "" });
-  wireHideOnScroll(header, new AbortController().signal);
-  wireHideOnScroll(header, new AbortController().signal);
-  assert.equal(reads, 1);
+  assert.equal(header.dataset.scrollDir, "down");
+  scrollTo(200);
+  assert.equal(header.dataset.scrollDir, "up");
 });
 
 test("down hides, up shows; short scrolls change nothing", () => {
@@ -127,7 +117,11 @@ test("hide-on-scroll CSS ships only in the opt-in stylesheets", async () => {
     assert.doesNotMatch(rules(read(p)), /data-hide-on-scroll|scroll-state/, p);
   }
   for (const p of ["src/styles/site-header-hide-on-scroll.css", "src/marko/lx-site-header/hide-on-scroll.css"]) {
-    assert.match(rules(read(p)), /data-hide-on-scroll/, p);
+    const css = rules(read(p));
+    assert.match(css, /data-hide-on-scroll/, p);
+    assert.match(css, /data-scroll-dir="down"/, p);
+    assert.match(css, /scroll-state\(scrolled:\s*bottom\)/, p);
+    assert.doesNotMatch(css, /--_scrolled-query|scrolled:\s*none/, p);
   }
   for (const p of [
     "src/astro/SiteHeader.astro",

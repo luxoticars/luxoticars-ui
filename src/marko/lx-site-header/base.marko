@@ -6,9 +6,9 @@
   The menu is wired by `wireSiteMenu()`. With `barLinks`, a window widened
   until the bar's links show closes an open menu (`closeMenuWhenLinksShow()`).
   With `model.hideOnScroll` the bar slides away on scrolling down, once the app
-  imports the opt-in hide-on-scroll.css (no entry does): that stylesheet does
-  it where the browser has `scroll-state(scrolled)` queries, and
-  `wireHideOnScroll()` gives it the scroll direction everywhere else.
+  imports the opt-in hide-on-scroll.css (no entry does). `wireHideOnScroll()`
+  sets the scroll direction; `scroll-state(scrolled: bottom)` hides the same
+  way where the browser applies it.
 
   Not here: the Astro prop `hideSearchWhileVisible`, which hides the header's
   search while the page shows its own. No Marko page needs it yet.
