@@ -47,8 +47,7 @@ export const Wide = { args: { scenario: "lightbox", size: "wide" } };
 export const Large = { args: { scenario: "lightbox", size: "large" } };
 export const Fullscreen = { args: { scenario: "lightbox", size: "fullscreen" } };
 /** A forced choice: alertdialog, no ✕, Escape cancels, the backdrop does nothing. */
-// Its destructive button has the same low contrast as the Destructive button story.
-export const Confirm = { args: { scenario: "confirm" }, parameters: { a11y: { test: "todo" } } };
+export const Confirm = { args: { scenario: "confirm" } };
 export const Panel = { args: { scenario: "panel" } };
 export const PanelEnd = { args: { scenario: "panel", side: "end" } };
 /** The body's own form, submitted by a footer button through its `form` attribute. Escape-only dismiss. */
