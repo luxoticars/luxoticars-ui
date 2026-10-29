@@ -57,7 +57,7 @@ Add `tags: ["!test"]` to a story, or to its meta, to leave it out; the
 SiteHeader stories are, because the Vitest browser runner cannot run the
 header's TypeScript `<script>`. The addon also adds a test panel to each
 Storybook (`npm run storybook`, `npm run storybook:marko`). The `Test` workflow
-runs `npm test` and `npm run test:stories` on every pull request.
+runs `npm test` and `npm run test:stories` on every pull request (not on pushes to main).
 
 ### Accessibility
 

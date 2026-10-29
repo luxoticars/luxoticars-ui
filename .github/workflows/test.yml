@@ -1,13 +1,12 @@
 # Runs the unit tests and every story as a component test (@storybook/addon-vitest,
-# which includes the accessibility checks) on each pull request and each push to
-# main. The story tests need Playwright's Chromium, installed here with its
-# system libraries.
+# which includes the accessibility checks) on each pull request. It does not run
+# on pushes to main: the pull request run already tested the same code, and the
+# Release workflow runs there. The story tests need Playwright's Chromium,
+# installed here with its system libraries.
 name: Test
 
 on:
   pull_request:
-    branches: [main]
-  push:
     branches: [main]
 
 permissions:
