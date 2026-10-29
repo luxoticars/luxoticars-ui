@@ -8,7 +8,7 @@ import tailwindcss from "@tailwindcss/vite";
 */
 const config: StorybookConfig = {
   stories: ["../stories/**/*.stories.ts"],
-  addons: ["@storybook/addon-docs"],
+  addons: ["@storybook/addon-docs", "@storybook/addon-vitest"],
   /*
     The Marko Storybook (.storybook-marko/), composed into this one so both
     renderers share one sidebar. In development it is its own dev server

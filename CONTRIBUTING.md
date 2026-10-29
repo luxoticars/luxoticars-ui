@@ -40,23 +40,23 @@ setup without it: your own fork can host its own Storybook preview.
 
 Keep your fork current with `git fetch upstream && git rebase upstream/main`.
 
-## Visual regression tests
+## Component tests
 
-Every story in both Storybooks is screenshotted in dark and light themes at a
-desktop and a mobile size (Playwright, `vrt/stories.spec.ts`). Baselines are
-committed under `vrt/__screenshots__/`.
+Every story in both Storybooks is also a test (`@storybook/addon-vitest`): it
+renders in headless Chromium, a story's `play` function runs, and an error or a
+failed assertion fails the test. The Astro and Marko Storybooks are one Vitest
+project each (`vitest.astro.config.ts`, `vitest.marko.config.ts`).
 
 ```bash
-npm run vrt          # build Storybook, compare against the baselines
-npm run vrt:update   # rewrite the baselines after an intended visual change
+npx playwright install chromium   # once
+npm run test:stories              # every story, both Storybooks
+npx vitest run --project=storybook-marko    # one Storybook
 ```
 
-Docker must be running. The tests execute inside the Playwright Linux image
-(`scripts/vrt.sh`), so font rendering is identical on every machine; baselines
-taken outside it will not match. Review the PNG diffs in `git` before committing
-updated baselines, and pass `-g <name>` to run a subset, for example
-`npm run vrt -- -g program-badge`. A new component's stories are picked up
-automatically; run `npm run vrt:update` to create their baselines.
+Add `tags: ["!test"]` to a story, or to its meta, to leave it out; the
+SiteHeader stories are, because the Vitest browser runner cannot run the
+header's TypeScript `<script>`. The addon also adds a test panel to each
+Storybook (`npm run storybook`, `npm run storybook:marko`).
 
 ## Running Storybook
 

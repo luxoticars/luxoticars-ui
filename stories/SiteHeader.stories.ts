@@ -11,7 +11,10 @@ import "./site-header-demo.css";
 export default {
   title: "Components/SiteHeader",
   component: SiteHeader,
-  tags: ["autodocs"],
+  // Not a component test: the header's `<script>` is TypeScript, which the Vitest
+  // browser runner executes as plain JavaScript once the story is rendered, and fails
+  // to parse ("Unexpected token ':'"). The story is still built and shown in Storybook.
+  tags: ["autodocs", "!test"],
   argTypes: {
     slots: { table: { disable: true } },
   },
