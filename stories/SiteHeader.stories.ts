@@ -57,10 +57,9 @@ export default {
 
 /*
   The header's own <script> does not run in these prerendered stories (as with
-  Dialog's), so where the browser needs the scroll-direction script the story
-  wires it itself once rendered: a no-op where the stylesheet hides the bar on
-  its own, or with `hideOnScroll={false}`. Each render drops the previous one's
-  listener.
+  Dialog's), so the story wires the scroll-direction script itself once
+  rendered. A no-op with `hideOnScroll={false}`. Each render drops the previous
+  one's listener.
 */
 let unwire: AbortController | undefined;
 

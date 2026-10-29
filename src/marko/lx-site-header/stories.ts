@@ -37,9 +37,8 @@ import "./hide-on-scroll.css";
  *
  * Scrolling down slides the bar out of view and scrolling up brings it back.
  * It stays while its menu is open or it has focus, and never moves under
- * reduced motion. Chrome 144+ does it in CSS alone
- * (`@container scroll-state(scrolled)`); elsewhere a small script that the
- * header loads itself tracks the scroll direction.
+ * reduced motion. The header's script sets the scroll direction;
+ * `scroll-state(scrolled: bottom)` does the same where the browser applies it.
  *
  * The slide is an opt-in stylesheet, so a page that does not want it never
  * downloads it: no entry imports it. Import it once in the app to turn it on:

@@ -23,8 +23,9 @@ export interface ModelInput {
   /**
    * Slide the sticky bar up out of view while the page scrolls down, and back
    * on scrolling up. It stays while its menu is open or it has focus, and
-   * never moves under reduced motion. Pure CSS where the browser has
-   * `scroll-state(scrolled)` queries; a small script elsewhere. Needs the
+   * never moves under reduced motion. A small script sets `data-scroll-dir`;
+   * `scroll-state(scrolled: bottom)` hides the same way where the browser
+   * applies it. Needs the
    * opt-in stylesheet `@luxoticars/ui/marko/lx-site-header/hide-on-scroll.css`,
    * which no entry imports; without it the bar stays put. @default true
    */

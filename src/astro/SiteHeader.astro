@@ -29,8 +29,9 @@ export type Props = {
   /**
    * Slide the sticky bar up out of view while the page scrolls down, and back
    * on scrolling up. It stays while its menu is open or it has focus, and
-   * never moves under reduced motion. Pure CSS where the browser has
-   * `scroll-state(scrolled)` queries; a small script elsewhere.
+   * never moves under reduced motion. A small script sets `data-scroll-dir`;
+   * `scroll-state(scrolled: bottom)` hides the same way where the browser
+   * applies it.
    *
    * Opt-in stylesheet: this component does not ship the slide. Import
    * `@luxoticars/ui/styles/site-header-hide-on-scroll.css` once in the app to
@@ -128,8 +129,8 @@ const header = resolveSiteHeader({ links, ctaLabel });
       if (menu) wireSiteMenu(menu, signal);
       const closeIfLinksShown = menu ? closeMenuWhenLinksShow(menu, nav, signal) : () => {};
       // Hide on scroll down, show on scroll up. A no-op without
-      // `data-hide-on-scroll`, or where the optional stylesheet
-      // (styles/site-header-hide-on-scroll.css) does it on its own.
+      // `data-hide-on-scroll`. The optional stylesheet
+      // (styles/site-header-hide-on-scroll.css) does the slide.
       wireHideOnScroll(header, signal);
 
       // While the page's own search field is on screen, hide the header's.
