@@ -4,12 +4,22 @@
 # so a "release" is a version bump on main plus a `vX.Y.Z` git tag and a GitHub
 # Release that consumers pin to.
 #
-# On every push to main:
-#   - pending changesets exist  -> open/update the "Version Packages" PR, which
-#                                  bumps package.json and writes CHANGELOG.md
-#   - that PR is merged         -> `npm run release` verifies the exports map and
-#                                  tags the commit; the action pushes the tag and
-#                                  creates the GitHub Release
+# On every push to main, changesets/action@v2.1.2 does one of:
+#   - pending non-empty changesets -> open/update the "Version Packages" PR,
+#     which bumps package.json and writes CHANGELOG.md. No Storybook build.
+#   - only empty changesets, or a version that already has a git tag -> nothing.
+#   - no changesets and an untagged version (that PR was merged) -> `npm run
+#     release` checks the exports map and tags the commit; the action pushes
+#     the tag and creates the GitHub Release.
+#
+# Storybook is built only in that last case, before the tag, so a release is
+# not cut when the docs site cannot build. The Pages deploy is the Storybook
+# workflow, called from here after `published` is true. The call is required:
+# the release is created with GITHUB_TOKEN, and GitHub will not start
+# Storybook's `release: published` trigger for that event. The call builds
+# Storybook again so that workflow stays the only deploy path (a manual run
+# and a release created outside this workflow can deploy on their own). That
+# second build happens only when a release is actually tagged.
 #
 # Requires: Settings -> Actions -> General -> Workflow permissions -> "Allow
 # GitHub Actions to create and approve pull requests".
@@ -22,6 +32,9 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  # select-mode uploads a publish-plan artifact when this push will publish.
+  # An explicit permissions block sets every other scope to none.
+  actions: write
 
 concurrency:
   group: release-${{ github.ref }}
@@ -32,6 +45,8 @@ jobs:
     # Forks have no business tagging releases.
     if: github.repository == 'luxoticars/luxoticars-ui'
     runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.changesets.outputs.published }}
     steps:
       - uses: actions/checkout@v4
 
@@ -42,14 +57,26 @@ jobs:
 
       - run: npm ci
 
-      # Never tag a release whose Storybook (and so every component) doesn't build.
-      - run: npm run build-storybook
+      # Same pin as the action below. "publish" means no pending changesets and
+      # the current version is not tagged yet (this repo's single package uses
+      # vX.Y.Z tags). "version" is the Version Packages PR. "none" is an
+      # already-tagged main, or only empty changesets. The action still runs
+      # the publish script when there are no changesets at all; git-tag is a
+      # no-op if the tag exists, and `published` stays false.
+      - name: Decide whether this push publishes
+        id: mode
+        uses: changesets/action/select-mode@v2.1.2
+
+      - name: Build Storybook
+        if: steps.mode.outputs.mode == 'publish'
+        run: npm run build-storybook
 
       # v2 is the line that supports Changesets CLI v3 (v1 targets CLI v2). It has
       # no floating `v2` tag, so pin the exact release. It tells the publish
       # script where to report new tags via CHANGESETS_OUTPUT, which the CLI reads
       # from the environment, so `npm run release` needs no extra flags.
       - uses: changesets/action@v2.1.2
+        id: changesets
         with:
           version-script: npm run version
           publish-script: npm run release
@@ -58,3 +85,14 @@ jobs:
           create-github-releases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Nested so a Pages failure does not look like a failure to tag: the release
+  # job has already succeeded. Re-run Storybook (workflow_dispatch) to redeploy.
+  deploy-storybook:
+    needs: release
+    if: needs.release.result == 'success' && needs.release.outputs.published == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/storybook.yml

@@ -240,8 +240,9 @@ from Git pulls none of the Storybook dependencies.
 ### Published Storybook
 
 `.github/workflows/storybook.yml` builds the Storybook and deploys it to GitHub
-Pages on every push to `main`, publishing to
-[`https://ui.luxoticars.com.my`](https://ui.luxoticars.com.my).
+Pages when a release is published (and when the workflow is run by hand), at
+[`https://ui.luxoticars.com.my`](https://ui.luxoticars.com.my). The site tracks
+released versions, not every merge to `main`.
 
 It uses the "GitHub Actions" Pages source rather than "Deploy from a branch", so
 the build output never has to be committed. Enable it once under
