@@ -32,7 +32,10 @@
   }
 
   /* The floating search hangs under the bar, so it slides a step further to
-     leave with it rather than stay behind at the top of the screen. */
+     leave with it rather than stay behind at the top of the screen.
+     The slide uses the individual `translate` property (`translate: 0 -100%`),
+     not `transform`. DevTools Computed `transform` stays `none` by design;
+     check `translate` when debugging. */
   .site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"])[data-scroll-dir="down"]:not(:focus-within):not(:has(.site-header__menu[open])),
   .site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"])[data-scroll-dir="down"]:not(:focus-within):not(:has(.site-header__menu[open])) .site-header__search {
     translate: 0 -100%;
@@ -45,6 +48,8 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
+    /* Same slide: individual `translate`, not `transform`. Computed `transform`
+       stays `none`; check `translate` when debugging. */
     @container scroll-state(scrolled: bottom) {
       .site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"]):not(:focus-within):not(:has(.site-header__menu[open])),
       .site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"]):not(:focus-within):not(:has(.site-header__menu[open])) .site-header__search {

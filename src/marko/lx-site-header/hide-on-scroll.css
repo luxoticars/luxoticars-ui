@@ -31,6 +31,9 @@
     transition: translate 200ms ease-out;
   }
 
+  /* The slide uses the individual `translate` property (`translate: 0 -100%`),
+     not `transform`. DevTools Computed `transform` stays `none` by design;
+     check `translate` when debugging. */
   .lx-site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"])[data-scroll-dir="down"]:not(:focus-within):not(:has(.lx-site-header__menu[open])) {
     translate: 0 -100%;
   }
@@ -42,6 +45,8 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
+    /* Same slide: individual `translate`, not `transform`. Computed `transform`
+       stays `none`; check `translate` when debugging. */
     @container scroll-state(scrolled: bottom) {
       .lx-site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"]):not(:focus-within):not(:has(.lx-site-header__menu[open])) {
         translate: 0 -100%;
