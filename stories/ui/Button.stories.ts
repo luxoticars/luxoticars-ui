@@ -21,11 +21,8 @@ export const Variants = {
   args: { variant: "outline" },
 };
 
-// The destructive, success and warning tints sit at 3.9 to 4.1:1 against their
-// backgrounds, under the 4.5:1 AA minimum. Fixing that is a token change.
 export const Destructive = {
   args: { variant: "destructive", slots: { default: "Delete listing" } },
-  parameters: { a11y: { test: "todo" } },
 };
 
 export const Secondary = { args: { variant: "secondary" } };
@@ -33,11 +30,9 @@ export const Ghost = { args: { variant: "ghost", slots: { default: "Dismiss" } }
 export const Link = { args: { variant: "link", slots: { default: "View all cars" } } };
 export const Success = {
   args: { variant: "success", slots: { default: "Published" } },
-  parameters: { a11y: { test: "todo" } },
 };
 export const Warning = {
   args: { variant: "warning", slots: { default: "Payment due" } },
-  parameters: { a11y: { test: "todo" } },
 };
 export const Info = { args: { variant: "info", slots: { default: "Under review" } } };
 
