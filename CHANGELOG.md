@@ -1,5 +1,14 @@
 # @luxoticars/ui
 
+## 0.15.0
+
+### Minor Changes
+
+- 22dc8aa: Breaking (Marko): `<price-filter>` is now `<lx-price-filter>` and `<price-distribution-graph>` is now `<lx-price-distribution-graph>`. Their block classes follow the tag names and each ships its own `style.css`, so they need `styles/tokens.css` and no longer read Tailwind/daisyUI colour names or fallbacks. `marko/price-filter` and `marko/price-distribution-graph` become `marko/lx-price-filter` and `marko/lx-price-distribution-graph`.
+- bc7cfe5: Breaking (Marko): `<selection-group>` is now `<lx-selection-group>`, its block class is `lx-selection-group` and its stylesheet moves beside the tag as `style.css`, so it needs `styles/tokens.css` and no longer reads Tailwind/daisyUI colour names or fallbacks. `marko/selection-group` becomes `marko/lx-selection-group`.
+- dac095c: Add `<lx-site-footer>` for Marko 6, the twin of the Astro `Footer`. It is adaptive: the app passes the `entry` for the request (`@luxoticars/ui/marko/lx-site-footer/desktop.entry.marko` or `mobile.entry.marko`) and the package does not classify devices. Each entry ships its own `style.css` (forked from `styles/footer.css`). It keeps the footer's grey literals, each behind its `--footer-*` override, and reads the accent from `--lux-marque-accent`, so it needs `styles/tokens.css`.
+- bee35aa: Breaking (Marko): `<site-header-desktop>` and `<site-header-mobile>` become one adaptive `<lx-site-header>`. The app picks the entry per request and passes it in (`entry=`), importing `@luxoticars/ui/marko/lx-site-header/desktop.entry.marko` or `mobile.entry.marko`; the package does not classify devices. Block classes are `lx-site-header`, each entry ships its own `style.css` (so it needs `styles/tokens.css` and no longer reads Tailwind/daisyUI colour names), and the phone entry has no media queries. The default menu is now Buy, Services, Reviews, About, with the desktop header switching to its menu button below 52rem; the phone entry shows only the first word of the call-to-action at every width.
+
 ## 0.14.0
 
 ### Minor Changes
