@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.15.1
+
+### Patch Changes
+
+- 3e752d0: `<lx-price-distribution-graph>`: a bar without `accessibilityText` is now hidden from assistive technology instead of being an unlabelled `role="img"`.
+
 ## 0.15.0
 
 ### Minor Changes
