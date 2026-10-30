@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/site-header.css [source-hash: bc5f17f3983c]
+  Forked from src/styles/site-header.css [source-hash: 3aba1a498426]
   The desktop bar: links in the bar, and the menu button where they do not
   fit. Its media queries stay: a narrow desktop window still gets the menu.
   Block is `lx-site-header`; needs styles/tokens.css.
