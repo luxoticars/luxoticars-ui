@@ -1,8 +1,9 @@
 /*
   A stylesheet, not a component: the story writes the markup a consumer would
-  and loads `@luxoticars/ui/styles/pill.css`.
+  and loads `@luxoticars/ui/styles/skin/pill.css` (canonical). The older
+  `@luxoticars/ui/styles/pill.css` export still aliases the same file.
 */
-import "../src/styles/pill.css";
+import "../../src/styles/skin/pill.css";
 
 type Args = { size: "default" | "sm" };
 
@@ -18,7 +19,7 @@ type Args = { size: "default" | "sm" };
  * ```
  */
 export default {
-  title: "Styles/pill",
+  title: "Skin/pill",
   tags: ["autodocs"],
   render: ({ size }: Args) => {
     const host = document.createElement("div");

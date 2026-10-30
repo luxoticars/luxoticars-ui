@@ -9,7 +9,7 @@ import Logo from "../src/astro/Logo.astro";
 import "../src/styles/logo.css";
 
 export default {
-  title: "Logo",
+  title: "Components/Logo",
   component: Logo,
   argTypes: {
     variant: { control: "inline-radio", options: ["white", "black"] },
