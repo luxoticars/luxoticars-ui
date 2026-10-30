@@ -199,9 +199,12 @@ holds the plain HTML builders (`HTML/*`) and the stylesheet-only Skin stories
 (`.storybook-astro/`) and the Marko tags (`.storybook-marko/`, stories beside
 each tag under `src/marko/`) are Storybooks of their own, composed into the
 host as the **Astro** and **Marko** refs, so the sidebar reads `HTML`, `Skin`,
-`Astro → Components → …` and `Marko → Components → …`. In development run all
-three dev servers to see the whole sidebar; a ref whose server is not running
-shows Storybook's usual "ref failed to load" entry. `npm run build-storybook`
+`Astro → Components → …` and `Marko → Components → …`. In development start
+`npm run storybook:astro` and `npm run storybook:marko` first, then
+`npm run storybook`; the host reads its refs when it starts, so if the host was
+started first, restart it. A ref whose server is not running shows "Oh no!
+Something went wrong loading this Storybook." (or a loading placeholder that
+never fills). `npm run build-storybook`
 builds the host into `storybook-static/` and the refs into
 `storybook-static/astro/` and `storybook-static/marko/`. The host's theme
 toolbar does not reach composed refs; open the Astro or Marko Storybook on its

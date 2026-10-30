@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { test } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -44,10 +44,15 @@ test("pill story lives under stories/skin/ with Skin/ title", () => {
   nothing here calls it; only the story objects are read.
 */
 const loadPillStories = async () => {
-  const src = read("stories/skin/pill.stories.ts").replace(/^import\s+["'][^"']+\.css["'];?[ \t]*$/m, "");
-  const file = join(mkdtempSync(join(tmpdir(), "pill-story-")), "pill.stories.mts");
+  const src = read("stories/skin/pill.stories.ts").replace(/^import\s+["'][^"']+\.css["'];?[ \t]*$/gm, "");
+  const dir = mkdtempSync(join(tmpdir(), "pill-story-"));
+  const file = join(dir, "pill.stories.mts");
   writeFileSync(file, src);
-  return import(pathToFileURL(file).href);
+  try {
+    return await import(pathToFileURL(file).href);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 };
 
 const pillImport = 'import "@luxoticars/ui/styles/skin/pill.css";';

@@ -86,12 +86,15 @@ npm run build-storybook  # static build into storybook-static/
 There are three Storybooks in one sidebar. The host (6006, `.storybook/`) holds
 `HTML/*` and `Skin/*` at the root; the Astro components (`.storybook-astro/`)
 and the Marko tags (`.storybook-marko/`) are composed into it as the **Astro**
-and **Marko** refs. Run all three to see the whole sidebar; a ref whose server
-is not running shows "ref failed to load":
+and **Marko** refs. Start `storybook:astro` and `storybook:marko` first, then
+the host; the host reads its refs when it starts, so if it was started first,
+restart it. A ref whose server is not running shows "Oh no! Something went
+wrong loading this Storybook." (or a loading placeholder that never fills):
 
 ```bash
 npm run storybook:astro  # http://localhost:6008, shown under "Astro" in 6006
 npm run storybook:marko  # http://localhost:6007, shown under "Marko" in 6006
+npm run storybook        # http://localhost:6006, start last
 ```
 
 The host's theme toolbar does not reach composed refs. To see Astro or Marko
@@ -149,7 +152,7 @@ live in one resolver under `src/utils/` that every renderer follows. `ProgramBad
 ships Astro and Marko; its HTML builder is a follow-up.
 
 Marko tags are written in **concise syntax** and the Marko 6 Tags API only. Their
-stories go in `stories-marko/`, with `argTypes` written out, because
+stories go beside each tag under `src/marko/`, with `argTypes` written out, because
 `@storybook/marko` has no docgen.
 
 1. Add `src/astro/<Name>.astro`, or `src/astro/ui/<Name>.astro` for a
