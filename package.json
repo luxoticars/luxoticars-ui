@@ -45,6 +45,7 @@
     "./styles/dialog.css": "./src/styles/dialog.css",
     "./styles/site-header.css": "./src/styles/site-header.css",
     "./styles/site-header-hide-on-scroll.css": "./src/styles/site-header-hide-on-scroll.css",
+    "./styles/site-header-frosted-on-scroll.css": "./src/styles/site-header-frosted-on-scroll.css",
     "./styles/pill.css": "./src/styles/pill.css",
     "./styles/section-head.css": "./src/styles/section-head.css",
     "./utils/listing-card": {
@@ -73,6 +74,7 @@
     "./marko/lx-site-footer/*.entry.marko": "./src/marko/lx-site-footer/*.entry.marko",
     "./marko/lx-site-header/*.entry.marko": "./src/marko/lx-site-header/*.entry.marko",
     "./marko/lx-site-header/hide-on-scroll.css": "./src/marko/lx-site-header/hide-on-scroll.css",
+    "./marko/lx-site-header/frosted-on-scroll.css": "./src/marko/lx-site-header/frosted-on-scroll.css",
     "./marko/lx-*": "./src/marko/lx-*/index.marko",
     "./marko/*.marko": "./src/marko/*.marko",
     "./marko/*": "./src/marko/*.marko",
