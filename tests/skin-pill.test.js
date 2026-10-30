@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { test } from "node:test";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -35,4 +36,50 @@ test("pill story lives under stories/skin/ with Skin/ title", () => {
   assert.match(src, /title:\s*["']Skin\/pill["']/);
   assert.match(src, /styles\/skin\/pill\.css/);
   assert.doesNotMatch(src, /title:\s*["']Styles\/pill["']/);
+});
+
+/*
+  Load the pill story module in Node: drop its CSS import (Node cannot import
+  CSS) and let Node strip the TypeScript. `render` touches `document`, but
+  nothing here calls it; only the story objects are read.
+*/
+const loadPillStories = async () => {
+  const src = read("stories/skin/pill.stories.ts").replace(/^import\s+["'][^"']+\.css["'];?[ \t]*$/m, "");
+  const file = join(mkdtempSync(join(tmpdir(), "pill-story-")), "pill.stories.mts");
+  writeFileSync(file, src);
+  return import(pathToFileURL(file).href);
+};
+
+const pillImport = 'import "@luxoticars/ui/styles/skin/pill.css";';
+
+test("pill Show code (Default) is the CSS import and the markup, not args", async () => {
+  const { Default } = await loadPillStories();
+  const { language, code } = Default.parameters.docs.source;
+  assert.equal(language, "html");
+  assert.ok(code.includes(pillImport), code);
+  assert.ok(code.includes('<a class="pill" href="#">Coupe</a>'), code);
+  assert.ok(code.includes('<a class="pill" href="#" aria-current="true">SUV</a>'), code);
+  assert.ok(code.includes('class="pill pill--selected"'), code);
+  assert.ok(!code.includes("pill--sm"), code);
+  assert.ok(!code.includes("args"), code);
+});
+
+test("pill Show code (Small) uses pill--sm", async () => {
+  const { Small } = await loadPillStories();
+  const { language, code } = Small.parameters.docs.source;
+  assert.equal(language, "html");
+  assert.ok(code.includes(pillImport), code);
+  assert.ok(code.includes('<a class="pill pill--sm" href="#">Coupe</a>'), code);
+  assert.ok(code.includes('<a class="pill pill--sm" href="#" aria-current="true">SUV</a>'), code);
+  assert.ok(code.includes('class="pill pill--sm pill--selected"'), code);
+  assert.ok(!code.includes("args"), code);
+});
+
+test("pill render and Show code share one markup helper", () => {
+  const src = read("stories/skin/pill.stories.ts");
+  assert.match(src, /const pillMarkup = /);
+  assert.match(src, /const pillSource = /);
+  assert.match(src, /innerHTML = pillMarkup\(size\)/);
+  assert.match(src, /code: pillSource\("default"\)/);
+  assert.match(src, /code: pillSource\("sm"\)/);
 });
