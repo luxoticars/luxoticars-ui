@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.15.6
+
+### Patch Changes
+
+- 8580dcb: Storybook shell host: compose Astro and Marko refs
+
 ## 0.15.5
 
 ### Patch Changes
