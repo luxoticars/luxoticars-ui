@@ -1,5 +1,12 @@
 # @luxoticars/ui
 
+## 0.15.4
+
+### Patch Changes
+
+- a4da58d: Add opt-in site-header frosted glass CSS on scroll-up (`data-scroll-dir=up`), progressive with `backdrop-filter`.
+- 71e829b: fix(site-header): match CTA padding to search autocomplete height
+
 ## 0.15.3
 
 ### Patch Changes
