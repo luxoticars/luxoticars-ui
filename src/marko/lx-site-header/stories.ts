@@ -6,6 +6,7 @@ import mobileEntry from "./mobile.entry.marko";
 // Hide on scroll is an opt-in stylesheet no entry imports; the stories load
 // it so the scroll demos slide, as an app that opts in would.
 import "./hide-on-scroll.css";
+import "./frosted-on-scroll.css";
 
 /**
  * `<lx-site-header>` for Marko 6 apps, the twin of the Astro `SiteHeader`.
@@ -45,6 +46,14 @@ import "./hide-on-scroll.css";
  *
  * ```marko
  * import "@luxoticars/ui/marko/lx-site-header/hide-on-scroll.css"
+ * ```
+ *
+ * After a hide, scrolling up brings the bar back frosted (`data-scroll-dir=up`)
+ * where `backdrop-filter` works; solid otherwise and under reduced motion.
+ * That is a second opt-in stylesheet:
+ *
+ * ```marko
+ * import "@luxoticars/ui/marko/lx-site-header/frosted-on-scroll.css"
  * ```
  *
  * `hideOnScroll` is on by default but only marks the bar for that stylesheet;

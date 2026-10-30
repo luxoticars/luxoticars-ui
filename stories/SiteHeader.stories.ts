@@ -13,6 +13,7 @@ import "./site-header-demo.css";
   stories load it so the scroll demos slide, as an app that opts in would.
 */
 import "../src/styles/site-header-hide-on-scroll.css";
+import "../src/styles/site-header-frosted-on-scroll.css";
 
 /**
  * The site's sticky header. By default it slides out of view while the page
@@ -26,6 +27,14 @@ import "../src/styles/site-header-hide-on-scroll.css";
  *
  * ```js
  * import "@luxoticars/ui/styles/site-header-hide-on-scroll.css";
+ * ```
+ *
+ * To frost the bar when it slides back in on scroll up, also import the
+ * opt-in frosted stylesheet (progressive: needs `backdrop-filter`, solid
+ * otherwise and under reduced motion):
+ *
+ * ```js
+ * import "@luxoticars/ui/styles/site-header-frosted-on-scroll.css";
  * ```
  *
  * ```astro

@@ -5,7 +5,7 @@ import { test } from "node:test";
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 const rules = (css) => css.replace(/\/\*[\s\S]*?\*\//g, "");
 
-test("frosted-on-scroll CSS ships only in the Astro opt-in stylesheet (Marko fork next)", () => {
+test("frosted-on-scroll CSS ships only in the Astro opt-in stylesheet", () => {
   for (const p of [
     "src/styles/site-header.css",
     "src/marko/lx-site-header/base.css",
