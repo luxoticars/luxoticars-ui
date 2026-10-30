@@ -74,6 +74,7 @@
     "./marko/lx-site-footer/*.entry.marko": "./src/marko/lx-site-footer/*.entry.marko",
     "./marko/lx-site-header/*.entry.marko": "./src/marko/lx-site-header/*.entry.marko",
     "./marko/lx-site-header/hide-on-scroll.css": "./src/marko/lx-site-header/hide-on-scroll.css",
+    "./marko/lx-site-header/frosted-on-scroll.css": "./src/marko/lx-site-header/frosted-on-scroll.css",
     "./marko/lx-*": "./src/marko/lx-*/index.marko",
     "./marko/*.marko": "./src/marko/*.marko",
     "./marko/*": "./src/marko/*.marko",
