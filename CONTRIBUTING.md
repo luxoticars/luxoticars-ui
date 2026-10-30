@@ -42,27 +42,28 @@ Keep your fork current with `git fetch upstream && git rebase upstream/main`.
 
 ## Component tests
 
-Every story in both Storybooks is also a test (`@storybook/addon-vitest`): it
-renders in headless Chromium, a story's `play` function runs, and an error or a
-failed assertion fails the test. The Astro and Marko Storybooks are one Vitest
-project each (`vitest.astro.config.ts`, `vitest.marko.config.ts`).
+Every story in all three Storybooks is also a test (`@storybook/addon-vitest`):
+it renders in headless Chromium, a story's `play` function runs, and an error or
+a failed assertion fails the test. The host, Astro and Marko Storybooks are one
+Vitest project each (`vitest.host.config.ts`, `vitest.astro.config.ts`,
+`vitest.marko.config.ts`).
 
 ```bash
 npx playwright install chromium   # once
-npm run test:stories              # every story, both Storybooks
-npx vitest run --project=storybook-marko    # one Storybook
+npm run test:stories              # every story, all three Storybooks
+npx vitest run --project=storybook-astro    # one Storybook: storybook-host, storybook-astro or storybook-marko
 ```
 
 Add `tags: ["!test"]` to a story, or to its meta, to leave it out; the
 SiteHeader stories are, because the Vitest browser runner cannot run the
 header's TypeScript `<script>`. The addon also adds a test panel to each
-Storybook (`npm run storybook`, `npm run storybook:marko`). The `Test` workflow
+Storybook (`npm run storybook`, `npm run storybook:astro`, `npm run storybook:marko`). The `Test` workflow
 runs `npm test` and `npm run test:stories` on every pull request (not on pushes to main).
 
 ### Accessibility
 
 `@storybook/addon-a11y` (axe-core) checks each story's rendered DOM, in the
-Accessibility panel and in the same test run. Both previews set
+Accessibility panel and in the same test run. All three previews set
 `parameters.a11y.test` to `"error"`, so a violation fails `npm run test:stories`.
 A story with a known problem it cannot fix yet is marked
 `parameters: { a11y: { test: "todo" } }` with a comment saying why: it still
@@ -82,12 +83,32 @@ npm run storybook        # http://localhost:6006
 npm run build-storybook  # static build into storybook-static/
 ```
 
-Marko tags render in a second Storybook, composed into the first. Run both to
-see them together:
+There are three Storybooks in one sidebar. The host (6006, `.storybook/`) holds
+`HTML/*` and `Skin/*` at the root; the Astro components (`.storybook-astro/`)
+and the Marko tags (`.storybook-marko/`) are composed into it as the **Astro**
+and **Marko** refs. Run all three to see the whole sidebar; a ref whose server
+is not running shows "ref failed to load":
 
 ```bash
+npm run storybook:astro  # http://localhost:6008, shown under "Astro" in 6006
 npm run storybook:marko  # http://localhost:6007, shown under "Marko" in 6006
 ```
+
+The host's theme toolbar does not reach composed refs. To see Astro or Marko
+stories in the light theme, open that Storybook on its own (port 6008 or 6007,
+or `/astro/` or `/marko/` on the published site).
+
+### Which Storybook a story lands in
+
+Story files never move to change Storybook; the globs in
+`.storybook/story-globs.ts` decide, and `tests/storybook-globs.test.js` (part of
+`npm test`) fails if a file under `stories/` matches neither list or both, or
+carries the wrong title prefix.
+
+- HTML factory stories: name them `stories/create*.stories.ts`, title `HTML/…` (host).
+- Skin (stylesheet-only) stories: put them in `stories/skin/`, title `Skin/…` (host).
+- Astro component stories: put them in `stories/ui/`, or add the file to
+  `ASTRO_STORY_GLOBS`, title `Components/…` (Astro ref).
 
 ### How Astro stories render
 

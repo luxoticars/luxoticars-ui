@@ -187,17 +187,26 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development and testing guid
 
 ```bash
 npm install
-npm run storybook        # dev server on http://localhost:6006
-npm run build-storybook  # static build in storybook-static/
+npm run storybook        # host (HTML, Skin): http://localhost:6006
+npm run storybook:astro  # Astro components: http://localhost:6008
+npm run storybook:marko  # Marko tags: http://localhost:6007
+npm run build-storybook  # static build of all three in storybook-static/
 ```
 
-Marko tags have their own Storybook (`.storybook-marko/`, stories in
-`stories-marko/`), composed into the Astro one so both share one sidebar under
-"Marko". In development run `npm run storybook:marko` (port 6007) alongside
-`npm run storybook`; `npm run build-storybook` builds both, the Marko one into
-`storybook-static/marko/`. The host's theme toolbar does not reach the composed
-Marko stories; open the Marko Storybook on its own (`/marko/` on the published
-site, or port 6007) to see them in the light theme.
+There are three Storybooks, shown in one sidebar. The host (`.storybook/`)
+holds the plain HTML builders (`HTML/*`) and the stylesheet-only Skin stories
+(`Skin/*`) at the root of the sidebar. The Astro components
+(`.storybook-astro/`) and the Marko tags (`.storybook-marko/`, stories beside
+each tag under `src/marko/`) are Storybooks of their own, composed into the
+host as the **Astro** and **Marko** refs, so the sidebar reads `HTML`, `Skin`,
+`Astro → Components → …` and `Marko → Components → …`. In development run all
+three dev servers to see the whole sidebar; a ref whose server is not running
+shows Storybook's usual "ref failed to load" entry. `npm run build-storybook`
+builds the host into `storybook-static/` and the refs into
+`storybook-static/astro/` and `storybook-static/marko/`. The host's theme
+toolbar does not reach composed refs; open the Astro or Marko Storybook on its
+own (`/astro/` or `/marko/` on the published site, or port 6008 or 6007) to see
+its stories in the light theme.
 
 Astro components have no browser runtime, so they cannot render in a story on
 their own. [`@storybook-astro/framework`](https://github.com/storybook-astro/storybook-astro)
@@ -231,7 +240,11 @@ tables are silently empty.
 
 Stories live in `stories/` rather than beside their components, because
 `package.json#files` ships all of `src/` and co-located stories would land in
-every consumer's `node_modules`.
+every consumer's `node_modules`. Which Storybook picks up a story is decided by
+the globs in `.storybook/story-globs.ts`: HTML factory stories are named
+`stories/create*.stories.ts`, Skin stories go in `stories/skin/`, and Astro
+component stories go in `stories/ui/` (or are added to the Astro list).
+`npm test` fails if a story file matches neither list, or both.
 
 Storybook is a development-only concern. It is not part of the published package:
 `files` limits the package to `src`, `marko.json` and the README, and installing this package
