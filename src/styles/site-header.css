@@ -118,7 +118,8 @@
 
 .site-header__cta {
   margin-left: auto;
-  padding: 0.4rem 1.4rem;
+  /* Match search autocomplete control height (~2.5rem total with font). */
+  padding: 0.875rem 1.4rem;
   border-radius: 9999px;
   background-color: var(--_primary);
   color: var(--_primary-content);
