@@ -161,3 +161,20 @@ test("Storybook scripts: ports 6006 / 6008 / 6007 and a three-part build", () =>
 test("astro check covers the Astro Storybook's config", () => {
   assert.match(read("tsconfig.json"), /"\.storybook-astro"/);
 });
+
+test("Vitest runs one story-test project per Storybook", () => {
+  assert.match(
+    read("vitest.config.ts"),
+    /projects: \["vitest\.host\.config\.ts", "vitest\.astro\.config\.ts", "vitest\.marko\.config\.ts"\]/,
+  );
+  const host = read("vitest.host.config.ts");
+  assert.match(host, /storybookTest\(\{ configDir: "\.storybook" \}\)/);
+  assert.match(host, /name: "storybook-host"/);
+  assert.match(host, /withoutPlugin\(config\.plugins, "cjs-esm-interop"\)/);
+  const astro = read("vitest.astro.config.ts");
+  assert.match(astro, /storybookTest\(\{ configDir: "\.storybook-astro" \}\)/);
+  assert.match(astro, /name: "storybook-astro"/);
+  assert.match(astro, /fileParallelism: false/);
+  assert.match(astro, /withoutPlugin\(config\.plugins, "cjs-esm-interop"\)/);
+  assert.match(read("vitest.marko.config.ts"), /storybookTest\(\{ configDir: "\.storybook-marko" \}\)/);
+});
