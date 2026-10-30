@@ -115,3 +115,49 @@ test("the sidebar titles are the spec's", () => {
     "Components/SiteHeader",
   ]);
 });
+
+test("the host Storybook reads the host globs and composes Astro and Marko", () => {
+  const main = read(".storybook/main.ts");
+  assert.match(main, /import \{ HOST_STORY_GLOBS \} from "\.\/story-globs";/);
+  assert.match(main, /stories: HOST_STORY_GLOBS,/);
+  assert.match(main, /astro: \{\s*title: "Astro",\s*url: configType === "DEVELOPMENT" \? "http:\/\/localhost:6008" : "\.\/astro",/);
+  assert.match(main, /marko: \{\s*title: "Marko",\s*url: configType === "DEVELOPMENT" \? "http:\/\/localhost:6007" : "\.\/marko",/);
+  assert.match(main, /renderMode: "static"/);
+});
+
+test("the Astro Storybook reads the Astro globs and has no refs", () => {
+  const main = read(".storybook-astro/main.ts");
+  assert.match(main, /import \{ ASTRO_STORY_GLOBS \} from "\.\.\/\.storybook\/story-globs";/);
+  assert.match(main, /stories: ASTRO_STORY_GLOBS,/);
+  assert.doesNotMatch(main, /\brefs\s*:/);
+  assert.match(main, /name: "@storybook-astro\/framework"/);
+  assert.match(main, /renderMode: "static"/);
+  assert.match(main, /tailwindcss\(\)/);
+});
+
+test("the Astro Storybook's preview is a copy of the host's", () => {
+  for (const file of ["preview.ts", "preview.css", "ThemeFrame.astro"]) {
+    assert.equal(read(`.storybook-astro/${file}`), read(`.storybook/${file}`), file);
+  }
+});
+
+test("the Marko Storybook's comment names the host as the one composing it", () => {
+  const main = read(".storybook-marko/main.ts");
+  assert.match(main, /the host Storybook composes it through `refs`/);
+  assert.doesNotMatch(main, /the Astro Storybook composes it/);
+});
+
+test("Storybook scripts: ports 6006 / 6008 / 6007 and a three-part build", () => {
+  const { scripts } = JSON.parse(read("package.json"));
+  assert.equal(scripts.storybook, "storybook dev -p 6006");
+  assert.equal(scripts["storybook:astro"], "storybook dev -p 6008 -c .storybook-astro");
+  assert.equal(scripts["storybook:marko"], "storybook dev -p 6007 -c .storybook-marko");
+  assert.equal(
+    scripts["build-storybook"],
+    "storybook build && storybook build -c .storybook-astro -o storybook-static/astro && storybook build -c .storybook-marko -o storybook-static/marko",
+  );
+});
+
+test("astro check covers the Astro Storybook's config", () => {
+  assert.match(read("tsconfig.json"), /"\.storybook-astro"/);
+});
