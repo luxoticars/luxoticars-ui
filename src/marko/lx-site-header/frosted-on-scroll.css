@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/site-header-frosted-on-scroll.css [source-hash: 0cad1863059e]
+  Forked from src/styles/site-header-frosted-on-scroll.css [source-hash: 29674606386d]
   Optional: `<lx-site-header>` frosted glass on scroll-up. Opt in:
 
     import "@luxoticars/ui/marko/lx-site-header/frosted-on-scroll.css"
@@ -15,6 +15,7 @@
       -webkit-backdrop-filter: blur(12px) saturate(1.2);
       backdrop-filter: blur(12px) saturate(1.2);
       transition:
+        translate 200ms ease-out,
         background-color 200ms ease-out,
         backdrop-filter 200ms ease-out,
         -webkit-backdrop-filter 200ms ease-out;

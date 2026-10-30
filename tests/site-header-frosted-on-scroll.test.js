@@ -5,7 +5,7 @@ import { test } from "node:test";
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 const rules = (css) => css.replace(/\/\*[\s\S]*?\*\//g, "");
 
-test("frosted-on-scroll CSS ships only in the Astro opt-in stylesheet", () => {
+test("frosted-on-scroll CSS ships only in the opt-in stylesheets", () => {
   for (const p of [
     "src/styles/site-header.css",
     "src/marko/lx-site-header/base.css",
@@ -18,14 +18,6 @@ test("frosted-on-scroll CSS ships only in the Astro opt-in stylesheet", () => {
   assert.match(css, /@supports/);
   assert.match(css, /backdrop-filter/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
-});
-
-test("frosted-on-scroll Astro package export is wired", () => {
-  const { exports } = JSON.parse(read("package.json"));
-  assert.equal(
-    exports["./styles/site-header-frosted-on-scroll.css"],
-    "./src/styles/site-header-frosted-on-scroll.css",
-  );
 });
 
 test("header entries do not import frosted-on-scroll.css", () => {
@@ -58,4 +50,15 @@ test("frosted-on-scroll Astro and Marko package exports are both wired", () => {
     exports["./marko/lx-site-header/frosted-on-scroll.css"],
     "./src/marko/lx-site-header/frosted-on-scroll.css",
   );
+});
+
+test("frosted transition in both opt-in sheets keeps translate", () => {
+  for (const p of [
+    "src/styles/site-header-frosted-on-scroll.css",
+    "src/marko/lx-site-header/frosted-on-scroll.css",
+  ]) {
+    const m = rules(read(p)).match(/transition:\s*([^;]+);/);
+    assert.ok(m, `${p}: frosted transition missing`);
+    assert.match(m[1], /(^|,)\s*translate\s+200ms ease-out/, p);
+  }
 });
