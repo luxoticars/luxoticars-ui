@@ -11,8 +11,9 @@
   "main": "./src/index.js",
   "scripts": {
     "storybook": "storybook dev -p 6006",
+    "storybook:astro": "storybook dev -p 6008 -c .storybook-astro",
     "storybook:marko": "storybook dev -p 6007 -c .storybook-marko",
-    "build-storybook": "storybook build && storybook build -c .storybook-marko -o storybook-static/marko",
+    "build-storybook": "storybook build && storybook build -c .storybook-astro -o storybook-static/astro && storybook build -c .storybook-marko -o storybook-static/marko",
     "test": "node --test \"tests/**/*.test.js\"",
     "test:stories": "vitest run",
     "styles:check": "node scripts/style-forks.mjs",

@@ -36,7 +36,7 @@
    npm run build-storybook          # must succeed
    rm -rf .astro                    # astro check generates this and it is NOT gitignored
    ```
-   For anything visual/DOM-level, render the built Storybook and assert on the real DOM rather than trusting the markup string — Chromium is at `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`, drive it with `playwright-core` installed in the scratchpad. Story ids come from `storybook-static/index.json`; prerendered Astro markup from `storybook-static/astro-prerendered-stories.json` (diff it before/after to prove a refactor changed nothing it shouldn't).
+   For anything visual/DOM-level, render the built Storybook and assert on the real DOM rather than trusting the markup string — Chromium is at `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`, drive it with `playwright-core` installed in the scratchpad. Host (HTML/Skin) story ids come from `storybook-static/index.json`; Astro (`Components/*`) story ids from `storybook-static/astro/index.json`, and prerendered Astro markup from `storybook-static/astro/astro-prerendered-stories.json` (diff it before/after to prove a refactor changed nothing it shouldn't); Marko ids from `storybook-static/marko/index.json`.
 
 3. **Commit** with the attribution lines the session's system reminder gives you (Co-Authored-By + Claude-Session). Never put a model identifier anywhere else in the commit.
 

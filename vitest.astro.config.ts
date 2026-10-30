@@ -10,7 +10,7 @@ import type { PluginOption } from "vite";
   assertions are checked. One project of vitest.config.ts; `npm run test:stories`.
 */
 const astro = defineConfig({
-  plugins: [tailwindcss(), storybookTest({ configDir: ".storybook" })],
+  plugins: [tailwindcss(), storybookTest({ configDir: ".storybook-astro" })],
   test: {
     name: "storybook-astro",
     // The stories share one Astro render server, which answers each render
