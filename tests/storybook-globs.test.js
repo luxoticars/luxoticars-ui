@@ -1,0 +1,117 @@
+import assert from "node:assert/strict";
+import { readdirSync, readFileSync } from "node:fs";
+import { test } from "node:test";
+import { fileURLToPath } from "node:url";
+import { dirname, join, sep } from "node:path";
+import { ASTRO_STORY_GLOBS, HOST_STORY_GLOBS } from "../.storybook/story-globs.ts";
+
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const read = (p) => readFileSync(join(root, p), "utf8");
+
+/*
+  A glob from story-globs.ts ("../stories/...", relative to a config dir) as a
+  RegExp over repo-relative paths. Only the syntax the lists use: `**\/` (any
+  number of folders), `*` (within one path segment) and literal characters.
+*/
+const globToRegExp = (glob) => {
+  const rel = glob.replace(/^\.\.\//, "");
+  let source = "";
+  for (let i = 0; i < rel.length; i += 1) {
+    if (rel.startsWith("**/", i)) {
+      source += "(?:[^/]+/)*";
+      i += 2;
+    } else if (rel[i] === "*") {
+      source += "[^/]*";
+    } else {
+      source += rel[i].replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+    }
+  }
+  return new RegExp(`^${source}$`);
+};
+
+const matchesAny = (globs, file) => globs.some((glob) => globToRegExp(glob).test(file));
+
+const storyFiles = readdirSync(join(root, "stories"), { recursive: true })
+  .map((p) => `stories/${p.split(sep).join("/")}`)
+  .filter((p) => p.endsWith(".stories.ts"))
+  .sort();
+
+/** The meta title: the first `title:` after `export default {`. */
+const metaTitle = (file) => {
+  const match = read(file).match(/export default\s*\{[\s\S]*?\btitle:\s*["']([^"']+)["']/);
+  assert.ok(match, `${file}: no title in export default`);
+  return match[1];
+};
+
+test("globToRegExp handles the patterns the lists use", () => {
+  assert.ok(globToRegExp("../stories/create*.stories.ts").test("stories/createLogo.stories.ts"));
+  assert.ok(!globToRegExp("../stories/create*.stories.ts").test("stories/ui/createLogo.stories.ts"));
+  assert.ok(globToRegExp("../stories/skin/**/*.stories.ts").test("stories/skin/pill.stories.ts"));
+  assert.ok(globToRegExp("../stories/skin/**/*.stories.ts").test("stories/skin/a/b.stories.ts"));
+  assert.ok(globToRegExp("../stories/ui/*.stories.ts").test("stories/ui/Button.stories.ts"));
+  assert.ok(!globToRegExp("../stories/ui/*.stories.ts").test("stories/ui/x/Button.stories.ts"));
+  assert.ok(!globToRegExp("../stories/Button.stories.ts").test("stories/ui/Button.stories.ts"));
+});
+
+test("story glob lists are exactly the spec's", () => {
+  assert.deepEqual(HOST_STORY_GLOBS, [
+    "../stories/create*.stories.ts",
+    "../stories/Button.stories.ts",
+    "../stories/skin/**/*.stories.ts",
+  ]);
+  assert.deepEqual(ASTRO_STORY_GLOBS, [
+    "../stories/Footer.stories.ts",
+    "../stories/Logo.stories.ts",
+    "../stories/SectionHead.stories.ts",
+    "../stories/SiteHeader.stories.ts",
+    "../stories/ui/*.stories.ts",
+  ]);
+});
+
+test("every story file is picked up by exactly one Storybook", () => {
+  assert.ok(storyFiles.length > 0, "no story files found");
+  for (const file of storyFiles) {
+    const host = matchesAny(HOST_STORY_GLOBS, file);
+    const astro = matchesAny(ASTRO_STORY_GLOBS, file);
+    assert.ok(host || astro, `${file} matches neither the host nor the Astro globs`);
+    assert.ok(!(host && astro), `${file} matches both the host and the Astro globs`);
+  }
+});
+
+test("every glob picks up at least one story file", () => {
+  for (const glob of [...HOST_STORY_GLOBS, ...ASTRO_STORY_GLOBS]) {
+    assert.ok(storyFiles.some((file) => globToRegExp(glob).test(file)), `${glob} matches no story file`);
+  }
+});
+
+test("host stories are HTML/ or Skin/; Astro stories are Components/", () => {
+  for (const file of storyFiles) {
+    const title = metaTitle(file);
+    if (matchesAny(HOST_STORY_GLOBS, file)) {
+      assert.match(title, /^(HTML|Skin)\//, `${file}: host story titled ${title}`);
+    } else {
+      assert.match(title, /^Components\//, `${file}: Astro story titled ${title}`);
+    }
+  }
+});
+
+test("the sidebar titles are the spec's", () => {
+  const titles = (globs) => storyFiles.filter((f) => matchesAny(globs, f)).map(metaTitle).sort();
+  assert.deepEqual(titles(HOST_STORY_GLOBS), [
+    "HTML/createButton",
+    "HTML/createDialog",
+    "HTML/createFooter",
+    "HTML/createListingCard",
+    "HTML/createLogo",
+    "Skin/pill",
+  ]);
+  assert.deepEqual(titles(ASTRO_STORY_GLOBS), [
+    "Components/Button",
+    "Components/Dialog",
+    "Components/Footer",
+    "Components/Logo",
+    "Components/ProgramBadge",
+    "Components/SectionHead",
+    "Components/SiteHeader",
+  ]);
+});
