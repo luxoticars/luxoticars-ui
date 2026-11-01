@@ -52,6 +52,23 @@ test("frosted-on-scroll Astro and Marko package exports are both wired", () => {
   );
 });
 
+/* A bare function like `(color-mix(…))` is not a supports-feature: CSS reads
+   it as <general-enclosed>, which is always false, so the whole block is dead.
+   It must be a declaration: `(color: color-mix(…))`. */
+test("@supports conditions in both opt-in sheets are declarations, not bare functions", () => {
+  for (const p of [
+    "src/styles/site-header-frosted-on-scroll.css",
+    "src/marko/lx-site-header/frosted-on-scroll.css",
+  ]) {
+    const preludes = [...rules(read(p)).matchAll(/@supports\s+([^{]+)\{/g)].map((m) => m[1]);
+    assert.ok(preludes.length > 0, `${p}: no @supports`);
+    for (const prelude of preludes) {
+      assert.doesNotMatch(prelude, /\(\s*(?!selector\(|font-tech\(|font-format\()[a-z-]+\(/i, `${p}: ${prelude}`);
+      assert.match(prelude, /\(color:\s*color-mix\(/, `${p}: ${prelude}`);
+    }
+  }
+});
+
 test("frosted transition in both opt-in sheets keeps translate", () => {
   for (const p of [
     "src/styles/site-header-frosted-on-scroll.css",
