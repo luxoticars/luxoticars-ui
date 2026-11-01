@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.15.7
+
+### Patch Changes
+
+- 54bf1db: Fix the frosted glass on scroll-up for `SiteHeader` and `<lx-site-header>`: its `@supports` condition used a bare `color-mix()` that browsers always read as false, so the effect never applied.
+
 ## 0.15.6
 
 ### Patch Changes
