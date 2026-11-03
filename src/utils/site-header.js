@@ -11,6 +11,7 @@ export const SITE_HEADER_LINKS = Object.freeze([
   Object.freeze({ label: "Services", href: "/services" }),
   Object.freeze({ label: "Reviews", href: "/a/reviews/" }),
   Object.freeze({ label: "About", href: "/a/" }),
+  Object.freeze({ label: "Merch", href: "https://merch.luxoticars.com.my/" }),
 ]);
 
 export function resolveSiteHeader({ links = SITE_HEADER_LINKS, ctaLabel = "Advertise your car" } = {}) {

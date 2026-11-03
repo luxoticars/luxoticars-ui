@@ -10,7 +10,7 @@ export interface Model extends ResolvedSiteHeader {
 }
 
 export interface ModelInput {
-  /** Menu links, in order. @default Buy, Services, Reviews, About */
+  /** Menu links, in order. @default Buy, Services, Reviews, About, Merch */
   links?: FooterLink[]
   /** Wordmark text. @default "Luxoticars" */
   siteTitle?: string
