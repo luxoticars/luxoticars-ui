@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.16.0
+
+### Minor Changes
+
+- 98be4e2: The site header's default menu ends with Merch, linking to the merchandise shop at merch.luxoticars.com.my. It opens in the same tab, like the other links: the shop is a Luxoticars site with the same header and footer.
+
 ## 0.15.8
 
 ### Patch Changes
