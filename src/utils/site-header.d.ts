@@ -1,6 +1,6 @@
 import type { FooterLink } from "../types";
 
-/** Buy, Services, Reviews, About. */
+/** Buy, Services, Reviews, About, Merch. */
 export declare const SITE_HEADER_LINKS: readonly FooterLink[];
 
 export interface ResolvedSiteHeaderLink extends FooterLink {
