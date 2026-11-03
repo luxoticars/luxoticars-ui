@@ -1,0 +1,26 @@
+/*
+  The site header: the Marko twin of `astro/SiteHeader.astro`. It is the public
+  boundary of an adaptive component: the app passes the `entry` for this request
+  (the desktop or the phone header) and the header's input, and the model is
+  built once and handed to the entry. This package does not classify devices;
+  the app does, once per request, and imports the entry by path:
+
+    import desktop from "@luxoticars/ui/marko/lx-site-header/desktop.entry.marko"
+
+  Each entry loads only its own stylesheet and works on its own.
+
+  Concise syntax, by repo convention.
+*/
+import { buildModel } from "./helper"
+import type { ModelInput } from "./helper"
+
+export interface Input extends ModelInput {
+  /** The entry chosen for this request: `desktop.entry.marko` or `mobile.entry.marko`. */
+  entry: Marko.Template
+  /** The search field shown in the bar, as `@search`. */
+  search?: Marko.AttrTag<{ content: Marko.Body }>
+}
+
+const/model=buildModel(input)
+
+${input.entry} model=model search=input.search

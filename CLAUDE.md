@@ -4,7 +4,7 @@
 
 ## What's in the package
 
-- **Up to three renderers, one component:** an HTML string-builder (`src/html/`, e.g. `createButton`) for markup-only contexts, an Astro component (`src/astro/`, e.g. `astro/ui/Button`), and a Marko 6 tag (`src/marko/`, e.g. `<program-badge>`, discovered via `marko.json`). All read from the same design tokens and utils; a component's decisions live in one resolver under `src/utils/`. `ProgramBadge` has no HTML builder yet.
+- **Up to three renderers, one component:** an HTML string-builder (`src/html/`, e.g. `createButton`) for markup-only contexts, an Astro component (`src/astro/`, e.g. `astro/ui/Button`), and a Marko 6 tag (`src/marko/`, e.g. `<lx-program-badge>`, discovered via `marko.json`). All read from the same design tokens and utils; a component's decisions live in one resolver under `src/utils/`. `ProgramBadge` has no HTML builder yet.
 - **`src/index.js`** — entry for the HTML API. **`src/astro/*.astro`** — entry per Astro component, exported via `package.json#exports` subpaths (`./astro/*`).
 - **`src/styles/tokens.css`** — the design tokens, exported as `./styles/tokens.css`.
 - **`src/utils/cn`** — class-name merge helper (`clsx` + `tailwind-merge`), and **`src/data/footer`** — shared footer data. Both are JS with hand-written `.d.ts` siblings (see typing convention below).
@@ -29,13 +29,14 @@
    ```bash
    npm ci
    npm test                         # the node:test unit tests; must pass
+   npm run test:stories             # every story as a Vitest browser test (npx playwright install chromium once); must pass
    npm i --no-save @astrojs/check @marko/type-check @emnapi/runtime@1.11.3   # NOT dependencies — install transiently, together, never commit; @emnapi/runtime is pruned otherwise and astro check silently checks nothing
    npx astro check                  # must be 0 errors; the Astro type gate
    npx mtc -p tsconfig.marko.json        # the Marko type gate; must be 0 errors
    npm run build-storybook          # must succeed
    rm -rf .astro                    # astro check generates this and it is NOT gitignored
    ```
-   For anything visual/DOM-level, render the built Storybook and assert on the real DOM rather than trusting the markup string — Chromium is at `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`, drive it with `playwright-core` installed in the scratchpad. Story ids come from `storybook-static/index.json`; prerendered Astro markup from `storybook-static/astro-prerendered-stories.json` (diff it before/after to prove a refactor changed nothing it shouldn't).
+   For anything visual/DOM-level, render the built Storybook and assert on the real DOM rather than trusting the markup string — Chromium is at `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`, drive it with `playwright-core` installed in the scratchpad. Host (HTML/Skin) story ids come from `storybook-static/index.json`; Astro (`Components/*`) story ids from `storybook-static/astro/index.json`, and prerendered Astro markup from `storybook-static/astro/astro-prerendered-stories.json` (diff it before/after to prove a refactor changed nothing it shouldn't); Marko ids from `storybook-static/marko/index.json`.
 
 3. **Commit** with the attribution lines the session's system reminder gives you (Co-Authored-By + Claude-Session). Never put a model identifier anywhere else in the commit.
 
@@ -81,9 +82,22 @@ Read its progress with `get_session` → `post_turn_summary`; that is the only c
 - **PR body attribution:** the 🤖 Generated with Claude Code lines + session URL, per the session's system reminder.
 - **No PR template** exists in the repo — write the body as a normal structured description.
 - **CI reality:** the fork has **no working Actions** — `.github/workflows/storybook.yml` has never triggered once in the fork's history, so do not wait on fork CI or treat its absence as a failure. Upstream runs a Copilot review (`copilot-pull-request-reviewer`) that posts an approval/finding summary.
-- **Stories live in `stories/` (Astro) and `stories-marko/` (Marko)**, never beside components — `package.json#files` ships all of `src/`, so co-located stories would land in consumers' `node_modules`.
+- **Stories:** Astro stories live in `stories/`, never beside components. Marko tags in the `lx-` layout keep `stories.ts` beside `index.marko`; `package.json#files` has `!**/{,*.}stories.*`, so they are not shipped. `stories-marko/` now holds only the data the price stories share (`price-filter-data.ts`).
 - **Marko tags use concise syntax** and the Marko 6 Tags API only (no `$` scriptlets, `style { }`, `class { }`).
 - **JS + hand-written `.d.ts`** is the typing convention (see `utils/cn`, `data/footer`); every public subpath in `package.json#exports` needs a `types` entry.
+
+## Marko tag layout (`lx-`)
+
+Marko tags are being moved one at a time into this layout, which follows the Marko docs ([custom tag discovery](https://markojs.com/docs/reference/custom-tag)) and the Luxoticars adaptive pattern. Unmigrated tags are still flat files in `src/marko/`.
+
+- **Folder per tag, prefixed `lx-`:** `src/marko/lx-logo/index.marko` is `<lx-logo>`. Scaffold with `npm run new:tag lx-name` (`--adaptive` for the large-component layout).
+- **Own CSS, not shared with Astro:** `style.css` beside `index.marko` is found by Marko, with no import. It is forked from the shared `src/styles/*.css` and starts with a stamp, `Forked from <source> [source-hash: …]`. `npm test` fails when the source changes; port what applies, then `npm run styles:stamp -- lx-name`.
+- **BEM block = the tag name** (`.lx-logo`, `.lx-logo__wordmark`). Read `--lux-*` tokens only: no colour literals, no daisyUI/Tailwind names, no fallbacks. The footer is the one exception: it keeps its grey literals behind their `--footer-*` overrides. These tags need `styles/tokens.css`.
+- **Logic stays shared** (`src/utils/*.js` resolvers); only the styles fork. A tag that transforms data has a `helper.ts` with a pure `buildModel`.
+- **Grouping folders** (one level, e.g. `src/marko/site-header/lx-site-header-desktop/`) only group: never give one an `index.marko`, which would turn it into a tag. `npm test` checks this.
+- **Large adaptive components** (header, footer): `index.marko` takes the chosen `entry` and builds the model once; `base.marko` + `base.css` hold the common part; `desktop|tablet|mobile.entry.marko` each import only their own CSS. The consuming app picks the entry per request; this package does not classify devices.
+- **Register each tag in `marko.json`** (`"<lx-logo>": { "template": "./src/marko/lx-logo/index.marko" }`): `exports` serves apps that install the package, but Marko does not look in it for the package's own files, so other tags here (the headers) use `<lx-logo>` with no import only through this entry. `npm test` fails if a tag folder is missing from it.
+- **Exports:** `./marko/lx-*` maps to `src/marko/lx-*/index.marko`. Keep the `./src/marko/*.marko` export too: Marko's compiler imports installed tags through it.
 
 ## After the PR is open
 

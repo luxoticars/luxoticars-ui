@@ -1,0 +1,11 @@
+import Base from "./base.marko"
+import type { Model } from "./helper"
+import "./desktop.css"
+
+export interface Input {
+  model: Model
+  /** The search field shown in the bar, as `@search`. */
+  search?: Marko.AttrTag<{ content: Marko.Body }>
+}
+
+Base model=input.model variant="desktop" barLinks search=input.search

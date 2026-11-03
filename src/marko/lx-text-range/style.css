@@ -1,0 +1,107 @@
+/*
+  Forked from none [source-hash: none]
+  Marko-only: no other renderer has a text range, so this is the tag's own
+  stylesheet, moved from styles/text-range.css. Needs styles/tokens.css.
+  Block is `lx-text-range`, the tag's own name.
+*/
+
+.lx-text-range {
+  --tr-ink: var(--lux-base-content);
+  --tr-field: var(--lux-base-200);
+  --tr-line: var(--lux-secondary);
+  --tr-error: var(--lux-error);
+  --tr-focus: var(--lux-accent);
+  width: 100%;
+}
+
+.lx-text-range__container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.lx-text-range__field {
+  display: flex;
+  flex: 2;
+  align-items: center;
+  box-sizing: border-box;
+  min-width: 4.375rem;
+  height: 2.125rem;
+  padding-inline: 0.25rem;
+  border: 1px solid var(--tr-line);
+  border-radius: 0.5rem;
+  background: var(--tr-field);
+}
+
+.lx-text-range__field:focus-within {
+  outline: 2px solid var(--tr-focus);
+  outline-offset: 1px;
+}
+
+.lx-text-range__field--invalid {
+  border-color: var(--tr-error);
+}
+
+.lx-text-range__affix {
+  flex: none;
+  font-size: 0.6875rem;
+  color: var(--tr-ink);
+}
+
+.lx-text-range__control {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding-inline: 0.25rem;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--tr-ink);
+  font: inherit;
+}
+
+.lx-text-range__control::placeholder {
+  color: var(--tr-line);
+}
+
+.lx-text-range__separator {
+  display: inline-block;
+  padding: 0.25rem;
+}
+
+.lx-text-range__submit {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--tr-field);
+  color: var(--tr-ink);
+  cursor: pointer;
+}
+
+.lx-text-range__submit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.lx-text-range__submit:focus-visible {
+  outline: 2px solid var(--tr-focus);
+  outline-offset: 2px;
+}
+
+.lx-text-range__submit svg {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+.lx-text-range__error {
+  flex-basis: 100%;
+  min-height: 1rem;
+  line-height: 1rem;
+  color: var(--tr-error);
+}

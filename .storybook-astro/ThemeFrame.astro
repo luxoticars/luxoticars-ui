@@ -1,0 +1,22 @@
+---
+/**
+ * Wraps a story so the Storybook theme toolbar can force `data-theme` without
+ * touching `document`. A decorator that calls browser DOM APIs
+ * (`document.createElement`, `document.documentElement.dataset...`) throws
+ * during @storybook-astro/framework's static prerender, which composes
+ * decorators in Node — every Astro story silently drops from the published
+ * build when that happens (see `preview.ts`). This component is pure Astro,
+ * so it composes in both dev (browser) and the static build (Node).
+ *
+ * Development-only: lives in .storybook/, not src/, so it never ships.
+ */
+interface Props {
+  theme: "light" | "dark";
+}
+
+const { theme } = Astro.props;
+---
+
+<div data-theme={theme} class="bg-base-100 text-base-content" style="padding:2rem">
+  <slot />
+</div>

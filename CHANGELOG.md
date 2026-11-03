@@ -1,5 +1,139 @@
 # @luxoticars/ui
 
+## 0.15.7
+
+### Patch Changes
+
+- 54bf1db: Fix the frosted glass on scroll-up for `SiteHeader` and `<lx-site-header>`: its `@supports` condition used a bare `color-mix()` that browsers always read as false, so the effect never applied.
+
+## 0.15.6
+
+### Patch Changes
+
+- 8580dcb: Storybook shell host: compose Astro and Marko refs
+
+## 0.15.5
+
+### Patch Changes
+
+- 5cb91e1: Organize Storybook: Astro Logo under Components/; move pill into Skin (`styles/skin/pill.css`, story `Skin/pill`). `@luxoticars/ui/styles/pill.css` still works as an alias.
+
+## 0.15.4
+
+### Patch Changes
+
+- a4da58d: Add opt-in site-header frosted glass CSS on scroll-up (`data-scroll-dir=up`), progressive with `backdrop-filter`.
+- 71e829b: fix(site-header): match CTA padding to search autocomplete height
+
+## 0.15.3
+
+### Patch Changes
+
+- 6a91b26: Site header hide-on-scroll keeps working when a browser understands `scroll-state` but does not hide the bar with `scroll-state(scrolled: bottom)`. The scroll-direction script now always sets `data-scroll-dir`, so scrolling down slides the bar away and scrolling up brings it back. The direction query stays as a progressive enhancement where it really applies.
+
+## 0.15.2
+
+### Patch Changes
+
+- 8a54813: `Button`: the `destructive`, `success` and `warning` variants' text is darkened toward the page text colour so it meets the 4.5:1 AA contrast on its tinted background.
+- e536793: Site header: the sticky bar can now slide out of view while the page scrolls down and come back on scrolling up. It stays while its menu is open or it has focus, and never moves under reduced motion. Chrome 144+ does it in CSS alone (`scroll-state(scrolled)` container queries); other browsers get a small scroll-direction script.
+  
+  The slide is an opt-in stylesheet, kept out of `styles/site-header.css` and the Marko entries' own CSS so pages that do not want it never download it. Import it once to turn it on:
+  
+  - Astro `SiteHeader`: `import "@luxoticars/ui/styles/site-header-hide-on-scroll.css";`
+  - Marko `<lx-site-header>`: `import "@luxoticars/ui/marko/lx-site-header/hide-on-scroll.css"`
+  
+  The `hideOnScroll` prop is on by default in both, but only marks the bar for that stylesheet; without the import the bar stays at the top as before. Turn it off per header with `hideOnScroll={false}` / `hideOnScroll=false`.
+
+## 0.15.1
+
+### Patch Changes
+
+- 3e752d0: `<lx-price-distribution-graph>`: a bar without `accessibilityText` is now hidden from assistive technology instead of being an unlabelled `role="img"`.
+
+## 0.15.0
+
+### Minor Changes
+
+- 22dc8aa: Breaking (Marko): `<price-filter>` is now `<lx-price-filter>` and `<price-distribution-graph>` is now `<lx-price-distribution-graph>`. Their block classes follow the tag names and each ships its own `style.css`, so they need `styles/tokens.css` and no longer read Tailwind/daisyUI colour names or fallbacks. `marko/price-filter` and `marko/price-distribution-graph` become `marko/lx-price-filter` and `marko/lx-price-distribution-graph`.
+- bc7cfe5: Breaking (Marko): `<selection-group>` is now `<lx-selection-group>`, its block class is `lx-selection-group` and its stylesheet moves beside the tag as `style.css`, so it needs `styles/tokens.css` and no longer reads Tailwind/daisyUI colour names or fallbacks. `marko/selection-group` becomes `marko/lx-selection-group`.
+- dac095c: Add `<lx-site-footer>` for Marko 6, the twin of the Astro `Footer`. It is adaptive: the app passes the `entry` for the request (`@luxoticars/ui/marko/lx-site-footer/desktop.entry.marko` or `mobile.entry.marko`) and the package does not classify devices. Each entry ships its own `style.css` (forked from `styles/footer.css`). It keeps the footer's grey literals, each behind its `--footer-*` override, and reads the accent from `--lux-marque-accent`, so it needs `styles/tokens.css`.
+- bee35aa: Breaking (Marko): `<site-header-desktop>` and `<site-header-mobile>` become one adaptive `<lx-site-header>`. The app picks the entry per request and passes it in (`entry=`), importing `@luxoticars/ui/marko/lx-site-header/desktop.entry.marko` or `mobile.entry.marko`; the package does not classify devices. Block classes are `lx-site-header`, each entry ships its own `style.css` (so it needs `styles/tokens.css` and no longer reads Tailwind/daisyUI colour names), and the phone entry has no media queries. The default menu is now Buy, Services, Reviews, About, with the desktop header switching to its menu button below 52rem; the phone entry shows only the first word of the call-to-action at every width.
+
+## 0.14.0
+
+### Minor Changes
+
+- 1fb5acc: Breaking (Marko): `<logo>` is now `<lx-logo>`, its block class is `lx-logo` and it ships its own `style.css`, so it needs `styles/tokens.css` and no longer reads Tailwind/daisyUI colour names. `marko/logo` becomes `marko/lx-logo`. Adds `npm run new:tag`, and `npm test` now fails when a Marko tag's forked CSS falls behind the shared stylesheet it came from.
+- 1311c47: Breaking (Marko): `<program-badge>` is now `<lx-program-badge>`, its block class is `lx-program-badge` and it ships its own `style.css`, so it needs `styles/tokens.css` and no longer reads Tailwind/daisyUI colour names or fallbacks. `marko/program-badge` becomes `marko/lx-program-badge`. The Astro `ProgramBadge` is unchanged.
+- d471086: Breaking (Marko): `<text-range>` is now `<lx-text-range>`, its block class is `lx-text-range` and its stylesheet moves beside the tag as `style.css`, so it needs `styles/tokens.css` and no longer reads Tailwind/daisyUI colour names or fallbacks. `marko/text-range` becomes `marko/lx-text-range`.
+- dd4761c: Ship the brand typeface (Jost, OFL-1.1) with the package instead of the `@luxoticars/fonts` dev dependency. Import `@luxoticars/ui/styles/fonts.css` to define `--font-futura`; the font files are exported under `@luxoticars/ui/fonts/*` for preloading.
+
+### Patch Changes
+
+- bc4dc98: Fix `<lx-program-badge>`: it used `$` scriptlets, which the Marko Tags API rejects, so the tag failed to compile. Back to `const/` tag variables, and `npm test` now fails if any Marko tag uses a `$` scriptlet.
+- 19e2de6: Fix `<lx-program-badge>` so it compiles under the Marko tags API. Derived state uses `const/` instead of `$` scriptlets; the rendered badge is unchanged.
+
+## 0.13.0
+
+### Minor Changes
+
+- e6f43dd: The marque accent is now the brand cyan (`oklch(86% 0.127 207.078)`, the same as `--lux-primary`) instead of blue. The logo's accent line and the header and footer accents change colour.
+- a220673: Tokens: new `--lux-marque-accent`, the logo's accent blue, mapped to `--color-marque-accent` in `@theme`. The logo, header and footer read it from there, so changing it in `tokens.css` changes all three. An app that sets `--color-marque-accent` itself (luxoticars-homepage does) keeps its own value. The colour itself is unchanged.
+
+## 0.12.0
+
+### Minor Changes
+
+- a453585: Add `<site-header-desktop>`, `<site-header-mobile>` and `<logo>`, the Marko twins of the Astro `SiteHeader` and `Logo`: same styles, with the header's search field passed as `@search`. The app picks the header per request: the phone one keeps the links in its menu only, so it ships less HTML and script. All of them take their links, new-tab attributes and button label from `resolveSiteHeader()`, and wire the menu with `wireSiteMenu()`, so they cannot drift. The Astro header's output is unchanged.
+- 1207227: Add the Malaysian state flags shown beside a listing's location, as `@luxoticars/ui/flags/states/<slug>.svg`, and `stateFlagSlug()` from `@luxoticars/ui/utils/state-flag`, which maps a listing's `location_state` to its flag. The same 15 flags luxoticars-vi and luxoticars-srp each keep their own copy of.
+
+### Patch Changes
+
+- 960c16d: Move the logo's © mark back to the bottom right of the wordmark, where luxoticars.com shows it. The mark is a `<sub>` again in `Logo.astro` and `createLogo`.
+- a3ab75d: Keep the site header's wordmark, button and menu button on one row at every phone width. Below about 400px the gaps, the wordmark and the button shrink with the bar instead of the button and the menu button dropping to a row of their own.
+
+## 0.11.0
+
+### Minor Changes
+
+- 9ed7465: Add a shared listing card: `createListingCard()` (HTML) and `styles/listing-card.css`, with the text rules in `utils/listing-card` (year and make above a shortened title, price, condition · body · mileage, location). The search results and the home page's Just listed row can now show the same card instead of one copy each.
+- 44a6e31: Add `styles/pill.css`: the rounded choice link used for body types on the home page and filter values on the search page. `pill` is 44px tall, `pill--sm` 32px; the current choice is marked with `aria-current` or `pill--selected`.
+
+### Patch Changes
+
+- 35351a2: The Footer's brand links swap Maserati, McLaren and Bugatti (one car listed each) for Toyota, Mercedes-Benz and Land Rover, so they follow what is in stock.
+
+## 0.10.3
+
+### Patch Changes
+
+- 2884dcf: `<price-distribution-graph>` no longer lets its two value labels run into each other when the knobs sit close together and the prices are long, as with six-digit prices: it pushes them apart. A new `compactLabels` option shortens them (`RM100k` for `RM100000`), and `labels.currencyCaption` (for example "Amounts in RM") shows the currency once under bare-number labels. Each knob's value now includes the currency for screen readers, and the visible labels next to the knobs are hidden from them to avoid reading each value twice.
+
+## 0.10.2
+
+### Patch Changes
+
+- 3b57490: `<text-range>` no longer loses what is being typed in one field when the other field is committed. Typing a minimum, moving to the maximum and typing there used to drop the maximum if the parent updated in between.
+
+## 0.10.1
+
+### Patch Changes
+
+- 045cd37: `<price-filter>` now works as a plain form: without a graph its range starts from the text fields' values, and when it has a form `action` and no `onPriceRangeChange` the browser submits the form itself instead of the filter swallowing the submit. A selected link option in `<selection-group>` now carries `aria-current="true"`, so screen readers announce it as the current choice.
+
+## 0.10.0
+
+### Minor Changes
+
+- f2879e1: `<text-range>` can be a real GET form. Give it an `action` and each field submits under its `key`, `hiddenFields` carry the rest of the page's state, and the submit button stays enabled, so the range works before any JavaScript has loaded. With JS and an `onChange` handler the submit is intercepted and reported through `onChange` as before.
+
+## 0.9.0
+
+### Minor Changes
+
+- f387e55: Add the price filter as four Marko 6 tags: `<price-filter>`, which composes `<selection-group>` (preset ranges), `<text-range>` (min and max fields) and `<price-distribution-graph>` (a histogram with two knobs) around one shared range. Each part also works on its own. The decisions live in `utils/price-range`, which the tags share.
+
 ## 0.8.0
 
 ### Minor Changes

@@ -6,9 +6,14 @@
   under the Astro preview's ThemeFrame.
 */
 @import "../src/styles/tokens.css";
+@import "../src/styles/fonts.css";
 
 .lux-canvas {
   background: var(--lux-base-100);
   color: var(--lux-base-content);
   padding: 2rem;
+}
+
+.lux-canvas--bleed {
+  padding: 0;
 }

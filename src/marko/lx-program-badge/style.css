@@ -1,0 +1,31 @@
+/*
+  Forked from src/styles/program-badge.css [source-hash: a39773c9b13f]
+  Marko-only: the Astro renderer keeps the shared stylesheet.
+  Needs styles/tokens.css. Block is `lx-program-badge`, the tag's own name;
+  `__icon` and `__text` are its elements and `--24` the large size.
+*/
+.lx-program-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.lx-program-badge__icon {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  color: var(--lux-accent);
+}
+
+.lx-program-badge--24 {
+  gap: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.lx-program-badge--24 .lx-program-badge__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}

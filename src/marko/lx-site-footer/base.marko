@@ -1,0 +1,105 @@
+/*
+  What both entries share: the footer's markup, with the small-screen baseline
+  styles in `base.css`. An entry chooses the variant and, by importing its own
+  stylesheet, how the columns are laid out.
+
+  Concise syntax, by repo convention.
+*/
+import type { Model } from "./helper"
+import "./base.css"
+
+export interface Input {
+  model: Model
+  variant: "desktop" | "tablet" | "mobile"
+  /** Replaces the built-in wordmark, as `@logo`. */
+  logo?: Marko.AttrTag<{ content: Marko.Body }>
+}
+
+const/{ model, variant, logo }=input
+
+footer class=["lx-site-footer", `lx-site-footer--${variant}`]
+  // Top seam: hairline transition from the section above
+  div.lx-site-footer__seam aria-hidden="true"
+
+  div.lx-site-footer__container
+    div.lx-site-footer__masthead
+      div.lx-site-footer__brand
+        div.lx-site-footer__logo-wrap
+          if=logo
+            ${logo.content}
+          else
+            lx-logo siteTitle=model.siteTitle href=model.homeHref
+        if=model.tagline
+          p.lx-site-footer__tagline -- ${model.tagline}
+
+      if=model.socials.length
+        nav class="lx-site-footer__nav lx-site-footer__nav--social" aria-label=`${model.siteTitle} on social media`
+          for|social| of=model.socials by=(social) => social.label
+            a href=social.href target="_blank" rel="noopener noreferrer" class="lx-site-footer__social-link" aria-label=`${model.siteTitle} on ${social.label} (opens in a new tab)`
+              svg class="lx-site-footer__social-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"
+                path d=social.path
+
+    div.lx-site-footer__divider aria-hidden="true"
+
+    div.lx-site-footer__columns
+      if=model.brandLinks.length
+        div class="lx-site-footer__column lx-site-footer__column--brands"
+          span.lx-site-footer__column-accent aria-hidden="true"
+          h2 id=model.brandsHeadingId class="lx-site-footer__column-heading lx-site-footer__column-heading--brands" -- ${model.brandsHeading}
+          nav class="lx-site-footer__nav lx-site-footer__nav--brands" aria-labelledby=model.brandsHeadingId
+            ul class="lx-site-footer__link-list lx-site-footer__link-list--brands"
+              for|link| of=model.brandLinks by=(link) => link.href
+                li.lx-site-footer__link-item
+                  a href=link.href class="lx-site-footer__link" target=link.target rel=link.rel
+                    -- ${link.label}
+                    if=link.external
+                      span.lx-site-footer__external-note -- ${" (opens in a new tab)"}
+
+      if=model.companyLinks.length
+        div class="lx-site-footer__column lx-site-footer__column--company"
+          span.lx-site-footer__column-accent aria-hidden="true"
+          h2 id=model.companyHeadingId class="lx-site-footer__column-heading" -- ${model.companyHeading}
+          nav class="lx-site-footer__nav lx-site-footer__nav--company" aria-labelledby=model.companyHeadingId
+            ul.lx-site-footer__link-list
+              for|link| of=model.companyLinks by=(link) => link.href
+                li.lx-site-footer__link-item
+                  a href=link.href class="lx-site-footer__link" target=link.target rel=link.rel
+                    -- ${link.label}
+                    if=link.external
+                      span.lx-site-footer__external-note -- ${" (opens in a new tab)"}
+
+      if=model.contacts.length
+        div class="lx-site-footer__column lx-site-footer__column--enquiries"
+          span.lx-site-footer__column-accent aria-hidden="true"
+          h2 class="lx-site-footer__column-heading" -- ${model.enquiriesHeading}
+          if=model.enquiriesText
+            p.lx-site-footer__enquiries-text -- ${model.enquiriesText}
+          div.lx-site-footer__contact-list
+            for|contact| of=model.contacts by=(contact) => contact.href
+              a href=contact.href class="lx-site-footer__contact-link" target=contact.target rel=contact.rel
+                svg
+                  ,class="lx-site-footer__contact-icon"
+                  ,viewBox="0 0 24 24"
+                  ,fill=contact.svg.fill
+                  ,stroke=(contact.svg.stroke ? "currentColor" : undefined)
+                  ,stroke-width=(contact.svg.stroke ? 1.75 : undefined)
+                  ,stroke-linecap=(contact.svg.stroke ? "round" : undefined)
+                  ,stroke-linejoin=(contact.svg.stroke ? "round" : undefined)
+                  ,aria-hidden="true"
+                  for|d| of=contact.svg.paths
+                    path d=d
+                span class="lx-site-footer__link lx-site-footer__contact-label" -- ${contact.label}
+                if=contact.external
+                  span.lx-site-footer__external-note -- ${" (opens in a new tab)"}
+
+    div.lx-site-footer__bottom
+      p.lx-site-footer__copyright -- ${model.copyright}
+      if=model.legalLinks.length
+        nav class="lx-site-footer__nav lx-site-footer__nav--legal" aria-label="Legal"
+          ul.lx-site-footer__legal-list
+            for|link| of=model.legalLinks by=(link) => link.href
+              li.lx-site-footer__legal-item
+                a href=link.href class="lx-site-footer__link lx-site-footer__link--small" target=link.target rel=link.rel
+                  -- ${link.label}
+                  if=link.external
+                    span.lx-site-footer__external-note -- ${" (opens in a new tab)"}

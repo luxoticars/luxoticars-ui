@@ -1,0 +1,56 @@
+/*
+  Forked from src/styles/site-header-hide-on-scroll.css [source-hash: 2121d0d06e35]
+  Optional, like its source: `<lx-site-header>`'s hide on scroll, kept out of
+  base.css so a page that does not want it never downloads it. No entry
+  imports it; the app does, once, to opt in:
+
+    import "@luxoticars/ui/marko/lx-site-header/hide-on-scroll.css"
+
+  `hideOnScroll` (on by default) only marks the bar with `data-hide-on-scroll`
+  and wires the fallback script; without this file that mark and the script's
+  `data-scroll-dir` change nothing visible, and the bar stays at the top.
+  Block is `lx-site-header`.
+
+  Scrolling down slides the bar up out of view, scrolling up brings it back.
+  It stays put while its menu is open or anything in it has focus, and under
+  reduced motion it never moves at all. Only `translate` changes, so nothing
+  below it reflows.
+
+  Two ways to the same slide. The script always sets the attribute; the
+  container query is progressive enhancement where it actually applies, and
+  does not turn the script off.
+  - `data-scroll-dir="down"`, set by scripts/site-header-hide-on-scroll.js.
+  - `@container scroll-state(scrolled: bottom)` where the browser applies that
+    direction query, with :root as the scroll-state container while a header
+    asks for it.
+  The search is a row of the bar in both entries, never floating under it,
+  so unlike the Astro header it needs no slide of its own.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  .lx-site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"]) {
+    transition: translate 200ms ease-out;
+  }
+
+  /* The slide uses the individual `translate` property (`translate: 0 -100%`),
+     not `transform`. DevTools Computed `transform` stays `none` by design;
+     check `translate` when debugging. */
+  .lx-site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"])[data-scroll-dir="down"]:not(:focus-within):not(:has(.lx-site-header__menu[open])) {
+    translate: 0 -100%;
+  }
+}
+
+@supports (container-type: scroll-state) {
+  :root:has(.lx-site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"])) {
+    container-type: scroll-state;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Same slide: individual `translate`, not `transform`. Computed `transform`
+       stays `none`; check `translate` when debugging. */
+    @container scroll-state(scrolled: bottom) {
+      .lx-site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"]):not(:focus-within):not(:has(.lx-site-header__menu[open])) {
+        translate: 0 -100%;
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+---
+/*
+  Story-only wrapper: `SiteHeader`, and with `page` a page's worth of text
+  under it, so the canvas scrolls and hide-on-scroll can be tried. The header
+  and the text are siblings, as on a real page: a sticky element sticks only
+  while its parent is on screen, and the stories' ThemeFrame wraps whatever
+  the story renders, so the text has to come from here. The `search` slot is
+  passed through. Lives in stories/, so it never ships.
+*/
+import SiteHeader, { type Props as SiteHeaderProps } from "../src/astro/SiteHeader.astro";
+
+type Props = SiteHeaderProps & {
+  /** Put a page of text under the header, so the canvas scrolls. @default false */
+  page?: boolean;
+};
+
+const { page = false, ...headerProps } = Astro.props;
+
+const sections = [
+  "Every car is inspected before it is listed, and the report sits on its page.",
+  "Prices are set by the seller; the graph on the search page shows where one sits.",
+  "Financing, insurance and delivery can be arranged once a price is agreed.",
+  "Dealers and private sellers list the same way, from the dashboard.",
+  "Reviews come from buyers who completed a purchase through the site.",
+  "Saved searches tell you when a car that matches comes in.",
+];
+---
+
+<SiteHeader {...headerProps}>
+  {Astro.slots.has("search") && <slot name="search" slot="search" />}
+</SiteHeader>
+
+{
+  page && (
+    <main style="display:block;max-width:40rem;margin-inline:auto;padding:2rem 0 50vh;line-height:1.6">
+      <h1 style="margin-top:0">Scroll down, then back up</h1>
+      <p>
+        Scrolling down slides the bar out of view; scrolling up, even a little, brings it back. It
+        stays while its menu is open or anything in it has focus: tab into it to see. With reduced
+        motion turned on it never moves.
+      </p>
+      {[...sections, ...sections].map((text, i) => (
+        <>
+          <h2>Section {i + 1}</h2>
+          <p>{text}</p>
+          <p>{text}</p>
+        </>
+      ))}
+    </main>
+  )
+}

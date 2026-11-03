@@ -109,14 +109,14 @@ uses them with no import. Marko is an optional peer dependency (`marko@^6`):
 install it in the app, not through this package.
 
 ```marko
-program-badge icon="top-rated-seller" text="Top rated seller"
+lx-program-badge icon="top-rated-seller" text="Top rated seller"
 ```
 
 Tags can also be imported by path, which is the way out if another installed
 package exports a tag with the same name (Marko uses the first one it finds):
 
 ```marko
-import ProgramBadge from "@luxoticars/ui/marko/program-badge.marko"
+import ProgramBadge from "@luxoticars/ui/marko/lx-program-badge"
 
 ProgramBadge icon="top-rated-seller"
 ```
@@ -175,6 +175,10 @@ site's own sections line up with both by using the same two values. Neither is a
 daisyUI token, so components read them with a fallback (`var(--page-max, 80rem)`)
 and still render in the dash.
 
+`--lux-marque-accent` (also `--color-marque-accent`) is the brand cyan used by the
+logo, header and footer. It is not a daisyUI token and does not change between
+themes; each component keeps a literal fallback, which a test holds equal to it.
+
 ## Storybook
 
 Storybook is where components are reviewed and where their documentation lives.
@@ -183,17 +187,29 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development and testing guid
 
 ```bash
 npm install
-npm run storybook        # dev server on http://localhost:6006
-npm run build-storybook  # static build in storybook-static/
+npm run storybook        # host (HTML, Skin): http://localhost:6006
+npm run storybook:astro  # Astro components: http://localhost:6008
+npm run storybook:marko  # Marko tags: http://localhost:6007
+npm run build-storybook  # static build of all three in storybook-static/
 ```
 
-Marko tags have their own Storybook (`.storybook-marko/`, stories in
-`stories-marko/`), composed into the Astro one so both share one sidebar under
-"Marko". In development run `npm run storybook:marko` (port 6007) alongside
-`npm run storybook`; `npm run build-storybook` builds both, the Marko one into
-`storybook-static/marko/`. The host's theme toolbar does not reach the composed
-Marko stories; open the Marko Storybook on its own (`/marko/` on the published
-site, or port 6007) to see them in the light theme.
+There are three Storybooks, shown in one sidebar. The host (`.storybook/`)
+holds the plain HTML builders (`HTML/*`) and the stylesheet-only Skin stories
+(`Skin/*`) at the root of the sidebar. The Astro components
+(`.storybook-astro/`) and the Marko tags (`.storybook-marko/`, stories beside
+each tag under `src/marko/`) are Storybooks of their own, composed into the
+host as the **Astro** and **Marko** refs, so the sidebar reads `HTML`, `Skin`,
+`Astro → Components → …` and `Marko → Components → …`. In development start
+`npm run storybook:astro` and `npm run storybook:marko` first, then
+`npm run storybook`; the host reads its refs when it starts, so if the host was
+started first, restart it. A ref whose server is not running shows "Oh no!
+Something went wrong loading this Storybook." (or a loading placeholder that
+never fills). `npm run build-storybook`
+builds the host into `storybook-static/` and the refs into
+`storybook-static/astro/` and `storybook-static/marko/`. The host's theme
+toolbar does not reach composed refs; open the Astro or Marko Storybook on its
+own (`/astro/` or `/marko/` on the published site, or port 6008 or 6007) to see
+its stories in the light theme.
 
 Astro components have no browser runtime, so they cannot render in a story on
 their own. [`@storybook-astro/framework`](https://github.com/storybook-astro/storybook-astro)
@@ -227,7 +243,11 @@ tables are silently empty.
 
 Stories live in `stories/` rather than beside their components, because
 `package.json#files` ships all of `src/` and co-located stories would land in
-every consumer's `node_modules`.
+every consumer's `node_modules`. Which Storybook picks up a story is decided by
+the globs in `.storybook/story-globs.ts`: HTML factory stories are named
+`stories/create*.stories.ts`, Skin stories go in `stories/skin/`, and Astro
+component stories go in `stories/ui/` (or are added to the Astro list).
+`npm test` fails if a story file matches neither list, or both.
 
 Storybook is a development-only concern. It is not part of the published package:
 `files` limits the package to `src`, `marko.json` and the README, and installing this package
@@ -236,8 +256,9 @@ from Git pulls none of the Storybook dependencies.
 ### Published Storybook
 
 `.github/workflows/storybook.yml` builds the Storybook and deploys it to GitHub
-Pages on every push to `main`, publishing to
-[`https://ui.luxoticars.com.my`](https://ui.luxoticars.com.my).
+Pages when a release is published (and when the workflow is run by hand), at
+[`https://ui.luxoticars.com.my`](https://ui.luxoticars.com.my). The site tracks
+released versions, not every merge to `main`.
 
 It uses the "GitHub Actions" Pages source rather than "Deploy from a branch", so
 the build output never has to be committed. Enable it once under

@@ -28,8 +28,12 @@ export const Destructive = {
 export const Secondary = { args: { variant: "secondary" } };
 export const Ghost = { args: { variant: "ghost", slots: { default: "Dismiss" } } };
 export const Link = { args: { variant: "link", slots: { default: "View all cars" } } };
-export const Success = { args: { variant: "success", slots: { default: "Published" } } };
-export const Warning = { args: { variant: "warning", slots: { default: "Payment due" } } };
+export const Success = {
+  args: { variant: "success", slots: { default: "Published" } },
+};
+export const Warning = {
+  args: { variant: "warning", slots: { default: "Payment due" } },
+};
 export const Info = { args: { variant: "info", slots: { default: "Under review" } } };
 
 export const Large = { args: { size: "xl" } };

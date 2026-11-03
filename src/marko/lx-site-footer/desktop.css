@@ -1,0 +1,52 @@
+/*
+  Forked from src/styles/footer.css [source-hash: 46ea34df5e6a]
+  The desktop footer: the two wider layouts of footer.css (two columns from
+  40rem, twelve from 64rem). Its media queries stay: a narrow desktop window
+  still stacks, so each entry works with only its base and this stylesheet.
+  Block is `lx-site-footer`; needs styles/tokens.css.
+*/
+@media (min-width: 40rem) {
+  .lx-site-footer--desktop .lx-site-footer__masthead {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-top: 5rem;
+  }
+
+  .lx-site-footer--desktop .lx-site-footer__nav--social {
+    padding-top: 0.5rem;
+  }
+
+  .lx-site-footer--desktop .lx-site-footer__columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lx-site-footer--desktop .lx-site-footer__column--brands {
+    grid-column: span 2 / span 2;
+  }
+}
+
+@media (min-width: 64rem) {
+  .lx-site-footer--desktop .lx-site-footer__masthead {
+    padding-top: 6rem;
+  }
+
+  .lx-site-footer--desktop .lx-site-footer__columns {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .lx-site-footer--desktop .lx-site-footer__column--brands {
+    grid-column: span 6 / span 6;
+  }
+
+  .lx-site-footer--desktop .lx-site-footer__column--company,
+  .lx-site-footer--desktop .lx-site-footer__column--enquiries {
+    grid-column: span 3 / span 3;
+  }
+
+  .lx-site-footer--desktop .lx-site-footer__bottom {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

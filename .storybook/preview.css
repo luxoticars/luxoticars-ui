@@ -8,4 +8,5 @@
 */
 @import "tailwindcss";
 @import "../src/styles/tokens.css";
+@import "../src/styles/fonts.css";
 @source "../src";

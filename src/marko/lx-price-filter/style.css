@@ -1,0 +1,13 @@
+/*
+  Forked from none [source-hash: none]
+  Marko-only, moved from styles/price-filter.css. Layout only: spacing between
+  the filter's parts. Block is `lx-price-filter`, the tag's own name.
+*/
+
+.lx-price-filter__section {
+  margin-top: 1.5rem;
+}
+
+.lx-price-filter__section-price {
+  margin-top: 0.5rem;
+}
