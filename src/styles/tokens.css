@@ -166,6 +166,7 @@
   --color-secondary-content: var(--lux-secondary-content);
   --color-accent: var(--lux-accent);
   --color-accent-content: var(--lux-accent-content);
+  --color-marque-accent: var(--lux-marque-accent);
   --color-neutral: var(--lux-neutral);
   --color-neutral-content: var(--lux-neutral-content);
   --color-info: var(--lux-info);
