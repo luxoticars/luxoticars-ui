@@ -1,5 +1,12 @@
 # @luxoticars/ui
 
+## 0.15.8
+
+### Patch Changes
+
+- 97d3441: The Footer's company links include Services, pointing at `/services`, matching the site header.
+- 6bd4b38: The `--color-*` aliases now follow a nested `data-theme`, so a light section inside a dark page gets light colours without each app re-declaring them.
+
 ## 0.15.7
 
 ### Patch Changes
