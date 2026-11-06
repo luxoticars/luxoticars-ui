@@ -1,0 +1,89 @@
+---
+/*
+  Slotted listing card. Markup matches `createListingCard` (same BEM block).
+  Callers format text with `@luxoticars/ui/utils/listing-card` and put it in
+  slots; this component does not accept a `listing` object.
+*/
+import type { HTMLAttributes } from "astro/types";
+import { cn } from "../../utils/cn.js";
+import { assertListingCardSlots } from "../../utils/listing-card-slots.js";
+import "../../styles/listing-card.css";
+
+type Controlled = "aria-labelledby";
+
+export type Props = Omit<HTMLAttributes<"article">, Controlled> & {
+  /** Required. Target of the single stretched title link. */
+  href: string;
+  /** `2` or `3`. @default 2 */
+  headingLevel?: 2 | 3;
+  /** Optional id on the heading; when set, the article gets `aria-labelledby`. */
+  headingId?: string;
+  /**
+   * Optional `aria-label` on the stretched link. When omitted, the link is
+   * named by the title slot's text.
+   */
+  linkLabel?: string;
+};
+
+const {
+  href,
+  headingLevel = 2,
+  headingId,
+  linkLabel,
+  class: className,
+  "class:list": classList,
+  ...attributes
+} = Astro.props;
+
+const { "aria-labelledby": _labelledby, ...rest } = attributes as HTMLAttributes<"article">;
+
+const textOf = (html: string) => html.replace(/<[^>]*>/g, "").trim();
+
+const titleHtml = Astro.slots.has("title") ? await Astro.slots.render("title") : "";
+const priceHtml = Astro.slots.has("price") ? await Astro.slots.render("price") : "";
+assertListingCardSlots({
+  href,
+  titleText: textOf(titleHtml),
+  priceText: textOf(priceHtml),
+});
+
+if (headingLevel !== 2 && headingLevel !== 3) {
+  throw new Error("ListingCard: `headingLevel` must be 2 or 3.");
+}
+
+const Heading = headingLevel === 3 ? "h3" : "h2";
+
+const mediaHtml = Astro.slots.has("media") ? await Astro.slots.render("media") : "";
+const kickerHtml = Astro.slots.has("kicker") ? await Astro.slots.render("kicker") : "";
+const metaHtml = Astro.slots.has("meta") ? await Astro.slots.render("meta") : "";
+const locationHtml = Astro.slots.has("location") ? await Astro.slots.render("location") : "";
+const actionHtml = Astro.slots.has("action") ? await Astro.slots.render("action") : "";
+
+const hasKicker = textOf(kickerHtml) !== "" || /<[^>]+>/.test(kickerHtml);
+const hasMeta = textOf(metaHtml) !== "" || /<[^>]+>/.test(metaHtml);
+const hasLocation = textOf(locationHtml) !== "" || /<[^>]+>/.test(locationHtml);
+const hasMedia = mediaHtml.trim() !== "";
+const hasAction = actionHtml.trim() !== "";
+---
+
+<article
+  {...rest}
+  class={cn("listing-card", className, classList)}
+  aria-labelledby={headingId}
+>
+  {
+    hasMedia && (
+      <div class="listing-card__media" aria-hidden="true" set:html={mediaHtml} />
+    )
+  }
+  <div class="listing-card__body">
+    {hasKicker && <p class="listing-card__kicker" set:html={kickerHtml} />}
+    <Heading class="listing-card__title" id={headingId}>
+      <a class="listing-card__link" href={href} aria-label={linkLabel} set:html={titleHtml} />
+    </Heading>
+    <p class="listing-card__price" set:html={priceHtml} />
+    {hasMeta && <p class="listing-card__meta" set:html={metaHtml} />}
+    {hasLocation && <p class="listing-card__location" set:html={locationHtml} />}
+  </div>
+  {hasAction && <div class="listing-card__action" set:html={actionHtml} />}
+</article>

@@ -180,3 +180,9 @@
     transition: none;
   }
 }
+
+/* Optional control above the stretched title-link hit area. */
+.listing-card__action {
+  position: relative;
+  z-index: 1;
+}
