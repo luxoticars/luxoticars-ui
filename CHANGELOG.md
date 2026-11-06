@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.17.0
+
+### Minor Changes
+
+- e4e1fe9: Add slotted `ListingCard` / `<lx-listing-card>` and `ScrollingItemCards` / `<lx-scrolling-item-cards>` (Astro + Marko), with shared scroller CSS and `initScrollingItemCards`.
+
 ## 0.16.0
 
 ### Minor Changes
