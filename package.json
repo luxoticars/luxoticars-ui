@@ -43,6 +43,7 @@
     "./styles/footer.css": "./src/styles/footer.css",
     "./styles/logo.css": "./src/styles/logo.css",
     "./styles/listing-card.css": "./src/styles/listing-card.css",
+    "./styles/scrolling-item-cards.css": "./src/styles/scrolling-item-cards.css",
     "./styles/dialog.css": "./src/styles/dialog.css",
     "./styles/site-header.css": "./src/styles/site-header.css",
     "./styles/site-header-hide-on-scroll.css": "./src/styles/site-header-hide-on-scroll.css",
@@ -70,6 +71,10 @@
     "./scripts/dialog": {
       "types": "./src/scripts/dialog.d.ts",
       "default": "./src/scripts/dialog.js"
+    },
+    "./scripts/scrolling-item-cards": {
+      "types": "./src/scripts/scrolling-item-cards.d.ts",
+      "default": "./src/scripts/scrolling-item-cards.js"
     },
     "./astro/*.astro": "./src/astro/*.astro",
     "./astro/*": "./src/astro/*.astro",
