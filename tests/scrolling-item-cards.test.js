@@ -15,12 +15,32 @@ function createFixture({
   const listeners = { scroll: [], resize: [], button: [] };
   const state = { scrollLeft, maxScroll: overflow ? maxScroll : 0, clientWidth };
   let active = null;
+  // Real browsers move focus to the body when the focused control is hidden or disabled.
+  const body = { nodeName: "BODY" };
+
+  function loseFocusIfCurrent(button) {
+    if (active === button) active = body;
+  }
 
   function makeButton(label, kind) {
-    return {
+    let hidden = true;
+    let disabled = false;
+    const button = {
       kind,
-      hidden: true,
-      disabled: false,
+      get hidden() {
+        return hidden;
+      },
+      set hidden(value) {
+        hidden = value;
+        if (value === true) loseFocusIfCurrent(button);
+      },
+      get disabled() {
+        return disabled;
+      },
+      set disabled(value) {
+        disabled = value;
+        if (value === true) loseFocusIfCurrent(button);
+      },
       getAttribute: (n) => (n === "aria-label" ? label : null),
       focus() {
         active = this;
@@ -29,6 +49,7 @@ function createFixture({
         if (type === "click") listeners.button.push({ kind, fn });
       },
     };
+    return button;
   }
 
   const prev = makeButton("Previous", "prev");

@@ -40,6 +40,8 @@ function update(root, prev, next, scrollport) {
   const overflow = max > eps;
   const atStart = left <= eps;
   const atEnd = left >= max - eps;
+  // Hiding or disabling the focused control moves focus to the body immediately.
+  const active = root.ownerDocument.activeElement;
 
   if (!overflow) {
     prev.hidden = true;
@@ -53,7 +55,6 @@ function update(root, prev, next, scrollport) {
     next.disabled = atEnd;
   }
 
-  const active = root.ownerDocument.activeElement;
   if (active === prev && (prev.disabled || prev.hidden)) {
     if (!next.disabled && !next.hidden) next.focus();
     else root.focus();
