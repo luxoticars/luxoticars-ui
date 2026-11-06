@@ -1,0 +1,67 @@
+/*
+  Horizontal scroller for Marko 6 — twin of `astro/ui/ScrollingItemCards.astro`.
+  Shared CSS + initScrollingItemCards. Concise Tags API only. No Marko-only CSS.
+*/
+import { cn } from "../../utils/cn.js"
+import { initScrollingItemCards } from "../../scripts/scrolling-item-cards.js"
+import "../../styles/scrolling-item-cards.css"
+
+export interface Input extends Omit<Marko.HTML.Section, "content" | "title" | "aria-label" | "aria-labelledby"> {
+  headingId?: string
+  label?: string
+  /** @default "Previous" */
+  prevLabel?: string
+  /** @default "Next" */
+  nextLabel?: string
+  title?: Marko.AttrTag<{ content: Marko.Body }>
+  titleCard?: Marko.AttrTag<{ content: Marko.Body }>
+  /** Repeatable item cards. */
+  item?: Marko.AttrTag<{ content: Marko.Body }>
+  footer?: Marko.AttrTag<{ content: Marko.Body }>
+  content?: never
+}
+
+const/raw=input as Input & { "aria-label"?: string, "aria-labelledby"?: string }
+const/{
+  headingId,
+  label,
+  prevLabel = "Previous",
+  nextLabel = "Next",
+  class: className,
+  title,
+  titleCard,
+  item,
+  footer,
+  content: _content,
+  "aria-label": _a,
+  "aria-labelledby": _b,
+  ...attrs
+}=raw
+
+const/_named=(headingId || (typeof label === "string" && label.trim()))
+const/_assert=_named ? true : (() => { throw new Error("ScrollingItemCards: one of `headingId` or `label` is required.") })()
+
+section/root ...attrs class=cn("scrolling-item-cards", className) aria-labelledby=headingId aria-label=(headingId ? undefined : label)
+  if=title
+    div.scrolling-item-cards__header
+      ${title.content}
+  div.scrolling-item-cards__viewport
+    button.scrolling-item-cards__control.scrolling-item-cards__control--prev type="button" aria-label=prevLabel hidden
+      svg.scrolling-item-cards__control-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+        polyline points="15 18 9 12 15 6"
+    div.scrolling-item-cards__flow
+      if=titleCard
+        div.scrolling-item-cards__title-card
+          ${titleCard.content}
+      div.scrolling-item-cards__track
+        for|entry| of=item
+          div.scrolling-item-cards__item
+            ${entry.content}
+    button.scrolling-item-cards__control.scrolling-item-cards__control--next type="button" aria-label=nextLabel hidden
+      svg.scrolling-item-cards__control-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+        polyline points="9 18 15 12 9 6"
+  if=footer
+    div.scrolling-item-cards__footer
+      ${footer.content}
+
+script -- initScrollingItemCards(root() as HTMLElement)

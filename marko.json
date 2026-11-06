@@ -1,10 +1,12 @@
 {
   "exports": "./src/marko",
   "script-lang": "ts",
+  "<lx-listing-card>": { "template": "./src/marko/lx-listing-card/index.marko" },
   "<lx-logo>": { "template": "./src/marko/lx-logo/index.marko" },
   "<lx-price-distribution-graph>": { "template": "./src/marko/lx-price-distribution-graph/index.marko" },
   "<lx-price-filter>": { "template": "./src/marko/lx-price-filter/index.marko" },
   "<lx-program-badge>": { "template": "./src/marko/lx-program-badge/index.marko" },
+  "<lx-scrolling-item-cards>": { "template": "./src/marko/lx-scrolling-item-cards/index.marko" },
   "<lx-selection-group>": { "template": "./src/marko/lx-selection-group/index.marko" },
   "<lx-site-footer>": { "template": "./src/marko/lx-site-footer/index.marko" },
   "<lx-site-header>": { "template": "./src/marko/lx-site-header/index.marko" },

@@ -1,0 +1,69 @@
+/*
+  Storybook demo wrapper for <lx-scrolling-item-cards>. Composes
+  <lx-listing-card> the way a Marko app would (no Marko SectionHead —
+  a heading in `@title` is enough).
+*/
+import ScrollingItemCards from "./index.marko"
+import ListingCard from "../lx-listing-card/index.marko"
+
+export interface Input {
+  scenario: "similar" | "promo" | "no-overflow" | "footer"
+}
+
+const/{ scenario }=input
+const/cars=[{ id: "1", title: "Range Rover Vogue", price: "MYR 450,000" }, { id: "2", title: "Porsche 911", price: "MYR 890,000" }, { id: "3", title: "BMW M4", price: "MYR 520,000" }, { id: "4", title: "Mercedes-AMG GT", price: "MYR 780,000" }]
+const/list=(scenario === "no-overflow" ? cars.slice(0, 1) : cars)
+
+if=(scenario === "similar")
+  ScrollingItemCards headingId="similar-cars" style="width:320px"
+    @title
+      h2#similar-cars -- Similar cars
+    for|car, i| of=list
+      @item
+        ListingCard href=`/m/${car.id}/` headingId=`similar-${car.id}` headingLevel=3
+          @media
+            if=(i === 0)
+              img.listing-card__image src=`/m/${car.id}/cover/` alt="" width="640" height="480" loading="eager" fetchpriority="high" decoding="async"
+            else
+              img.listing-card__image src=`/m/${car.id}/cover/` alt="" width="640" height="480" loading="lazy" decoding="async"
+          @title -- ${car.title}
+          @price -- ${car.price}
+else if=(scenario === "promo")
+  ScrollingItemCards label="Featured cars"
+    @titleCard
+      h2 -- This week's picks
+    for|car, i| of=list
+      @item
+        ListingCard href=`/m/${car.id}/` headingId=`featured-${car.id}` headingLevel=3
+          @media
+            if=(i === 0)
+              img.listing-card__image src=`/m/${car.id}/cover/` alt="" width="640" height="480" loading="eager" fetchpriority="high" decoding="async"
+            else
+              img.listing-card__image src=`/m/${car.id}/cover/` alt="" width="640" height="480" loading="lazy" decoding="async"
+          @title -- ${car.title}
+          @price -- ${car.price}
+else if=(scenario === "no-overflow")
+  ScrollingItemCards label="One car"
+    for|car| of=list
+      @item
+        ListingCard href=`/m/${car.id}/` headingId=`one-${car.id}` headingLevel=3
+          @media
+            img.listing-card__image src=`/m/${car.id}/cover/` alt="" width="640" height="480" loading="eager" fetchpriority="high" decoding="async"
+          @title -- ${car.title}
+          @price -- ${car.price}
+else if=(scenario === "footer")
+  ScrollingItemCards headingId="with-footer"
+    @title
+      h2#with-footer -- Just listed
+    for|car, i| of=list
+      @item
+        ListingCard href=`/m/${car.id}/` headingId=`listed-${car.id}` headingLevel=3
+          @media
+            if=(i === 0)
+              img.listing-card__image src=`/m/${car.id}/cover/` alt="" width="640" height="480" loading="eager" fetchpriority="high" decoding="async"
+            else
+              img.listing-card__image src=`/m/${car.id}/cover/` alt="" width="640" height="480" loading="lazy" decoding="async"
+          @title -- ${car.title}
+          @price -- ${car.price}
+    @footer
+      p -- Prices include taxes.

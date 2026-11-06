@@ -1,0 +1,43 @@
+/*
+  Story-only. Storybook args cannot pass an AttrTag body, and a string in
+  `content` is read as a tag name. This template turns the shared case HTML
+  into real `@media` / `@title` / … bodies. The `.stories.` name keeps it out
+  of the package.
+*/
+import Card from "./index.marko"
+
+export interface Input {
+  href: string
+  headingLevel?: 2 | 3
+  headingId?: string
+  linkLabel?: string
+  class?: string
+  mediaHtml?: string
+  kickerHtml?: string
+  titleHtml: string
+  priceHtml: string
+  metaHtml?: string
+  locationHtml?: string
+  actionHtml?: string
+}
+
+Card href=input.href headingLevel=input.headingLevel headingId=input.headingId linkLabel=input.linkLabel class=input.class
+  if=input.mediaHtml
+    @media
+      -- $!{input.mediaHtml}
+  if=input.kickerHtml
+    @kicker
+      -- $!{input.kickerHtml}
+  @title
+    -- $!{input.titleHtml}
+  @price
+    -- $!{input.priceHtml}
+  if=input.metaHtml
+    @meta
+      -- $!{input.metaHtml}
+  if=input.locationHtml
+    @location
+      -- $!{input.locationHtml}
+  if=input.actionHtml
+    @action
+      -- $!{input.actionHtml}

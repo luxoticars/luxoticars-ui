@@ -1,0 +1,177 @@
+/*
+  Horizontal scroller for slotted item cards. Shared by Astro and Marko.
+  Native overflow + scroll-snap; prev/next come from scripts/scrolling-item-cards.js.
+*/
+
+.scrolling-item-cards {
+  --scrolling-item-cards-item-width: 16.5rem;
+  --_gap: 1rem;
+  --_control-size: 2.5rem;
+  --_surface: var(--lux-base-100, var(--color-base-100, oklch(100% 0 0)));
+  --_text: var(--lux-base-content, var(--color-base-content, oklch(21% 0.006 285.885)));
+  --_line: var(--lux-base-200, var(--color-base-200, oklch(96% 0.001 286)));
+  --_focus: var(--lux-accent, var(--color-accent, oklch(52% 0.16 232.661)));
+
+  container-type: inline-size;
+  container-name: scrolling-item-cards;
+  color: var(--_text);
+}
+
+.scrolling-item-cards__header {
+  margin-block-end: 1rem;
+}
+
+.scrolling-item-cards__viewport {
+  position: relative;
+}
+
+.scrolling-item-cards__flow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--_gap);
+}
+
+.scrolling-item-cards__title-card {
+  min-width: 0;
+}
+
+.scrolling-item-cards__track {
+  display: flex;
+  gap: var(--_gap);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding-block-end: 0.25rem;
+}
+
+.scrolling-item-cards__item {
+  flex: 0 0 var(--scrolling-item-cards-item-width);
+  width: var(--scrolling-item-cards-item-width);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.scrolling-item-cards__item > * {
+  height: 100%;
+}
+
+.scrolling-item-cards__footer {
+  margin-block-start: 1rem;
+}
+
+.scrolling-item-cards__control {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: inline-grid;
+  place-items: center;
+  width: var(--_control-size);
+  height: var(--_control-size);
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--_line);
+  border-radius: 999px;
+  background: var(--_surface);
+  color: inherit;
+  box-shadow: 0 1px 2px oklch(0 0 0 / 0.08);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.scrolling-item-cards__control--prev {
+  left: 0.25rem;
+}
+
+.scrolling-item-cards__control--next {
+  right: 0.25rem;
+}
+
+.scrolling-item-cards__control:focus-visible {
+  outline: 2px solid var(--_focus);
+  outline-offset: 2px;
+}
+
+.scrolling-item-cards__control:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.scrolling-item-cards__control[hidden] {
+  display: none;
+}
+
+.scrolling-item-cards__control-icon {
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+}
+
+/*
+  From 768px with a title-card: flow is the scrollport; track uses display:contents.
+  Select descendants of the container (not `.scrolling-item-cards` itself) so the
+  container query can apply. `:has(> .__title-card)` keeps the flip title-card-only.
+*/
+@container scrolling-item-cards (min-width: 768px) {
+  .scrolling-item-cards__flow:has(> .scrolling-item-cards__title-card) {
+    flex-direction: row;
+    align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scrolling-item-cards__flow:has(> .scrolling-item-cards__title-card) > .scrolling-item-cards__title-card {
+    flex: 0 0 auto;
+    width: min(225px, var(--scrolling-item-cards-item-width));
+    max-width: 225px;
+    scroll-snap-align: start;
+  }
+
+  .scrolling-item-cards__flow:has(> .scrolling-item-cards__title-card) > .scrolling-item-cards__track {
+    display: contents;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .scrolling-item-cards__flow:has(> .scrolling-item-cards__title-card) {
+    flex-direction: row;
+    align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scrolling-item-cards__flow:has(> .scrolling-item-cards__title-card) > .scrolling-item-cards__title-card {
+    flex: 0 0 auto;
+    width: min(225px, var(--scrolling-item-cards-item-width));
+    max-width: 225px;
+    scroll-snap-align: start;
+  }
+
+  .scrolling-item-cards__flow:has(> .scrolling-item-cards__title-card) > .scrolling-item-cards__track {
+    display: contents;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+}
+
+/*
+  Match the 768px title-card flow selector's specificity so reduced motion
+  actually overrides `scroll-behavior: smooth` and `scroll-snap-type: x mandatory`.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .scrolling-item-cards__track,
+  .scrolling-item-cards__flow,
+  .scrolling-item-cards__flow:has(> .scrolling-item-cards__title-card) {
+    scroll-behavior: auto;
+    scroll-snap-type: x proximity;
+  }
+}

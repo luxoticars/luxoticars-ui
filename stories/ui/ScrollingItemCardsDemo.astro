@@ -1,0 +1,124 @@
+---
+import ScrollingItemCards from "../../src/astro/ui/ScrollingItemCards.astro";
+import ListingCard from "../../src/astro/ui/ListingCard.astro";
+import SectionHead from "../../src/astro/SectionHead.astro";
+
+export interface Props {
+  scenario: "similar" | "promo" | "no-overflow" | "footer";
+}
+
+const { scenario } = Astro.props;
+
+const cars = [
+  { id: "1", title: "Range Rover Vogue", price: "MYR 450,000" },
+  { id: "2", title: "Porsche 911", price: "MYR 890,000" },
+  { id: "3", title: "BMW M4", price: "MYR 520,000" },
+  { id: "4", title: "Mercedes-AMG GT", price: "MYR 780,000" },
+];
+const list = scenario === "no-overflow" ? cars.slice(0, 1) : cars;
+---
+
+{
+  list && (
+    <Fragment>
+      {scenario === "similar" && (
+        <ScrollingItemCards headingId="similar-cars">
+          <SectionHead slot="title" title="Similar cars" headingId="similar-cars" linkHref="/search" linkLabel="View all" />
+          {list.map((car, i) => (
+            <div class="scrolling-item-cards__item">
+              <ListingCard href={`/m/${car.id}/`} headingId={`similar-${car.id}`} headingLevel={3}>
+                <img
+                  slot="media"
+                  class="listing-card__image"
+                  src={`/m/${car.id}/cover/`}
+                  alt=""
+                  width="640"
+                  height="480"
+                  loading={i === 0 ? "eager" : "lazy"}
+                  fetchpriority={i === 0 ? "high" : undefined}
+                  decoding="async"
+                />
+                <Fragment slot="title">{car.title}</Fragment>
+                <Fragment slot="price">{car.price}</Fragment>
+              </ListingCard>
+            </div>
+          ))}
+        </ScrollingItemCards>
+      )}
+      {scenario === "promo" && (
+        <ScrollingItemCards label="Featured cars">
+          <div slot="titleCard">
+            <h2>This week's picks</h2>
+          </div>
+          {list.map((car, i) => (
+            <div class="scrolling-item-cards__item">
+              <ListingCard href={`/m/${car.id}/`} headingId={`featured-${car.id}`} headingLevel={3}>
+                <img
+                  slot="media"
+                  class="listing-card__image"
+                  src={`/m/${car.id}/cover/`}
+                  alt=""
+                  width="640"
+                  height="480"
+                  loading={i === 0 ? "eager" : "lazy"}
+                  fetchpriority={i === 0 ? "high" : undefined}
+                  decoding="async"
+                />
+                <Fragment slot="title">{car.title}</Fragment>
+                <Fragment slot="price">{car.price}</Fragment>
+              </ListingCard>
+            </div>
+          ))}
+        </ScrollingItemCards>
+      )}
+      {scenario === "no-overflow" && (
+        <ScrollingItemCards label="One car">
+          {list.map((car) => (
+            <div class="scrolling-item-cards__item">
+              <ListingCard href={`/m/${car.id}/`} headingId={`one-${car.id}`} headingLevel={3}>
+                <img
+                  slot="media"
+                  class="listing-card__image"
+                  src={`/m/${car.id}/cover/`}
+                  alt=""
+                  width="640"
+                  height="480"
+                  loading="eager"
+                  fetchpriority="high"
+                  decoding="async"
+                />
+                <Fragment slot="title">{car.title}</Fragment>
+                <Fragment slot="price">{car.price}</Fragment>
+              </ListingCard>
+            </div>
+          ))}
+        </ScrollingItemCards>
+      )}
+      {scenario === "footer" && (
+        <ScrollingItemCards headingId="with-footer">
+          <h2 id="with-footer" slot="title">Just listed</h2>
+          {list.map((car, i) => (
+            <div class="scrolling-item-cards__item">
+              <ListingCard href={`/m/${car.id}/`} headingId={`listed-${car.id}`} headingLevel={3}>
+                <img
+                  slot="media"
+                  class="listing-card__image"
+                  src={`/m/${car.id}/cover/`}
+                  alt=""
+                  width="640"
+                  height="480"
+                  loading={i === 0 ? "eager" : "lazy"}
+                  fetchpriority={i === 0 ? "high" : undefined}
+                  decoding="async"
+                />
+                <Fragment slot="title">{car.title}</Fragment>
+                <Fragment slot="price">{car.price}</Fragment>
+              </ListingCard>
+            </div>
+          ))}
+          <p slot="footer">Prices include taxes.</p>
+        </ScrollingItemCards>
+      )}
+    </Fragment>
+  )
+}

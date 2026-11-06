@@ -102,6 +102,22 @@ Storybook, generated from each component's own types and JSDoc, so they cannot
 drift from the code the way a hand-written table in this file does. Run
 `npm run storybook`, or read the published build.
 
+### Listing cards
+
+`ListingCard` (`@luxoticars/ui/astro/ui/ListingCard`) is a slotted card. The
+component imports the shared listing-card stylesheet. Callers still format text
+with `@luxoticars/ui/utils/listing-card` and put it in the slots.
+
+`ScrollingItemCards` (`@luxoticars/ui/astro/ui/ScrollingItemCards`) is a
+horizontal scroller. Its stylesheet is
+`@luxoticars/ui/styles/scrolling-item-cards.css`. The component installs
+`initScrollingItemCards` from `@luxoticars/ui/scripts/scrolling-item-cards`.
+
+Images in a card's media slot are the caller's contract. The default is
+`loading="lazy"` and `decoding="async"`. The first visible card, or any LCP
+image, may use `fetchpriority="high"` and eager loading. Decorative images use
+`alt=""`. The components do not rewrite slotted `<img>` elements.
+
 ## Marko API
 
 Marko 6 tags are discovered through the package's `marko.json`, so a Marko app
@@ -129,6 +145,21 @@ As with the Astro components, props are documented in Storybook, not here. For
 Marko tags the controls and their descriptions are written out beside the
 stories, because `@storybook/marko` has no docgen; they mirror the JSDoc on each
 tag's `Input`.
+
+### Listing cards
+
+`<lx-listing-card>` is the Marko twin of `ListingCard`. It imports the same
+shared stylesheet. Callers still format text with
+`@luxoticars/ui/utils/listing-card` and put it in the slots.
+
+`<lx-scrolling-item-cards>` is the horizontal scroller. It uses
+`@luxoticars/ui/styles/scrolling-item-cards.css` and installs
+`initScrollingItemCards` from `@luxoticars/ui/scripts/scrolling-item-cards`.
+
+The image-loading contract matches the Astro card: default `loading="lazy"` and
+`decoding="async"`; the first visible or LCP image may use `fetchpriority="high"`
+and eager loading; decorative images use `alt=""`. The tag does not rewrite
+slotted `<img>` elements.
 
 ## Design tokens
 
