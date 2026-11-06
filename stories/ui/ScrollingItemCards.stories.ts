@@ -35,6 +35,13 @@ export const SimilarCars = {
     }
     const links = root.querySelectorAll("a.listing-card__link");
     if (links.length !== imgs.length) throw new Error("one stretched link per card");
+    // The component's own <script> must reveal the control. Do not call
+    // initScrollingItemCards here — that hides a missing install path.
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    const next = root.querySelector(".scrolling-item-cards__control--next");
+    if (!next || next.hasAttribute("hidden")) {
+      throw new Error("next should be shown when the scroller overflows");
+    }
   },
   parameters: { docs: { source: { language: "astro", code: scrollerSource.SimilarCars } } },
 };
