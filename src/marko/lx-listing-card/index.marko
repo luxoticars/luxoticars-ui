@@ -1,0 +1,79 @@
+/*
+  Slotted listing card for Marko 6 — the twin of `astro/ui/ListingCard.astro`.
+  Same BEM block (`listing-card`) and shared stylesheet; no Marko-only fork.
+  Concise syntax, by repo convention.
+*/
+import { cn } from "../../utils/cn.js"
+import { assertListingCardSlots } from "../../utils/listing-card-slots.js"
+import "../../styles/listing-card.css"
+
+export interface Input extends Omit<Marko.HTML.Article, "content" | "title" | "aria-labelledby"> {
+  /** Required. Target of the single stretched title link. */
+  href: string
+  /** `2` or `3`. @default 2 */
+  headingLevel?: 2 | 3
+  /** Optional id on the heading; when set, the article gets `aria-labelledby`. */
+  headingId?: string
+  /** Optional `aria-label` on the stretched link. */
+  linkLabel?: string
+  media?: Marko.AttrTag<{ content: Marko.Body }>
+  kicker?: Marko.AttrTag<{ content: Marko.Body }>
+  /** Required. Phrasing/text only — not a nested link. */
+  title: Marko.AttrTag<{ content: Marko.Body }>
+  /** Required. */
+  price: Marko.AttrTag<{ content: Marko.Body }>
+  meta?: Marko.AttrTag<{ content: Marko.Body }>
+  location?: Marko.AttrTag<{ content: Marko.Body }>
+  action?: Marko.AttrTag<{ content: Marko.Body }>
+  content?: never
+}
+
+const/raw=input as Input & { "aria-labelledby"?: string }
+const/{
+  href,
+  headingLevel = 2,
+  headingId,
+  linkLabel,
+  class: className,
+  media,
+  kicker,
+  title,
+  price,
+  meta,
+  location,
+  action,
+  content: _content,
+  "aria-labelledby": _labelledby,
+  ...attrs
+}=raw
+
+const/_assert=assertListingCardSlots({
+  href,
+  titleText: title ? "x" : "",
+  priceText: price ? "x" : "",
+})
+const/_level=(headingLevel === 3 ? 3 : headingLevel === 2 ? 2 : (() => { throw new Error("ListingCard: `headingLevel` must be 2 or 3.") })())
+const/Heading=(_level === 3 ? "h3" : "h2")
+
+article ...attrs class=cn("listing-card", className) aria-labelledby=headingId
+  if=media
+    div.listing-card__media aria-hidden="true"
+      ${media.content}
+  div.listing-card__body
+    if=kicker
+      p.listing-card__kicker
+        ${kicker.content}
+    ${Heading} class="listing-card__title" id=headingId
+      a.listing-card__link href=href aria-label=linkLabel
+        ${title.content}
+    p.listing-card__price
+      ${price.content}
+    if=meta
+      p.listing-card__meta
+        ${meta.content}
+    if=location
+      p.listing-card__location
+        ${location.content}
+  if=action
+    div.listing-card__action
+      ${action.content}

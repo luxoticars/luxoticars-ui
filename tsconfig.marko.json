@@ -8,7 +8,7 @@
 // also makes it write a .tsbuildinfo file, which is pointed into node_modules
 // (gitignored) instead of the repo root.
 {
-  "include": ["src/marko", "stories-marko", ".storybook-marko", "stories/program-badge-cases.ts"],
+  "include": ["src/marko", "stories-marko", ".storybook-marko", "stories/program-badge-cases.ts", "stories/listing-card-cases.ts"],
   "compilerOptions": {
     "strict": true,
     "noEmit": true,

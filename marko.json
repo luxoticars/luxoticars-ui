@@ -1,6 +1,7 @@
 {
   "exports": "./src/marko",
   "script-lang": "ts",
+  "<lx-listing-card>": { "template": "./src/marko/lx-listing-card/index.marko" },
   "<lx-logo>": { "template": "./src/marko/lx-logo/index.marko" },
   "<lx-price-distribution-graph>": { "template": "./src/marko/lx-price-distribution-graph/index.marko" },
   "<lx-price-filter>": { "template": "./src/marko/lx-price-filter/index.marko" },
