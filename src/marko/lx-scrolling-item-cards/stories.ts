@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/marko";
 import Demo, { type Input } from "./demo.marko";
-import { initScrollingItemCards } from "../../scripts/scrolling-item-cards.js";
 
 function rootOf(canvasElement: HTMLElement) {
   const root = canvasElement.querySelector(".scrolling-item-cards");
@@ -32,6 +31,11 @@ export const SimilarCars: Story = {
     if (imgs.slice(1).some((img) => img.getAttribute("loading") !== "lazy")) {
       throw new Error("remaining images must be loading=lazy");
     }
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    const next = root.querySelector(".scrolling-item-cards__control--next");
+    if (!next || next.hasAttribute("hidden")) {
+      throw new Error("next should be shown when the scroller overflows");
+    }
   },
 };
 
@@ -48,7 +52,6 @@ export const NoOverflow: Story = {
   args: { scenario: "no-overflow" },
   play: async ({ canvasElement }) => {
     const root = rootOf(canvasElement);
-    initScrollingItemCards(root);
     const prev = root.querySelector(".scrolling-item-cards__control--prev");
     const next = root.querySelector(".scrolling-item-cards__control--next");
     if (!prev?.hasAttribute("hidden") || !next?.hasAttribute("hidden")) {

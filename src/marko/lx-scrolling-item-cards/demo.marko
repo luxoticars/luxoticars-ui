@@ -15,7 +15,7 @@ const/cars=[{ id: "1", title: "Range Rover Vogue", price: "MYR 450,000" }, { id:
 const/list=(scenario === "no-overflow" ? cars.slice(0, 1) : cars)
 
 if=(scenario === "similar")
-  ScrollingItemCards headingId="similar-cars"
+  ScrollingItemCards headingId="similar-cars" style="width:320px"
     @title
       h2#similar-cars -- Similar cars
     for|car, i| of=list
