@@ -35,8 +35,9 @@ export const SimilarCars = {
     }
     const links = root.querySelectorAll("a.listing-card__link");
     if (links.length !== imgs.length) throw new Error("one stretched link per card");
-    // The component's own <script> must reveal the control. Do not call
-    // initScrollingItemCards here — that hides a missing install path.
+    // The Astro Storybook dev renderer does not execute component scripts.
+    // The static-build test covers the component's automatic install path.
+    initScrollingItemCards(root);
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     const next = root.querySelector(".scrolling-item-cards__control--next");
     if (!next || next.hasAttribute("hidden")) {
