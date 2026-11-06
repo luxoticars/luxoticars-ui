@@ -1,0 +1,121 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { cn } from "../../utils/cn.js";
+import "../../styles/scrolling-item-cards.css";
+
+type Controlled = "aria-label" | "aria-labelledby";
+
+export type Props = Omit<HTMLAttributes<"section">, Controlled> & {
+  /**
+   * When the title slot contains a heading with this id, the section uses
+   * `aria-labelledby`. One of `headingId` or `label` is required.
+   */
+  headingId?: string;
+  /** Accessible name when there is no `headingId`. */
+  label?: string;
+  /** @default "Previous" */
+  prevLabel?: string;
+  /** @default "Next" */
+  nextLabel?: string;
+};
+
+/**
+ * Horizontal scroller. Default-slot children should each be wrapped in
+ * `.scrolling-item-cards__item` (Marko `@item` wraps for you).
+ */
+const {
+  headingId,
+  label,
+  prevLabel = "Previous",
+  nextLabel = "Next",
+  class: className,
+  "class:list": classList,
+  ...attributes
+} = Astro.props;
+
+const {
+  "aria-label": _ariaLabel,
+  "aria-labelledby": _ariaLabelledby,
+  ...rest
+} = attributes as HTMLAttributes<"section">;
+
+if (!headingId && !(typeof label === "string" && label.trim())) {
+  throw new Error("ScrollingItemCards: one of `headingId` or `label` is required.");
+}
+
+const hasTitle = Astro.slots.has("title");
+const hasTitleCard = Astro.slots.has("titleCard");
+const hasFooter = Astro.slots.has("footer");
+
+const chevronPrev =
+  '<svg class="scrolling-item-cards__control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+const chevronNext =
+  '<svg class="scrolling-item-cards__control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+---
+
+<section
+  {...rest}
+  class={cn("scrolling-item-cards", className, classList)}
+  aria-labelledby={headingId}
+  aria-label={headingId ? undefined : label}
+>
+  {
+    hasTitle && (
+      <div class="scrolling-item-cards__header">
+        <slot name="title" />
+      </div>
+    )
+  }
+  <div class="scrolling-item-cards__viewport">
+    <button
+      type="button"
+      class="scrolling-item-cards__control scrolling-item-cards__control--prev"
+      aria-label={prevLabel}
+      hidden
+      set:html={chevronPrev}
+    />
+    <div class="scrolling-item-cards__flow">
+      {
+        hasTitleCard && (
+          <div class="scrolling-item-cards__title-card">
+            <slot name="titleCard" />
+          </div>
+        )
+      }
+      <div class="scrolling-item-cards__track">
+        <slot />
+      </div>
+    </div>
+    <button
+      type="button"
+      class="scrolling-item-cards__control scrolling-item-cards__control--next"
+      aria-label={nextLabel}
+      hidden
+      set:html={chevronNext}
+    />
+  </div>
+  {
+    hasFooter && (
+      <div class="scrolling-item-cards__footer">
+        <slot name="footer" />
+      </div>
+    )
+  }
+</section>
+
+<script>
+  import { initScrollingItemCards } from "../../scripts/scrolling-item-cards.js";
+
+  // SiteHeader tears down listeners with AbortController + signal. This script
+  // does not: `initScrollingItemCards` treats a second call on the same root as
+  // a no-op (WeakSet), which is the spec. After `astro:after-swap`, preserved
+  // roots skip re-wiring; new roots initialize.
+  function initAll() {
+    for (const root of document.querySelectorAll(".scrolling-item-cards")) {
+      initScrollingItemCards(root);
+    }
+  }
+
+  initAll();
+  document.addEventListener("astro:after-swap", initAll);
+</script>
