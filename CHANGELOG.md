@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.17.1
+
+### Patch Changes
+
+- dc74f1b: Show Astro ScrollingItemCards previous and next buttons in the static Storybook when the row overflows.
+
 ## 0.17.0
 
 ### Minor Changes
