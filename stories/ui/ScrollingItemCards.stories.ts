@@ -35,6 +35,14 @@ export const SimilarCars = {
     }
     const links = root.querySelectorAll("a.listing-card__link");
     if (links.length !== imgs.length) throw new Error("one stretched link per card");
+    // The Astro Storybook dev renderer does not execute component scripts.
+    // The static-build test covers the component's automatic install path.
+    initScrollingItemCards(root);
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    const next = root.querySelector(".scrolling-item-cards__control--next");
+    if (!next || next.hasAttribute("hidden")) {
+      throw new Error("next should be shown when the scroller overflows");
+    }
   },
   parameters: { docs: { source: { language: "astro", code: scrollerSource.SimilarCars } } },
 };

@@ -22,7 +22,7 @@ const list = scenario === "no-overflow" ? cars.slice(0, 1) : cars;
   list && (
     <Fragment>
       {scenario === "similar" && (
-        <ScrollingItemCards headingId="similar-cars">
+        <ScrollingItemCards headingId="similar-cars" style="width:320px">
           <SectionHead slot="title" title="Similar cars" headingId="similar-cars" linkHref="/search" linkLabel="View all" />
           {list.map((car, i) => (
             <div class="scrolling-item-cards__item">
