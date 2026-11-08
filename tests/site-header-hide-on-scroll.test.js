@@ -75,14 +75,32 @@ test("down hides, up shows; short scrolls change nothing", () => {
   assert.equal(header.dataset.scrollDir, "down");
 });
 
-test("within the bar's height of the top it stays, and overscroll counts as the top", () => {
+test("within the bar's height of the top it is at rest, and overscroll counts as the top", () => {
   const { header, scrollTo } = setup();
   wireHideOnScroll(header, new AbortController().signal);
   scrollTo(40); // down, but still inside the 64px bar
-  assert.equal(header.dataset.scrollDir, "up");
+  assert.equal(header.dataset.scrollDir, undefined);
   scrollTo(300);
   scrollTo(-30);
+  assert.equal(header.dataset.scrollDir, undefined);
+});
+
+/* The frosted sheet keys off `data-scroll-dir="up"`, so the direction must
+   clear on the way back to the top, or the glass sticks there. */
+test("scrolling back up to the top clears the direction, even by a short last step", () => {
+  const { header, scrollTo } = setup();
+  wireHideOnScroll(header, new AbortController().signal);
+  scrollTo(400);
+  scrollTo(200);
   assert.equal(header.dataset.scrollDir, "up");
+  scrollTo(70); // still below the bar: frosted
+  assert.equal(header.dataset.scrollDir, "up");
+  scrollTo(64); // a 6px step, under the threshold, into the top
+  assert.equal(header.dataset.scrollDir, undefined);
+  scrollTo(200);
+  assert.equal(header.dataset.scrollDir, "down");
+  scrollTo(0); // jump to the top
+  assert.equal(header.dataset.scrollDir, undefined);
 });
 
 test("abort stops listening and clears the direction", () => {

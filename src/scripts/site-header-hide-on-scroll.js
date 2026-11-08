@@ -3,8 +3,9 @@
   Marko header. Scrolling down slides the sticky bar up out of view; scrolling
   up brings it back. The stylesheet does the sliding.
 
-  This script always records the last scroll direction on the header as
-  `data-scroll-dir="down"|"up"` when hide-on-scroll is on. The opt-in
+  This script records the last scroll direction on the header as
+  `data-scroll-dir="down"|"up"` when hide-on-scroll is on, and clears it
+  within the bar's height of the top, where the bar is at rest. The opt-in
   stylesheet reads that attribute. `@container scroll-state(scrolled: bottom)`
   is progressive enhancement where the browser actually applies it, and is not
   a reason to skip this script: `scroll-state(scrolled: none)` can match
@@ -33,10 +34,16 @@ export function wireHideOnScroll(header, signal) {
   const onScroll = () => {
     // iOS overscrolls past the top into negative offsets; treat that as the top.
     const y = Math.max(0, window.scrollY);
-    if (Math.abs(y - last) < THRESHOLD) return;
     // Within the bar's own height of the top there is nothing to make room
-    // for, so it stays; this also brings it back on a jump to the top.
-    const dir = y > last && y > header.offsetHeight ? "down" : "up";
+    // for, so it stays, at rest: no direction, so no frosted glass either.
+    // Checked before the threshold so a short last step to the top counts.
+    if (y <= header.offsetHeight) {
+      last = y;
+      if (header.dataset.scrollDir !== undefined) header.removeAttribute("data-scroll-dir");
+      return;
+    }
+    if (Math.abs(y - last) < THRESHOLD) return;
+    const dir = y > last ? "down" : "up";
     last = y;
     if (header.dataset.scrollDir !== dir) header.dataset.scrollDir = dir;
   };
