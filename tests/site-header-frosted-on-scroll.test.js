@@ -79,3 +79,19 @@ test("frosted transition in both opt-in sheets keeps translate", () => {
     assert.match(m[1], /(^|,)\s*translate\s+200ms ease-out/, p);
   }
 });
+
+/* #107: on narrow screens the search row has its own solid --_bg. While the
+   bar is frosted the row must be cleared, or it paints a dark box. The Astro
+   floating row sits outside the header, so it keeps its background there. */
+test("frosted-on-scroll clears the search row's solid background", () => {
+  const marko = rules(read("src/marko/lx-site-header/frosted-on-scroll.css"));
+  assert.match(
+    marko,
+    /\[data-scroll-dir="up"\] \.lx-site-header__search \{\s*background-color: transparent;/,
+  );
+  const astro = rules(read("src/styles/site-header-frosted-on-scroll.css"));
+  assert.match(
+    astro,
+    /\[data-scroll-dir="up"\]:not\(\[data-search-floating\]\) \.site-header__search \{\s*background-color: transparent;/,
+  );
+});
