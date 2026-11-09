@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/site-header-frosted-on-scroll.css [source-hash: dab8829e5eb0]
+  Forked from src/styles/site-header-frosted-on-scroll.css [source-hash: ff269cfca06f]
   Optional: `<lx-site-header>` frosted glass on scroll-up. Opt in:
 
     import "@luxoticars/ui/marko/lx-site-header/frosted-on-scroll.css"
@@ -19,6 +19,12 @@
         background-color 200ms ease-out,
         backdrop-filter 200ms ease-out,
         -webkit-backdrop-filter 200ms ease-out;
+    }
+
+    /* On narrow screens the search row is solid --_bg (mobile.css, desktop.css).
+       Clear it so the row shows the frosted bar instead of a dark box. */
+    .lx-site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"])[data-scroll-dir="up"] .lx-site-header__search {
+      background-color: transparent;
     }
   }
 }

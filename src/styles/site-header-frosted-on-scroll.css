@@ -19,6 +19,13 @@
         backdrop-filter 200ms ease-out,
         -webkit-backdrop-filter 200ms ease-out;
     }
+
+    /* On narrow screens the search row is solid --_bg. Clear it so the row shows
+       the frosted bar instead of a dark box. Not when the row floats under the
+       bar: outside the header it would show the page unblurred. */
+    .site-header[data-hide-on-scroll]:not([data-hide-on-scroll="false"])[data-scroll-dir="up"]:not([data-search-floating]) .site-header__search {
+      background-color: transparent;
+    }
   }
 }
 
