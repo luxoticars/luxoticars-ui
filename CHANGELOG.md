@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.17.2
+
+### Patch Changes
+
+- e96e07e: Frosted header on scroll-up: the search row on narrow screens is now frosted too, instead of sitting in a solid dark box (#107).
+
 ## 0.17.1
 
 ### Patch Changes
