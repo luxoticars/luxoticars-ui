@@ -47,18 +47,18 @@ export function resolveProgramBadge({ text, icon, size, iconLabel, className, bl
   return {
     className: cn(block, px === 24 && `${block}--24`, className),
     text: label || undefined,
-    icon: hasIcon ? resolveIcon(PROGRAM_BADGE_ICONS[icon], label, iconLabel) : null,
+    icon: hasIcon ? resolveIcon(icon, PROGRAM_BADGE_ICONS[icon], label, iconLabel) : null,
   };
 }
 
 /* `hidden` is the string "true", never a boolean: ARIA attributes are
    enumerated strings, and Marko writes a boolean `true` as an empty value. */
-function resolveIcon(artwork, label, iconLabel) {
-  if (label) return { paths: artwork.paths, role: undefined, label: undefined, hidden: "true" };
+function resolveIcon(name, artwork, label, iconLabel) {
+  if (label) return { name, paths: artwork.paths, role: undefined, label: undefined, hidden: "true" };
 
   /* An unset `iconLabel` (including `false`) falls back to the icon's own
      label. An empty or whitespace-only string is a mistake, and fails below. */
-  const name = isUnset(iconLabel) ? artwork.label : String(iconLabel).trim();
-  if (!name) fail("an icon-only badge needs a non-empty `iconLabel` — it is the badge's only accessible name.");
-  return { paths: artwork.paths, role: "img", label: name, hidden: undefined };
+  const accessibleName = isUnset(iconLabel) ? artwork.label : String(iconLabel).trim();
+  if (!accessibleName) fail("an icon-only badge needs a non-empty `iconLabel` — it is the badge's only accessible name.");
+  return { name, paths: artwork.paths, role: "img", label: accessibleName, hidden: undefined };
 }

@@ -20,6 +20,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
+  font-family: var(--font-futura, inherit);
   font-size: var(--text-sm, 0.875rem);
   line-height: 1.25rem;
 }
@@ -40,4 +41,34 @@
 .program-badge--24 .program-badge__icon {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+/* Beside text the icon is centred on the cap height, but lowercase letters
+   carry their weight lower, between the x-height and the caps, so it reads
+   high. In Jost the cap centre (0.35em) and the x-height centre (0.23em) are
+   0.12em apart; 0.06em lands the icon halfway between them. */
+.program-badge:has(.program-badge__text) .program-badge__icon {
+  translate: 0 0.06em;
+}
+
+/* Icon beside text: sized in cap heights (1.6cap ≈ 1rem, 2.1cap ≈ 1.5rem), so it
+   follows the font. Left centred: on the baseline a taller-than-cap icon rides
+   above the text. Icon-only keeps the fixed box, and so does a browser without
+   the `cap` unit. */
+@supports (block-size: 1cap) {
+  .program-badge:has(.program-badge__text) .program-badge__icon {
+    width: auto;
+    height: auto;
+    block-size: 1.6cap;
+  }
+
+  .program-badge--24:has(.program-badge__text) .program-badge__icon {
+    block-size: 2.1cap;
+  }
+}
+
+/* The blue tick and the verified tick are painted with the brand primary, not the accent. */
+.program-badge__icon--blue-tick,
+.program-badge__icon--verified {
+  color: var(--lux-primary, var(--color-primary, oklch(86% 0.127 207.078)));
 }

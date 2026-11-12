@@ -43,7 +43,7 @@ if=badge
       // Marko's SVG typings have no `focusable`, so it is spread in: written
       // as an attribute it fails the type gate (TS2353).
       svg
-        ,class=`${block}__icon`
+        ,class=`${block}__icon ${block}__icon--${badge.icon.name}`
         ,viewBox="0 0 24 24"
         ,fill="currentColor"
         ,...{ focusable: "false" }
