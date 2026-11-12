@@ -46,7 +46,7 @@ test("icon + text: the text names the badge, so the icon is hidden", () => {
   assert.deepEqual(resolveProgramBadge({ icon: "top-rated-seller", text: "Top rated seller" }), {
     className: "program-badge",
     text: "Top rated seller",
-    icon: { paths: ROSETTE.paths, role: undefined, label: undefined, hidden: "true" },
+    icon: { name: "top-rated-seller", paths: ROSETTE.paths, role: undefined, label: undefined, hidden: "true" },
   });
 });
 
@@ -58,7 +58,7 @@ test("icon + text: iconLabel is ignored, because the text names the badge", () =
 
 test("icon only: the icon carries the name, defaulting to the icon's own label", () => {
   const badge = resolveProgramBadge({ icon: "top-rated-seller" });
-  assert.deepEqual(badge.icon, { paths: ROSETTE.paths, role: "img", label: "Top rated seller", hidden: undefined });
+  assert.deepEqual(badge.icon, { name: "top-rated-seller", paths: ROSETTE.paths, role: "img", label: "Top rated seller", hidden: undefined });
   assert.equal(badge.text, undefined);
 });
 
@@ -70,7 +70,7 @@ test("icon only: iconLabel overrides the default, trimmed", () => {
 test("icon + whitespace-only text: treated as icon only, so the icon stays named", () => {
   const badge = resolveProgramBadge({ icon: "top-rated-seller", text: "   " });
   assert.equal(badge.text, undefined);
-  assert.deepEqual(badge.icon, { paths: ROSETTE.paths, role: "img", label: "Top rated seller", hidden: undefined });
+  assert.deepEqual(badge.icon, { name: "top-rated-seller", paths: ROSETTE.paths, role: "img", label: "Top rated seller", hidden: undefined });
 });
 
 test("text only: no icon, and the text is trimmed", () => {
@@ -103,11 +103,11 @@ test("className: the caller's classes follow the badge's own, in any form cn() a
 
 test("rejects invalid input with a message naming the component", () => {
   assert.throws(() => resolveProgramBadge({ icon: "nope" }), {
-    message: 'ProgramBadge: unknown icon "nope". Use one of: top-rated-seller.',
+    message: 'ProgramBadge: unknown icon "nope". Use one of: top-rated-seller, blue-tick, star, verified, pin.',
   });
   for (const key of ["toString", "constructor", "__proto__", "hasOwnProperty"]) {
     assert.throws(() => resolveProgramBadge({ icon: key, text: "x" }), {
-      message: `ProgramBadge: unknown icon "${key}". Use one of: top-rated-seller.`,
+      message: `ProgramBadge: unknown icon "${key}". Use one of: top-rated-seller, blue-tick, star, verified, pin.`,
     });
   }
   assert.throws(() => resolveProgramBadge({ text: "x", size: 20 }), {
@@ -174,7 +174,7 @@ test("text: 0 is text, not unset, as in JSX", () => {
 test("icon + text: an empty iconLabel does not throw, and the icon stays hidden", () => {
   for (const iconLabel of ["", "  "]) {
     const badge = resolveProgramBadge({ icon: "top-rated-seller", text: "Top rated seller", iconLabel });
-    assert.deepEqual(badge.icon, { paths: ROSETTE.paths, role: undefined, label: undefined, hidden: "true" });
+    assert.deepEqual(badge.icon, { name: "top-rated-seller", paths: ROSETTE.paths, role: undefined, label: undefined, hidden: "true" });
   }
 });
 
@@ -189,4 +189,29 @@ test("block: the class names follow the caller's block, so a renderer can own it
     "lx-program-badge lx-program-badge--24 mt-2",
   );
   assert.equal(resolveProgramBadge({ text: "x" }).className, "program-badge");
+});
+
+test("artwork: blue-tick is one evenodd path, so the tick is knocked out", () => {
+  const tick = PROGRAM_BADGE_ICONS["blue-tick"];
+  assert.equal(tick.label, "Verified");
+  assert.equal(tick.paths.length, 1);
+  assert.equal(tick.paths[0].fillRule, "evenodd");
+  assert.equal(resolveProgramBadge({ icon: "blue-tick" }).icon.name, "blue-tick");
+});
+
+test("artwork: star is a single filled path", () => {
+  const star = PROGRAM_BADGE_ICONS.star;
+  assert.equal(star.paths.length, 1);
+  assert.equal(star.paths[0].fillRule, undefined);
+  assert.equal(resolveProgramBadge({ icon: "star" }).icon.label, "Star");
+});
+
+test("artwork: verified and pin are evenodd, so the tick and the pin's dot are holes", () => {
+  for (const id of ["verified", "pin"]) {
+    const art = PROGRAM_BADGE_ICONS[id];
+    assert.equal(art.paths.length, 1, id);
+    assert.equal(art.paths[0].fillRule, "evenodd", id);
+  }
+  assert.equal(PROGRAM_BADGE_ICONS.verified.label, "Verified by Luxoticars");
+  assert.equal(PROGRAM_BADGE_ICONS.pin.label, "Location");
 });

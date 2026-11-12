@@ -18,6 +18,8 @@ export interface ProgramBadgeOptions {
 }
 
 export interface ResolvedProgramBadgeIcon {
+  /** The icon's name; renderers print it as the `__icon--<name>` class. */
+  name: ProgramBadgeIcon;
   paths: readonly ProgramBadgePath[];
   /** `"img"` when the icon is the badge's only content; `undefined` when text names the badge. */
   role: "img" | undefined;

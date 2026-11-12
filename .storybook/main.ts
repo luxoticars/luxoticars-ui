@@ -1,6 +1,6 @@
 import type { StorybookConfig } from "@storybook-astro/framework";
 import tailwindcss from "@tailwindcss/vite";
-import { HOST_STORY_GLOBS } from "./story-globs";
+import { HOST_STORY_GLOBS } from "./story-globs.ts";
 
 /*
   The host Storybook: the plain HTML builders (HTML/*) and the stylesheet-only

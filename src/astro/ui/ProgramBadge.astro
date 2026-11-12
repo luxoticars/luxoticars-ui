@@ -58,7 +58,7 @@ const badge = resolveProgramBadge({ text, icon, size, iconLabel, className: [cla
     <span {...attrs} class={badge.className}>
       {badge.icon && (
         <svg
-          class="program-badge__icon"
+          class={`program-badge__icon program-badge__icon--${badge.icon.name}`}
           viewBox="0 0 24 24"
           fill="currentColor"
           focusable="false"

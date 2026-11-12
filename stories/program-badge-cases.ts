@@ -17,6 +17,14 @@ export interface ProgramBadgeCase {
 
 export const cases = {
   Default: { icon: "top-rated-seller", text: "Top rated seller" },
+  BlueTick: { icon: "blue-tick", text: "Verified" },
+  BlueTickIconOnly: { icon: "blue-tick" },
+  Star: { icon: "star", text: "Rated 4.9" },
+  StarIconOnly: { icon: "star" },
+  Verified: { icon: "verified", text: "Verified by Luxoticars" },
+  VerifiedIconOnly: { icon: "verified" },
+  Pin: { icon: "pin", text: "Kuala Lumpur" },
+  PinIconOnly: { icon: "pin" },
   TextOnly: { text: "Free inspection" },
   IconOnly: { icon: "top-rated-seller" },
   Large: { icon: "top-rated-seller", text: "Top rated seller", size: 24 },
@@ -39,7 +47,7 @@ export const markoArgTypes = {
   text: { control: "text", description: "Visible label." },
   icon: {
     control: "select",
-    options: ["top-rated-seller", "none"],
+    options: ["top-rated-seller", "blue-tick", "star", "verified", "pin", "none"],
     mapping: { none: undefined },
     description: "A built-in icon.",
   },
