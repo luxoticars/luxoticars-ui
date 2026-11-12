@@ -1,6 +1,6 @@
 import type { StorybookConfig } from "@storybook-astro/framework";
 import tailwindcss from "@tailwindcss/vite";
-import { ASTRO_STORY_GLOBS } from "../.storybook/story-globs";
+import { ASTRO_STORY_GLOBS } from "../.storybook/story-globs.ts";
 
 /*
   The Astro Storybook: every Astro component story (Components/*).

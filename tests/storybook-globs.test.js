@@ -120,7 +120,7 @@ test("the sidebar titles are the spec's", () => {
 
 test("the host Storybook reads the host globs and composes Astro and Marko", () => {
   const main = read(".storybook/main.ts");
-  assert.match(main, /import \{ HOST_STORY_GLOBS \} from "\.\/story-globs";/);
+  assert.match(main, /import \{ HOST_STORY_GLOBS \} from "\.\/story-globs\.ts";/);
   assert.match(main, /stories: HOST_STORY_GLOBS,/);
   assert.match(main, /astro: \{\s*title: "Astro",\s*url: configType === "DEVELOPMENT" \? "http:\/\/localhost:6008" : "\.\/astro",/);
   assert.match(main, /marko: \{\s*title: "Marko",\s*url: configType === "DEVELOPMENT" \? "http:\/\/localhost:6007" : "\.\/marko",/);
@@ -129,7 +129,7 @@ test("the host Storybook reads the host globs and composes Astro and Marko", () 
 
 test("the Astro Storybook reads the Astro globs and has no refs", () => {
   const main = read(".storybook-astro/main.ts");
-  assert.match(main, /import \{ ASTRO_STORY_GLOBS \} from "\.\.\/\.storybook\/story-globs";/);
+  assert.match(main, /import \{ ASTRO_STORY_GLOBS \} from "\.\.\/\.storybook\/story-globs\.ts";/);
   assert.match(main, /stories: ASTRO_STORY_GLOBS,/);
   assert.doesNotMatch(main, /\brefs\s*:/);
   assert.match(main, /name: "@storybook-astro\/framework"/);
