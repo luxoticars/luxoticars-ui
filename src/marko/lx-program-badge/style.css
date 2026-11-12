@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/program-badge.css [source-hash: f6cc3b87cdb0]
+  Forked from src/styles/program-badge.css [source-hash: fc9e74683389]
   Marko-only: the Astro renderer keeps the shared stylesheet.
   Needs styles/tokens.css. Block is `lx-program-badge`, the tag's own name;
   `__icon` and `__text` are its elements and `--24` the large size.
@@ -55,8 +55,11 @@
   }
 }
 
-/* The blue tick and the verified tick are painted with the brand primary, not the accent. */
-.lx-program-badge__icon--blue-tick,
-.lx-program-badge__icon--verified {
+/* The blue tick and the verified tick are painted with the brand primary only
+   when text names the badge, so the icon is decorative. --lux-primary is too light
+   for an icon that stands alone (about 1.5:1 on white, WCAG asks 3:1), so an
+   icon-only badge keeps the accent. */
+.lx-program-badge:has(.lx-program-badge__text) .lx-program-badge__icon--blue-tick,
+.lx-program-badge:has(.lx-program-badge__text) .lx-program-badge__icon--verified {
   color: var(--lux-primary);
 }

@@ -67,8 +67,11 @@
   }
 }
 
-/* The blue tick and the verified tick are painted with the brand primary, not the accent. */
-.program-badge__icon--blue-tick,
-.program-badge__icon--verified {
+/* The blue tick and the verified tick are painted with the brand primary only
+   when text names the badge, so the icon is decorative. --lux-primary is too light
+   for an icon that stands alone (about 1.5:1 on white, WCAG asks 3:1), so an
+   icon-only badge keeps the accent. */
+.program-badge:has(.program-badge__text) .program-badge__icon--blue-tick,
+.program-badge:has(.program-badge__text) .program-badge__icon--verified {
   color: var(--lux-primary, var(--color-primary, oklch(86% 0.127 207.078)));
 }
