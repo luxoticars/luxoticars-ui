@@ -98,11 +98,11 @@ const header = resolveSiteHeader({ links, ctaLabel });
       </summary>
       <nav class="site-header__menu-panel" aria-label="Main">
         {header.links.map((link) => (
-        <a href={link.href} class="site-header__menu-link" target={link.target} rel={link.rel}>
-          {link.label}
-          {link.external && <span class="site-header__external-note"> (opens in a new tab)</span>}
-        </a>
-      ))}
+          <a href={link.href} class="site-header__menu-link" target={link.target} rel={link.rel}>
+            {link.label}
+            {link.external && <span class="site-header__external-note"> (opens in a new tab)</span>}
+          </a>
+        ))}
       </nav>
     </details>
   </div>
