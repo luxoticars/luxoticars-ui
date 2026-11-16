@@ -44,3 +44,22 @@ export type ProgramBadgeIcon = "top-rated-seller" | "blue-tick" | "star" | "veri
 
 /** Program badge size in px. Sets the icon box, the text size and the gap. */
 export type ProgramBadgeSize = 16 | 24;
+
+/** Seller summary size: `full` is a card with every fact, `compact` is one line. */
+export type SellerSummarySize = "full" | "compact";
+
+/** The seller summary's built-in text, each replaceable through its `labels` prop. */
+export interface SellerSummaryLabels {
+  /** The full card's heading. */
+  heading: string;
+  /** Spoken before the name in the compact size. */
+  seller: string;
+  luxoticarsVerified: string;
+  identityVerified: string;
+  carsForSale: string;
+  location: string;
+  registrationNo: string;
+  address: string;
+  /** The full card's link to the seller's page. */
+  showroom: string;
+}

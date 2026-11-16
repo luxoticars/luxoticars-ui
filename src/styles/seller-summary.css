@@ -1,0 +1,225 @@
+/*
+  Seller summary styles, for `astro/ui/SellerSummary.astro`.
+
+  BEM: `seller-summary` is the block, `--full` and `--compact` its two sizes.
+
+  Tokens are read `--lux-*` first, then a literal, so an app that has not
+  loaded tokens.css still gets a readable card. The muted text and the
+  hairlines are mixed from the text colour, not taken from a grey token, so
+  they keep their contrast on any surface and in either theme: muted text is
+  the text colour at 72%, about 6:1 on the light base and 8:1 on the dark one
+  (WCAG 1.4.3 asks 4.5:1).
+
+  Sizes are in rem and nothing has a fixed height, so the card grows with the
+  reader's text size and spacing (1.4.4, 1.4.12) and reflows at 320px (1.4.10).
+  Margins and list styles are set here, not left to a reset: the host may or
+  may not have one.
+*/
+
+.seller-summary {
+  --_ink: var(--lux-base-content, oklch(20% 0.018 264));
+  --_muted: color-mix(in srgb, var(--_ink) 72%, transparent);
+  --_line: color-mix(in srgb, var(--_ink) 16%, transparent);
+  --_accent: var(--lux-accent, oklch(52% 0.16 232.661));
+  color: var(--_ink);
+  font-family: var(--font-futura, inherit);
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: start;
+}
+
+.seller-summary--full {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--_line);
+}
+
+.seller-summary--compact,
+.seller-summary__identity {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.seller-summary__heading {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--_muted);
+}
+
+/* Initials on the brand's dark neutral, which is dark in both themes. The
+   photo, when there is one, covers them; if it fails to load they still show. */
+.seller-summary__avatar {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--lux-neutral, oklch(12% 0.042 264.695));
+  color: var(--lux-neutral-content, oklch(96% 0.003 264.542));
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.seller-summary--full .seller-summary__avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  font-size: 1.125rem;
+}
+
+.seller-summary__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.seller-summary__body {
+  min-width: 0;
+}
+
+.seller-summary__name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.5rem;
+  overflow-wrap: anywhere;
+}
+
+.seller-summary--full .seller-summary__name {
+  font-size: 1.125rem;
+}
+
+/* Items sit on one line with a dot between them and wrap when they must.
+   Every item carries its dot in its own leading padding, and the list is
+   pulled left by that padding and clipped there, so the dot of whichever item
+   starts a line is cut off instead of dangling at the line's start. */
+.seller-summary__meta {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  margin-inline-start: -1rem;
+  padding: 0;
+  list-style: none;
+  clip-path: inset(0 0 0 1rem);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--_muted);
+}
+
+[dir="rtl"] .seller-summary__meta {
+  clip-path: inset(0 1rem 0 0);
+}
+
+.seller-summary__meta li {
+  position: relative;
+  padding-inline-start: 1rem;
+}
+
+/* The second value is the dot's alt text: none, so a screen reader hears the
+   list items and not "middle dot". */
+.seller-summary__meta li::before {
+  content: "·";
+  content: "·" / "";
+  position: absolute;
+  inset-inline-start: 0;
+  width: 1rem;
+  text-align: center;
+}
+
+/* The badge is a claim about the seller, so it reads at full strength. */
+.seller-summary__meta .program-badge {
+  color: var(--_ink);
+}
+
+.seller-summary__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.875rem 1rem;
+  margin: 0;
+  padding-block-start: 1rem;
+  border-block-start: 1px solid var(--_line);
+}
+
+.seller-summary__fact--wide {
+  grid-column: 1 / -1;
+}
+
+.seller-summary__facts dt {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--_muted);
+}
+
+.seller-summary__facts dd {
+  margin: 0.125rem 0 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.seller-summary__fact--wide dd {
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+/* Underlined, so a link is not told apart by colour alone (1.4.1). */
+.seller-summary__link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  border-radius: 2px;
+}
+
+/* The name link in the compact size: a 24px target even on one line (2.5.8). */
+.seller-summary__name .seller-summary__link {
+  display: inline-block;
+  min-height: 1.5rem;
+}
+
+.seller-summary__link:hover {
+  text-decoration-thickness: 2px;
+}
+
+.seller-summary__link:focus-visible {
+  outline: 2px solid var(--_accent);
+  outline-offset: 2px;
+}
+
+/* Stands alone, so it gets a 24px target of its own (2.5.8). */
+.seller-summary__link--showroom {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Text for screen readers only. Its own class, because the host app may not
+   ship an `sr-only` utility (see footer.css). */
+.seller-summary__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

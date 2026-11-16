@@ -114,6 +114,7 @@ test("the sidebar titles are the spec's", () => {
     "Components/ProgramBadge",
     "Components/ScrollingItemCards",
     "Components/SectionHead",
+    "Components/SellerSummary",
     "Components/SiteHeader",
   ]);
 });
