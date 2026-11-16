@@ -4,9 +4,10 @@ import { readFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";
 
 /*
-  SellerSummary.astro tells consumers what the component costs a page. These
+  The SellerSummary Storybook docs (stories/ui/SellerSummary.stories.ts) tell
+  consumers what the component costs a page. These
   keep that note true: when one fails, either trim what was added or raise the
-  ceiling here and the figures in the component's JSDoc together.
+  ceiling here and the figures in that story file together.
 */
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");

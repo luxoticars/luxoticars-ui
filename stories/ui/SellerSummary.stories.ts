@@ -17,6 +17,21 @@ const photo = "/dealer-photo.webp";
  * The dealer is sample data. Real ones come from the profile site's dealer
  * list (name, photo, the two verification flags, location) and from the
  * listing (registration number, address).
+ *
+ * **What it costs a page**, measured on the component and its two stylesheets
+ * (`tests/seller-summary-cost.test.js` fails if the CSS or JS figure is passed):
+ *
+ * - **JS: 0 bytes.** No `<script>`, nothing to hydrate.
+ * - **CSS: about 4.0 kB minified, 1.3 kB gzip, once per page** however many
+ *   summaries it shows. That is `seller-summary.css` (3.1 kB, 1.1 kB gzip) plus
+ *   `program-badge.css` (0.9 kB, 0.4 kB gzip), which a page that already uses
+ *   `ProgramBadge` has paid for.
+ * - **HTML, per summary:** `full` with every fact about 2.0 kB (0.8 kB gzip);
+ *   `compact` about 1.3 kB (0.6 kB gzip). The blue tick's artwork is 0.5 kB of
+ *   each, and only there for a `luxoticarsVerified` seller. A `full` card with
+ *   only a registration number and address is about 0.5 kB (0.2 kB gzip).
+ * - **Not counted:** the seller's photo (one lazy-loaded image, when there is
+ *   one) and the brand font, which the page loads anyway.
  */
 export default {
   title: "Components/SellerSummary",
