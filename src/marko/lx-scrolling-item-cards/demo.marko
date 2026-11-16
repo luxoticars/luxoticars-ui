@@ -8,14 +8,15 @@ import ListingCard from "../lx-listing-card/index.marko"
 
 export interface Input {
   scenario: "similar" | "promo" | "no-overflow" | "footer"
+  controlsPlacement?: "sides" | "top-start" | "top-center" | "top-end" | "bottom-start" | "bottom-center" | "bottom-end"
 }
 
-const/{ scenario }=input
+const/{ scenario, controlsPlacement }=input
 const/cars=[{ id: "1", title: "Range Rover Vogue", price: "MYR 450,000" }, { id: "2", title: "Porsche 911", price: "MYR 890,000" }, { id: "3", title: "BMW M4", price: "MYR 520,000" }, { id: "4", title: "Mercedes-AMG GT", price: "MYR 780,000" }]
 const/list=(scenario === "no-overflow" ? cars.slice(0, 1) : cars)
 
 if=(scenario === "similar")
-  ScrollingItemCards headingId="similar-cars" style="width:320px"
+  ScrollingItemCards controlsPlacement=controlsPlacement headingId="similar-cars" style="width:320px"
     @title
       h2#similar-cars -- Similar cars
     for|car, i| of=list
@@ -29,7 +30,7 @@ if=(scenario === "similar")
           @title -- ${car.title}
           @price -- ${car.price}
 else if=(scenario === "promo")
-  ScrollingItemCards label="Featured cars"
+  ScrollingItemCards controlsPlacement=controlsPlacement label="Featured cars"
     @titleCard
       h2 -- This week's picks
     for|car, i| of=list
@@ -43,7 +44,7 @@ else if=(scenario === "promo")
           @title -- ${car.title}
           @price -- ${car.price}
 else if=(scenario === "no-overflow")
-  ScrollingItemCards label="One car"
+  ScrollingItemCards controlsPlacement=controlsPlacement label="One car"
     for|car| of=list
       @item
         ListingCard href=`/m/${car.id}/` headingId=`one-${car.id}` headingLevel=3
@@ -52,7 +53,7 @@ else if=(scenario === "no-overflow")
           @title -- ${car.title}
           @price -- ${car.price}
 else if=(scenario === "footer")
-  ScrollingItemCards headingId="with-footer"
+  ScrollingItemCards controlsPlacement=controlsPlacement headingId="with-footer"
     @title
       h2#with-footer -- Just listed
     for|car, i| of=list

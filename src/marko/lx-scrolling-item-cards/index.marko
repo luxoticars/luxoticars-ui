@@ -13,6 +13,13 @@ export interface Input extends Omit<Marko.HTML.Section, "content" | "title" | "a
   prevLabel?: string
   /** @default "Next" */
   nextLabel?: string
+  /**
+   * Where Previous / Next sit. `sides` floats one over each edge of the track.
+   * The others put both together in a row above (`top-*`) or below (`bottom-*`)
+   * the track, at the start, centre or end. CSS only; no extra JS.
+   * @default "sides"
+   */
+  controlsPlacement?: "sides" | "top-start" | "top-center" | "top-end" | "bottom-start" | "bottom-center" | "bottom-end"
   title?: Marko.AttrTag<{ content: Marko.Body }>
   titleCard?: Marko.AttrTag<{ content: Marko.Body }>
   /** Repeatable item cards. */
@@ -27,6 +34,7 @@ const/{
   label,
   prevLabel = "Previous",
   nextLabel = "Next",
+  controlsPlacement = "sides",
   class: className,
   title,
   titleCard,
@@ -41,14 +49,26 @@ const/{
 const/_named=(headingId || (typeof label === "string" && label.trim()))
 const/_assert=_named ? true : (() => { throw new Error("ScrollingItemCards: one of `headingId` or `label` is required.") })()
 
+const/[edge, align]=controlsPlacement.split("-")
+const/controlsClass=cn("scrolling-item-cards__controls", edge === "top" && "scrolling-item-cards__controls--top", align && align !== "end" && `scrolling-item-cards__controls--${align}`)
+
 section/root ...attrs class=cn("scrolling-item-cards", className) aria-labelledby=headingId aria-label=(headingId ? undefined : label)
   if=title
     div.scrolling-item-cards__header
       ${title.content}
   div.scrolling-item-cards__viewport
-    button.scrolling-item-cards__control.scrolling-item-cards__control--prev type="button" aria-label=prevLabel hidden
-      svg.scrolling-item-cards__control-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
-        polyline points="15 18 9 12 15 6"
+    if=(edge === "sides")
+      button.scrolling-item-cards__control.scrolling-item-cards__control--prev type="button" aria-label=prevLabel hidden
+        svg.scrolling-item-cards__control-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+          polyline points="15 18 9 12 15 6"
+    if=(edge === "top")
+      div class=controlsClass
+        button.scrolling-item-cards__control.scrolling-item-cards__control--prev type="button" aria-label=prevLabel hidden
+          svg.scrolling-item-cards__control-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+            polyline points="15 18 9 12 15 6"
+        button.scrolling-item-cards__control.scrolling-item-cards__control--next type="button" aria-label=nextLabel hidden
+          svg.scrolling-item-cards__control-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+            polyline points="9 18 15 12 9 6"
     div.scrolling-item-cards__flow
       if=titleCard
         div.scrolling-item-cards__title-card
@@ -57,9 +77,18 @@ section/root ...attrs class=cn("scrolling-item-cards", className) aria-labelledb
         for|entry| of=item
           div.scrolling-item-cards__item
             ${entry.content}
-    button.scrolling-item-cards__control.scrolling-item-cards__control--next type="button" aria-label=nextLabel hidden
-      svg.scrolling-item-cards__control-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
-        polyline points="9 18 15 12 9 6"
+    if=(edge === "sides")
+      button.scrolling-item-cards__control.scrolling-item-cards__control--next type="button" aria-label=nextLabel hidden
+        svg.scrolling-item-cards__control-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+          polyline points="9 18 15 12 9 6"
+    if=(edge === "bottom")
+      div class=controlsClass
+        button.scrolling-item-cards__control.scrolling-item-cards__control--prev type="button" aria-label=prevLabel hidden
+          svg.scrolling-item-cards__control-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+            polyline points="15 18 9 12 15 6"
+        button.scrolling-item-cards__control.scrolling-item-cards__control--next type="button" aria-label=nextLabel hidden
+          svg.scrolling-item-cards__control-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+            polyline points="9 18 15 12 9 6"
   if=footer
     div.scrolling-item-cards__footer
       ${footer.content}
