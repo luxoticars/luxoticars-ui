@@ -56,4 +56,34 @@ import ListingCard from "@luxoticars/ui/astro/ui/ListingCard";
   ${listingCardSnippet("2", "Porsche 911", "MYR 890,000", "lazy")}
   <p slot="footer">Prices include taxes.</p>
 </ScrollingItemCards>`,
+  ControlsBottomEnd: `---
+import ScrollingItemCards from "@luxoticars/ui/astro/ui/ScrollingItemCards";
+import ListingCard from "@luxoticars/ui/astro/ui/ListingCard";
+---
+<ScrollingItemCards headingId="similar-cars" controlsPlacement="bottom-end">
+  <h2 id="similar-cars" slot="title">Similar cars</h2>
+  ${listingCardSnippet("1", "Range Rover Vogue", "MYR 450,000", "priority")}
+  ${listingCardSnippet("2", "Porsche 911", "MYR 890,000", "lazy")}
+  ${listingCardSnippet("3", "BMW M4", "MYR 520,000", "lazy")}
+</ScrollingItemCards>`,
+  ControlsTopStart: `---
+import ScrollingItemCards from "@luxoticars/ui/astro/ui/ScrollingItemCards";
+import ListingCard from "@luxoticars/ui/astro/ui/ListingCard";
+---
+<ScrollingItemCards headingId="similar-cars" controlsPlacement="top-start">
+  <h2 id="similar-cars" slot="title">Similar cars</h2>
+  ${listingCardSnippet("1", "Range Rover Vogue", "MYR 450,000", "priority")}
+  ${listingCardSnippet("2", "Porsche 911", "MYR 890,000", "lazy")}
+  ${listingCardSnippet("3", "BMW M4", "MYR 520,000", "lazy")}
+</ScrollingItemCards>`,
+  ControlsBottomCenter: `---
+import ScrollingItemCards from "@luxoticars/ui/astro/ui/ScrollingItemCards";
+import ListingCard from "@luxoticars/ui/astro/ui/ListingCard";
+---
+<ScrollingItemCards headingId="similar-cars" controlsPlacement="bottom-center">
+  <h2 id="similar-cars" slot="title">Similar cars</h2>
+  ${listingCardSnippet("1", "Range Rover Vogue", "MYR 450,000", "priority")}
+  ${listingCardSnippet("2", "Porsche 911", "MYR 890,000", "lazy")}
+  ${listingCardSnippet("3", "BMW M4", "MYR 520,000", "lazy")}
+</ScrollingItemCards>`,
 } as const;

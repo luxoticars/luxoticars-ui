@@ -17,6 +17,21 @@ export type Props = Omit<HTMLAttributes<"section">, Controlled> & {
   prevLabel?: string;
   /** @default "Next" */
   nextLabel?: string;
+  /**
+   * Where Previous / Next sit. `sides` floats one over each edge of the
+   * track. The others put both together in a row above (`top-*`) or below
+   * (`bottom-*`) the track, at the start, centre or end: a shorter reach for
+   * a thumb or a mouse, and they never cover a card. CSS only; no extra JS.
+   * @default "sides"
+   */
+  controlsPlacement?:
+    | "sides"
+    | "top-start"
+    | "top-center"
+    | "top-end"
+    | "bottom-start"
+    | "bottom-center"
+    | "bottom-end";
 };
 
 /**
@@ -28,6 +43,7 @@ const {
   label,
   prevLabel = "Previous",
   nextLabel = "Next",
+  controlsPlacement = "sides",
   class: className,
   "class:list": classList,
   ...attributes
@@ -46,6 +62,15 @@ if (!headingId && !(typeof label === "string" && label.trim())) {
 const hasTitle = Astro.slots.has("title");
 const hasTitleCard = Astro.slots.has("titleCard");
 const hasFooter = Astro.slots.has("footer");
+
+const [edge, align] = controlsPlacement.split("-") as [string, string?];
+const sides = edge === "sides";
+// Bottom and end are the CSS defaults, so `bottom-end` adds no modifier class.
+const controlsClass = cn(
+  "scrolling-item-cards__controls",
+  edge === "top" && "scrolling-item-cards__controls--top",
+  align && align !== "end" && `scrolling-item-cards__controls--${align}`,
+);
 
 const chevronPrev =
   '<svg class="scrolling-item-cards__control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>';
@@ -67,13 +92,33 @@ const chevronNext =
     )
   }
   <div class="scrolling-item-cards__viewport">
-    <button
-      type="button"
-      class="scrolling-item-cards__control scrolling-item-cards__control--prev"
-      aria-label={prevLabel}
-      hidden
-      set:html={chevronPrev}
-    />
+    {sides && (
+      <button
+        type="button"
+        class="scrolling-item-cards__control scrolling-item-cards__control--prev"
+        aria-label={prevLabel}
+        hidden
+        set:html={chevronPrev}
+      />
+    )}
+    {edge === "top" && (
+      <div class={controlsClass}>
+        <button
+          type="button"
+          class="scrolling-item-cards__control scrolling-item-cards__control--prev"
+          aria-label={prevLabel}
+          hidden
+          set:html={chevronPrev}
+        />
+        <button
+          type="button"
+          class="scrolling-item-cards__control scrolling-item-cards__control--next"
+          aria-label={nextLabel}
+          hidden
+          set:html={chevronNext}
+        />
+      </div>
+    )}
     <div class="scrolling-item-cards__flow">
       {
         hasTitleCard && (
@@ -86,13 +131,33 @@ const chevronNext =
         <slot />
       </div>
     </div>
-    <button
-      type="button"
-      class="scrolling-item-cards__control scrolling-item-cards__control--next"
-      aria-label={nextLabel}
-      hidden
-      set:html={chevronNext}
-    />
+    {sides && (
+      <button
+        type="button"
+        class="scrolling-item-cards__control scrolling-item-cards__control--next"
+        aria-label={nextLabel}
+        hidden
+        set:html={chevronNext}
+      />
+    )}
+    {edge === "bottom" && (
+      <div class={controlsClass}>
+        <button
+          type="button"
+          class="scrolling-item-cards__control scrolling-item-cards__control--prev"
+          aria-label={prevLabel}
+          hidden
+          set:html={chevronPrev}
+        />
+        <button
+          type="button"
+          class="scrolling-item-cards__control scrolling-item-cards__control--next"
+          aria-label={nextLabel}
+          hidden
+          set:html={chevronNext}
+        />
+      </div>
+    )}
   </div>
   {
     hasFooter && (
