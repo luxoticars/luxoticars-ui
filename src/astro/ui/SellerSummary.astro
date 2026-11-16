@@ -1,0 +1,136 @@
+---
+/*
+  Prints what `resolveSellerSummary()` decides, and nothing else: every value
+  below that varies with the input comes from the resolver.
+
+  The stylesheet is imported in the frontmatter, as ProgramBadge.astro does, so
+  importing the component is the whole setup.
+*/
+import "../../styles/seller-summary.css";
+import type { HTMLAttributes } from "astro/types";
+import type { SellerSummaryLabels, SellerSummarySize } from "../../types";
+import { resolveSellerSummary } from "../../utils/seller-summary.js";
+import ProgramBadge from "./ProgramBadge.astro";
+
+/**
+ * Who is selling: the dealer's name, photo, verification and business details.
+ *
+ * `full` is a labelled card with a heading, the facts as a description list and
+ * a link to the seller's page. `compact` is one line for beside a price or a
+ * title; its name is the link.
+ *
+ * It shows only what it is given and never a placeholder. Renders nothing when
+ * there is nothing to show: a compact summary without a `name`, or a full one
+ * with neither a `name` nor a fact. Throws on an unknown `size` or
+ * `headingLevel`, which fails the build with the message.
+ *
+ * Other attributes (`data-*`, …) go on the outer element.
+ *
+ * What it costs a page in CSS, HTML and JS bytes is in its Storybook docs
+ * (`stories/ui/SellerSummary.stories.ts`).
+ */
+export type Props = Omit<HTMLAttributes<"div">, "id"> & {
+  /** The seller's display name. */
+  name?: string | false;
+  /** `full` is a card with every fact; `compact` is one line. @default "full" */
+  size?: SellerSummarySize | false;
+  /** The seller's own page. `full` links to it as "View showroom"; in `compact` the name is the link. */
+  href?: string | false;
+  /** The seller's photo or logo, as an `https` URL or a same-site path. Initials show without one, and if it fails to load. */
+  avatarUrl?: string | false;
+  /** The Luxoticars blue tick, granted by hand. Never implied by `identityVerified`. */
+  luxoticarsVerified?: boolean;
+  /** The identity check. `compact` shows it only when there is no blue tick. */
+  identityVerified?: boolean;
+  /** Where the business is, e.g. "Petaling Jaya". */
+  location?: string | false;
+  /** How many cars the seller has for sale now. 0 shows nothing. */
+  carsForSale?: number | false;
+  /** Business registration number. `full` only. */
+  registrationNo?: string | false;
+  /** Business address. `full` only. */
+  address?: string | false;
+  /** The `full` card's heading level, to fit the page outline. @default 2 */
+  headingLevel?: 2 | 3 | 4 | 5 | 6 | false;
+  /** Replacements for the built-in English text, e.g. `{ heading: "Tentang penjual" }`. */
+  labels?: Partial<SellerSummaryLabels>;
+  /** The outer element's id. The heading's id is derived from it, so give each card on a page its own. @default "seller-summary" */
+  id?: string | false;
+};
+
+/* `class` and `class:list` come out of the spread, as in ProgramBadge.astro. */
+const {
+  name, size, href, avatarUrl, luxoticarsVerified, identityVerified, location, carsForSale,
+  registrationNo, address, headingLevel, labels, id, class: className, "class:list": classList, ...attrs
+} = Astro.props;
+const seller = resolveSellerSummary({
+  name, size, href, avatarUrl, luxoticarsVerified, identityVerified, location, carsForSale,
+  registrationNo, address, headingLevel, labels, id, className: [className, classList],
+});
+const Heading = seller ? (`h${seller.headingLevel}` as "h2") : "h2";
+---
+
+{
+  seller && seller.size === "compact" && (
+    <div {...attrs} id={seller.id} class={seller.className}>
+      <span class="seller-summary__avatar" aria-hidden="true">
+        {seller.initials}
+        {seller.avatarUrl && (
+          <img class="seller-summary__photo" src={seller.avatarUrl} alt="" width="40" height="40" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+        )}
+      </span>
+      <div class="seller-summary__body">
+        <p class="seller-summary__name">
+          <span class="seller-summary__sr">{seller.sellerLabel}: </span>
+          {seller.href ? <a class="seller-summary__link" href={seller.href}>{seller.name}</a> : seller.name}
+        </p>
+        {(seller.badges.length > 0 || seller.meta.length > 0) && (
+          <ul class="seller-summary__meta">
+            {seller.badges.map((badge) => <li><ProgramBadge icon={badge.icon} text={badge.text} /></li>)}
+            {seller.meta.map((item) => <li>{item}</li>)}
+          </ul>
+        )}
+      </div>
+    </div>
+  )
+}
+{
+  seller && seller.size === "full" && (
+    <section {...attrs} id={seller.id} class={seller.className} aria-labelledby={seller.headingId}>
+      <Heading class="seller-summary__heading" id={seller.headingId}>{seller.heading}</Heading>
+      {seller.name && (
+        <div class="seller-summary__identity">
+          <span class="seller-summary__avatar" aria-hidden="true">
+            {seller.initials}
+            {seller.avatarUrl && (
+              <img class="seller-summary__photo" src={seller.avatarUrl} alt="" width="56" height="56" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+            )}
+          </span>
+          <div class="seller-summary__body">
+            <p class="seller-summary__name">{seller.name}</p>
+            {seller.badges.length > 0 && (
+              <ul class="seller-summary__meta">
+                {seller.badges.map((badge) => <li><ProgramBadge icon={badge.icon} text={badge.text} /></li>)}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
+      {seller.facts.length > 0 && (
+        <dl class="seller-summary__facts">
+          {seller.facts.map((fact) => (
+            <div class:list={["seller-summary__fact", fact.wide && "seller-summary__fact--wide"]}>
+              <dt>{fact.label}</dt>
+              <dd>{fact.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {seller.href && (
+        <a class="seller-summary__link seller-summary__link--showroom" href={seller.href}>
+          {seller.showroomLabel}<span class="seller-summary__sr">: {seller.name}</span>
+        </a>
+      )}
+    </section>
+  )
+}
