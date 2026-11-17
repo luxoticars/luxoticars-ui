@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/skin/menu-button.css [source-hash: 3c91ca936f91]
+  Forked from src/styles/skin/menu-button.css [source-hash: e4139db24302]
   Marko-only: the Astro renderer keeps the shared stylesheet. Block is
   `lx-menu-button`, the tag's own name. Reads --lux-* tokens only (no fallbacks),
   so it needs styles/tokens.css. Elements: `__button`, `__label`, `__chevron`,
@@ -58,12 +58,12 @@
   flex: none;
   inline-size: 1rem;
   block-size: 1rem;
-  /* Points down when closed and up when open: the state is in the shape too, not only in ARIA. */
-  rotate: 180deg;
+  /* The artwork points down. Down when closed, up when open: the state is in the shape too, not only in ARIA. */
+  rotate: 0deg;
 }
 
 .lx-menu-button__button[aria-expanded="true"] .lx-menu-button__chevron {
-  rotate: 0deg;
+  rotate: 180deg;
 }
 
 /* ---- the menu ---------------------------------------------------------- */

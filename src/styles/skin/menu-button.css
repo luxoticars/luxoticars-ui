@@ -67,12 +67,12 @@
   flex: none;
   inline-size: 1rem;
   block-size: 1rem;
-  /* Points down when closed and up when open: the state is in the shape too, not only in ARIA. */
-  rotate: 180deg;
+  /* The artwork points down. Down when closed, up when open: the state is in the shape too, not only in ARIA. */
+  rotate: 0deg;
 }
 
 .menu-button__button[aria-expanded="true"] .menu-button__chevron {
-  rotate: 0deg;
+  rotate: 180deg;
 }
 
 /* ---- the menu ---------------------------------------------------------- */

@@ -6,7 +6,7 @@
 */
 import "../../src/styles/skin/menu-button.css";
 import { initMenuButton } from "../../src/scripts/menu-button.js";
-import { checkExclusive, checkNavigation, checkRadios, checkSemantics, checkCheckboxes, checkBadges, parts } from "../menu-button-play";
+import { checkChevron, checkExclusive, checkNavigation, checkRadios, checkSemantics, checkCheckboxes, checkBadges, parts } from "../menu-button-play";
 
 const CHEVRON = `<svg class="menu-button__chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M3.5 6.5 8 11l4.5-4.5"/></svg>`;
 const CHECK = `<svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>`;
@@ -137,6 +137,7 @@ export const Condition = {
   play: async ({ canvasElement }: Ctx) => {
     await wire(canvasElement);
     await checkSemantics(canvasElement, BLOCK);
+    await checkChevron(canvasElement, BLOCK);
     await checkNavigation(canvasElement, BLOCK);
     await checkCheckboxes(canvasElement, BLOCK);
     await checkExclusive(canvasElement, BLOCK);

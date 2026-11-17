@@ -3,6 +3,7 @@ import { cases } from "../menu-button-cases";
 import {
   checkBadges,
   checkCheckboxes,
+  checkChevron,
   checkExclusive,
   checkFocusLeaves,
   checkNavigation,
@@ -76,6 +77,7 @@ export const Condition = {
   play: async ({ canvasElement }: Ctx) => {
     await wired(canvasElement);
     await checkSemantics(canvasElement, BLOCK);
+    await checkChevron(canvasElement, BLOCK);
     await checkOpenAndClose(canvasElement, BLOCK);
     await checkNavigation(canvasElement, BLOCK);
     await checkCheckboxes(canvasElement, BLOCK);

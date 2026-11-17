@@ -4,6 +4,7 @@ import { cases, markoArgTypes } from "../../../stories/menu-button-cases";
 import {
   checkBadges,
   checkCheckboxes,
+  checkChevron,
   checkExclusive,
   checkFocusLeaves,
   checkNavigation,
@@ -46,6 +47,7 @@ export const Condition: Story = {
   args: cases.Condition,
   play: async ({ canvasElement }: Ctx) => {
     await checkSemantics(canvasElement, BLOCK);
+    await checkChevron(canvasElement, BLOCK);
     await checkOpenAndClose(canvasElement, BLOCK);
     await checkNavigation(canvasElement, BLOCK);
     await checkCheckboxes(canvasElement, BLOCK);
