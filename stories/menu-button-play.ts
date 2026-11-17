@@ -55,6 +55,24 @@ export async function checkOpenAndClose(canvasElement: HTMLElement, block: strin
   assert(document.activeElement === button, "Escape returns focus to the button");
 }
 
+/** The chevron points down when the menu is closed and up when it is open. */
+export async function checkChevron(canvasElement: HTMLElement, block: string) {
+  const { button, menu } = parts(canvasElement, block);
+  const chevron = button.querySelector<SVGElement>(`.${block}__chevron`);
+  assert(chevron, "the button has a chevron");
+  const rotation = () => getComputedStyle(chevron!).rotate;
+  const down = (value: string) => value === "none" || value === "0deg";
+  if (!menu.hidden) button.click();
+  await frame();
+  assert(down(rotation()), `closed: the chevron points down, rotate is "${rotation()}"`);
+  button.click();
+  await frame();
+  assert(rotation() === "180deg", `open: the chevron points up, rotate is "${rotation()}"`);
+  button.click();
+  await frame();
+  assert(down(rotation()), "closed again: points down");
+}
+
 /** ArrowDown / ArrowUp wrap, Home / End jump, a disabled item is skipped, a letter jumps. */
 export async function checkNavigation(canvasElement: HTMLElement, block: string) {
   const { button, menu, items } = parts(canvasElement, block);
