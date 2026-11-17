@@ -1,0 +1,17 @@
+---
+/*
+  Stories render the component alone, but an open menu hangs below its button, so
+  it needs room to show. This wraps it in a row like the search results toolbar
+  and leaves space underneath for the menu.
+*/
+import MenuButton, { type Props as MenuButtonProps } from "../../src/astro/ui/MenuButton.astro";
+
+export type Props = MenuButtonProps;
+
+const props = Astro.props;
+---
+
+<div style="display:flex;align-items:center;gap:1.5rem;padding:1rem 1rem 16rem">
+  <h1 style="margin:0;font-size:1.5rem">Browse all listings</h1>
+  <MenuButton {...props} />
+</div>

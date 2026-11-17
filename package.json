@@ -52,6 +52,7 @@
     "./styles/skin/pill.css": "./src/styles/skin/pill.css",
     "./styles/section-head.css": "./src/styles/section-head.css",
     "./styles/seller-summary.css": "./src/styles/seller-summary.css",
+    "./styles/menu-button.css": "./src/styles/menu-button.css",
     "./utils/listing-card": {
       "types": "./src/utils/listing-card.d.ts",
       "default": "./src/utils/listing-card.js"

@@ -63,3 +63,33 @@ export interface SellerSummaryLabels {
   /** The full card's link to the seller's page. */
   showroom: string;
 }
+
+/** What a menu button's items do: none (plain actions), toggle independently, or pick one. */
+export type MenuButtonType = "checkbox" | "radio";
+
+/** Which edge of the button the menu lines up with. */
+export type MenuButtonAlign = "start" | "end";
+
+/** One entry in a menu button. */
+export interface MenuButtonItem {
+  /** The visible text, and the item's accessible name. */
+  label: string;
+  /** Reported when the item is chosen. Required, and unique, in a `checkbox` or `radio` menu. */
+  value?: string;
+  /** Whether the item is checked. Only in a `checkbox` or `radio` menu. */
+  checked?: boolean;
+  disabled?: boolean;
+  /** Makes the item a link. Only in a plain menu. */
+  href?: string;
+  /** A count or short text in a pill after the label, e.g. `3` or `99+`. `0` is shown. */
+  badge?: number | string | false;
+  /**
+   * What screen readers hear for the badge, e.g. "99 new messages". The badge itself is
+   * hidden from them. Without it they hear the badge text on its own, which is rarely enough.
+   */
+  badgeLabel?: string;
+  /** A short symbol or text before the label, e.g. `RM`. Decorative unless `prefixLabel` is set. */
+  prefix?: string;
+  /** What screen readers hear for the prefix. */
+  prefixLabel?: string;
+}
