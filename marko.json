@@ -3,6 +3,7 @@
   "script-lang": "ts",
   "<lx-listing-card>": { "template": "./src/marko/lx-listing-card/index.marko" },
   "<lx-logo>": { "template": "./src/marko/lx-logo/index.marko" },
+  "<lx-menu-button>": { "template": "./src/marko/lx-menu-button/index.marko" },
   "<lx-price-distribution-graph>": { "template": "./src/marko/lx-price-distribution-graph/index.marko" },
   "<lx-price-filter>": { "template": "./src/marko/lx-price-filter/index.marko" },
   "<lx-program-badge>": { "template": "./src/marko/lx-program-badge/index.marko" },

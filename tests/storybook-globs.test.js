@@ -111,6 +111,7 @@ test("the sidebar titles are the spec's", () => {
     "Components/Footer",
     "Components/ListingCard",
     "Components/Logo",
+    "Components/MenuButton",
     "Components/ProgramBadge",
     "Components/ScrollingItemCards",
     "Components/SectionHead",

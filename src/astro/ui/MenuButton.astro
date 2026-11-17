@@ -1,0 +1,125 @@
+---
+/*
+  Prints what `resolveMenuButton()` decides, and nothing else: every id, role,
+  ARIA state and class below that varies with the input comes from the resolver,
+  which the Marko tag (`src/marko/lx-menu-button/index.marko`) shares, so the two
+  renderers agree. The fixed parts (the `menu-button__*` elements, the chevron
+  and check artwork) are the markup contract both print.
+
+  The stylesheet is imported here, as ProgramBadge.astro does, and the behaviour
+  (`scripts/menu-button.js`) is installed by the processed <script> at the end,
+  so importing the component is the whole setup.
+*/
+import "../../styles/menu-button.css";
+import type { HTMLAttributes } from "astro/types";
+import type { MenuButtonAlign, MenuButtonItem, MenuButtonType } from "../../types";
+import { resolveMenuButton } from "../../utils/menu-button.js";
+
+/**
+ * A button that opens a menu: the WAI-ARIA "menu button" pattern. Use it for a
+ * filter such as Condition (`type="checkbox"`), a sort order (`type="radio"`) or
+ * a short list of actions or links (no `type`).
+ *
+ * Each item can carry a `badge` (a count in a pill) and a `prefix`. A `checkbox`
+ * or `radio` menu draws a mark beside each item and keeps itself open while you
+ * change it; give it a `name` and each checked item submits as a form field.
+ * Listen for `menu-button:select` on the component to react to a choice:
+ *
+ * ```js
+ * el.addEventListener("menu-button:select", (e) => e.detail); // { value, label, checked }
+ * ```
+ *
+ * Keyboard: Enter, Space or ArrowDown opens it (ArrowUp opens on the last item);
+ * arrows, Home, End and typing a letter move; Enter or Space chooses; Escape
+ * closes and returns to the button; Tab closes. Needs JavaScript to open. The
+ * menu is positioned under the button, so an ancestor with `overflow: hidden`
+ * would clip it.
+ *
+ * Other attributes (`data-*`, …) go on the outer `<div>`.
+ */
+export type Props = Omit<HTMLAttributes<"div">, "id"> & {
+  /** The button's visible text and accessible name, e.g. "Condition". */
+  label: string;
+  /** The menu's entries, in order. */
+  items: MenuButtonItem[];
+  /**
+   * `checkbox`: each item toggles on its own. `radio`: choosing one unchecks the
+   * rest. Unset: items are plain actions or links, with no mark.
+   */
+  type?: MenuButtonType;
+  /** A form field name. Each checked item submits under it, with its `value`. `checkbox` and `radio` only. */
+  name?: string;
+  /** Which edge of the button the menu lines up with. @default "start" */
+  align?: MenuButtonAlign;
+  /** Base for the ids the component generates. A counter supplies one when unset. */
+  id?: string;
+};
+
+/* `class` comes out of the spread for the same reason as in ProgramBadge.astro:
+   an explicit `class` after a spread is emitted as a second attribute and the
+   parser keeps the first, so the resolver's merged class would be lost. */
+const { label, items, type, name, align, id, class: className, "class:list": classList, ...attrs } = Astro.props;
+const menu = resolveMenuButton({ label, items, type, name, align, id, className: [className, classList] });
+---
+
+<div {...attrs} class={menu.className}>
+  <button
+    type="button"
+    id={menu.buttonId}
+    class="menu-button__button"
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-controls={menu.menuId}
+  >
+    <span class="menu-button__label">{menu.label}</span>
+    <svg class="menu-button__chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true">
+      <path d="M3.5 6.5 8 11l4.5-4.5"></path>
+    </svg>
+  </button>
+  <div id={menu.menuId} class="menu-button__menu" role="menu" aria-labelledby={menu.buttonId} hidden>
+    {
+      menu.items.map((item) => {
+        const Item = item.isLink ? "a" : "div";
+        return (
+          <Item
+            id={item.id}
+            class="menu-button__item"
+            role={item.role}
+            tabindex="-1"
+            href={item.href}
+            aria-checked={item.checked}
+            aria-disabled={item.disabled}
+            data-value={item.value}
+            data-label={item.label}
+            data-exclusive={item.exclusive ? "" : undefined}
+          >
+            {item.checked && (
+              <span class="menu-button__control" aria-hidden="true">
+                {item.role === "menuitemcheckbox" && (
+                  <svg viewBox="0 0 24 24" fill="currentColor" focusable="false">
+                    <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z" />
+                  </svg>
+                )}
+              </span>
+            )}
+            {item.prefix && <span class="menu-button__prefix" aria-hidden="true">{item.prefix.text}</span>}
+            {item.prefix?.label && <span class="menu-button__sr">{item.prefix.label}</span>}
+            <span class="menu-button__text">{item.label}</span>
+            {item.badge && <span class="menu-button__badge" aria-hidden="true">{item.badge.text}</span>}
+            {item.badge && <span class="menu-button__sr">{item.badge.label}</span>}
+            {menu.name && item.value !== undefined && <input type="hidden" name={menu.name} value={item.value} disabled={item.checked !== "true"} />}
+          </Item>
+        );
+      })
+    }
+  </div>
+</div>
+
+<script>
+  import { initMenuButtons } from "../../scripts/menu-button.js";
+
+  // Installing twice on a root is a no-op, so after `astro:after-swap` the roots that
+  // survived are skipped and new ones are wired.
+  initMenuButtons();
+  document.addEventListener("astro:after-swap", () => initMenuButtons());
+</script>

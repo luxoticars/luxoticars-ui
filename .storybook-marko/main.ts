@@ -13,6 +13,6 @@ import type { StorybookConfig } from "@storybook/marko-vite";
 */
 export default {
   framework: "@storybook/marko-vite",
-  stories: ["../src/marko/**/stories.ts"],
+  stories: ["../src/marko/**/stories.ts", "../src/marko/**/*.stories.ts"],
   addons: ["@storybook/addon-docs", "@storybook/addon-a11y", "@storybook/addon-vitest"],
 } satisfies StorybookConfig;
