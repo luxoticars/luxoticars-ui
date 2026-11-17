@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/menu-button.css [source-hash: 3c91ca936f91]
+  Forked from src/styles/skin/menu-button.css [source-hash: 3c91ca936f91]
   Marko-only: the Astro renderer keeps the shared stylesheet. Block is
   `lx-menu-button`, the tag's own name. Reads --lux-* tokens only (no fallbacks),
   so it needs styles/tokens.css. Elements: `__button`, `__label`, `__chevron`,

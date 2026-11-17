@@ -1,6 +1,8 @@
 /*
-  Menu button styles, shared by `astro/ui/MenuButton.astro` and (forked, see
-  marko/lx-menu-button/style.css) the Marko tag.
+  Menu button Skin: the styles for a button that opens a menu, with no behaviour.
+  `astro/ui/MenuButton.astro` imports it, the Marko tag keeps a fork of it
+  (marko/lx-menu-button/style.css), and any other page can use it with the markup in
+  the `Skin/menu-button` story and `scripts/menu-button` for the behaviour.
 
   BEM: `menu-button` is the block. Elements: `__button`, `__label`, `__chevron`,
   `__menu`, `__item`, `__control` (the checkbox or radio mark), `__prefix`,
@@ -8,6 +10,7 @@
   the menu up with the button's end edge. State is read from ARIA, not from
   classes: `[aria-expanded]` on the button and `[aria-checked]` and
   `[aria-disabled]` on an item, so the markup and the styles cannot disagree.
+  The menu is hidden with the `hidden` attribute.
 
   Tokens are read `--lux-*` first, then the daisyUI name, then a literal (see
   program-badge.css for why). Needs nothing else.

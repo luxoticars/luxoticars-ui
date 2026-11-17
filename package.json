@@ -52,7 +52,8 @@
     "./styles/skin/pill.css": "./src/styles/skin/pill.css",
     "./styles/section-head.css": "./src/styles/section-head.css",
     "./styles/seller-summary.css": "./src/styles/seller-summary.css",
-    "./styles/menu-button.css": "./src/styles/menu-button.css",
+    "./styles/menu-button.css": "./src/styles/skin/menu-button.css",
+    "./styles/skin/menu-button.css": "./src/styles/skin/menu-button.css",
     "./utils/listing-card": {
       "types": "./src/utils/listing-card.d.ts",
       "default": "./src/utils/listing-card.js"
@@ -73,6 +74,10 @@
     "./scripts/dialog": {
       "types": "./src/scripts/dialog.d.ts",
       "default": "./src/scripts/dialog.js"
+    },
+    "./scripts/menu-button": {
+      "types": "./src/scripts/menu-button.d.ts",
+      "default": "./src/scripts/menu-button.js"
     },
     "./scripts/scrolling-item-cards": {
       "types": "./src/scripts/scrolling-item-cards.d.ts",
