@@ -1,7 +1,8 @@
 /*
   Behaviour for `.menu-button`, the ARIA Authoring Practices "menu button"
   pattern. `MenuButton.astro` installs it through a processed <script>, which
-  Astro bundles once per page. The markup is the contract: roles, `aria-checked`
+  Astro bundles once per page. With the Skin (`styles/skin/menu-button.css`) and
+  the markup in its story, call `initMenuButtons()` yourself. The markup is the contract: roles, `aria-checked`
   and `hidden` are the state, so there is nothing to keep in step.
 
   Focus stays on the items (roving, tabindex -1) and the menu closes when focus

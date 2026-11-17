@@ -17,7 +17,7 @@ import { initMenuButton } from "../../src/scripts/menu-button.js";
   Astro components are prerendered to markup by the Storybook framework, so
   the stylesheet reaches the story as a module here, as it does for ProgramBadge.
 */
-import "../../src/styles/menu-button.css";
+import "../../src/styles/skin/menu-button.css";
 
 const BLOCK = "menu-button";
 type Ctx = { canvasElement: HTMLElement };

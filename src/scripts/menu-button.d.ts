@@ -15,5 +15,13 @@ export interface MenuButtonSelectDetail {
  */
 export declare function initMenuButton(root: Element): void;
 
-/** Wires every `.menu-button` under `scope` (the document by default). */
+/**
+ * Wires every `.menu-button` under `scope` (the document by default). `astro/ui/MenuButton` does this
+ * itself; call it when you write the Skin's markup by hand:
+ *
+ * ```js
+ * import { initMenuButtons } from "@luxoticars/ui/scripts/menu-button";
+ * initMenuButtons();
+ * ```
+ */
 export declare function initMenuButtons(scope?: ParentNode): void;
