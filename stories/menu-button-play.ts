@@ -132,6 +132,22 @@ export async function checkFocusLeaves(canvasElement: HTMLElement, block: string
   outside.remove();
 }
 
+/** Focus going to a known outside element closes the menu even right after a press inside. */
+export async function checkOutsideFocusAfterPress(canvasElement: HTMLElement, block: string) {
+  const { button, menu } = parts(canvasElement, block);
+  const outside = document.createElement("button");
+  canvasElement.append(outside);
+  button.focus();
+  button.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+  button.click();
+  await frame();
+  assert(!menu.hidden, "open after the click");
+  outside.focus();
+  await frame();
+  assert(menu.hidden, "focus moving to an outside element closes it, even within the press grace period");
+  outside.remove();
+}
+
 /** A badge is hidden from assistive tech and its `label` is read instead. */
 export async function checkBadges(canvasElement: HTMLElement, block: string) {
   const { items } = parts(canvasElement, block);

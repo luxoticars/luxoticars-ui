@@ -5,6 +5,7 @@ import {
   checkCheckboxes,
   checkFocusLeaves,
   checkNavigation,
+  checkOutsideFocusAfterPress,
   checkOpenAndClose,
   checkRadios,
   checkSemantics,
@@ -78,6 +79,7 @@ export const Condition = {
     await checkNavigation(canvasElement, BLOCK);
     await checkCheckboxes(canvasElement, BLOCK);
     await checkFocusLeaves(canvasElement, BLOCK);
+    await checkOutsideFocusAfterPress(canvasElement, BLOCK);
   },
 };
 

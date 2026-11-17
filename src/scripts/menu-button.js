@@ -82,8 +82,15 @@ export function initMenuButton(root) {
   });
 
   root.addEventListener("focusout", (event) => {
-    if (performance.now() - pressedAt < 300 || !isOpen()) return;
-    if (!event.relatedTarget || !root.contains(event.relatedTarget)) close({ returnFocus: false });
+    if (!isOpen()) return;
+    /* Focus going to a known element is never ambiguous: outside closes, inside stays. */
+    if (event.relatedTarget) {
+      if (!root.contains(event.relatedTarget)) close({ returnFocus: false });
+      return;
+    }
+    /* No target: a press inside (Safari's button) or focus leaving the page. Only the first is ignored. */
+    if (performance.now() - pressedAt < 300) return;
+    close({ returnFocus: false });
   });
 
   button.addEventListener("click", () => {

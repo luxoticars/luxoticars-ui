@@ -102,12 +102,17 @@ const/choose=(item: ResolvedMenuItem) => {
 div/root ...attrs class=model.className
   ,onPointerDown() { root().dataset.pressedAt = String(performance.now()) }
   ,onFocusOut(event: FocusEvent) {
-    // Safari does not focus a button on click, so focus leaving the menu for the button
-    // has no relatedTarget. A press inside is never "outside"; the focus change follows it within a few ms.
-    const pressedAt = Number(root().dataset.pressedAt ?? -Infinity)
-    if (!open || performance.now() - pressedAt < 300) return
+    if (!open) return
+    // Focus going to a known element is never ambiguous: outside closes, inside stays.
     const next = event.relatedTarget as Node | null
-    if (!next || !root().contains(next)) close(false)
+    if (next) {
+      if (!root().contains(next)) close(false)
+      return
+    }
+    // No target: a press inside (Safari does not focus a button on click) or focus leaving the page.
+    // Only the first is ignored; the focus change follows the press within a few ms.
+    const pressedAt = Number(root().dataset.pressedAt ?? -Infinity)
+    if (performance.now() - pressedAt >= 300) close(false)
   }
   button.lx-menu-button__button/trigger
     ,type="button"

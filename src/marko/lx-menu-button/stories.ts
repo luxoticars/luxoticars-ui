@@ -6,6 +6,7 @@ import {
   checkCheckboxes,
   checkFocusLeaves,
   checkNavigation,
+  checkOutsideFocusAfterPress,
   checkOpenAndClose,
   checkRadios,
   checkSemantics,
@@ -48,6 +49,7 @@ export const Condition: Story = {
     await checkNavigation(canvasElement, BLOCK);
     await checkCheckboxes(canvasElement, BLOCK);
     await checkFocusLeaves(canvasElement, BLOCK);
+    await checkOutsideFocusAfterPress(canvasElement, BLOCK);
   },
 };
 export const Badged: Story = {
