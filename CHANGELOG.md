@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.22.1
+
+### Patch Changes
+
+- 9cf5cb6: Fix the menu button's chevron, which pointed up when the menu was closed and down when it was open. It now points down when closed and up when open.
+
 ## 0.22.0
 
 ### Minor Changes
