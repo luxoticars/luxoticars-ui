@@ -4,6 +4,7 @@ import { cases, markoArgTypes } from "../../../stories/menu-button-cases";
 import {
   checkBadges,
   checkCheckboxes,
+  checkExclusive,
   checkFocusLeaves,
   checkNavigation,
   checkOutsideFocusAfterPress,
@@ -48,6 +49,7 @@ export const Condition: Story = {
     await checkOpenAndClose(canvasElement, BLOCK);
     await checkNavigation(canvasElement, BLOCK);
     await checkCheckboxes(canvasElement, BLOCK);
+    await checkExclusive(canvasElement, BLOCK);
     await checkFocusLeaves(canvasElement, BLOCK);
     await checkOutsideFocusAfterPress(canvasElement, BLOCK);
   },

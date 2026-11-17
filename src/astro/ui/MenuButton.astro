@@ -91,6 +91,7 @@ const menu = resolveMenuButton({ label, items, type, name, align, id, className:
             aria-disabled={item.disabled}
             data-value={item.value}
             data-label={item.label}
+            data-exclusive={item.exclusive ? "" : undefined}
           >
             {item.checked && (
               <span class="menu-button__control" aria-hidden="true">

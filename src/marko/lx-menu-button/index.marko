@@ -14,7 +14,7 @@
 
   Concise syntax, by repo convention.
 */
-import { ENTRY, resolveMenuButton, navigate, extendQuery, isTypeaheadKey, typeahead } from "../../utils/menu-button.js"
+import { ENTRY, resolveMenuButton, navigate, extendQuery, isTypeaheadKey, toggleChecked, typeahead } from "../../utils/menu-button.js"
 import type { ResolvedMenuItem } from "../../utils/menu-button.js"
 import type { MenuButtonAlign, MenuButtonItem, MenuButtonType } from "../../types"
 
@@ -94,7 +94,7 @@ const/choose=(item: ResolvedMenuItem) => {
     close(true)
     return
   }
-  const next = type === "radio" ? [value] : checkedValues.includes(value) ? checkedValues.filter((v) => v !== value) : [...checkedValues, value]
+  const next = toggleChecked(type, model.items, checkedValues, value)
   draft = { base, values: next }
   onSelect?.({ value, label: item.label, checked: next.includes(value) })
 }

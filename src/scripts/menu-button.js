@@ -8,7 +8,7 @@
   leaves it, so a click elsewhere, Tab and Escape all close it, and the first
   two need no document listener.
 */
-import { ENTRY, extendQuery, isTypeaheadKey, navigate, typeahead } from "../utils/menu-button.js";
+import { ENTRY, extendQuery, isTypeaheadKey, navigate, toggleChecked, typeahead } from "../utils/menu-button.js";
 
 export function initMenuButton(root) {
   /* An attribute, not a WeakSet: a second copy of this module (a story and a page
@@ -55,12 +55,14 @@ export function initMenuButton(root) {
     if (item.getAttribute("aria-disabled") === "true") return;
     const role = item.getAttribute("role");
     let checked = false;
-    if (role === "menuitemcheckbox") {
-      checked = item.getAttribute("aria-checked") !== "true";
-      item.setAttribute("aria-checked", String(checked));
-    } else if (role === "menuitemradio") {
-      checked = true;
-      for (const other of items()) if (other.getAttribute("role") === "menuitemradio") other.setAttribute("aria-checked", String(other === item));
+    if (role !== "menuitem") {
+      const type = role === "menuitemradio" ? "radio" : "checkbox";
+      const marked = items().filter((el) => el.getAttribute("role") === role);
+      const rules = marked.map((el) => ({ value: el.dataset.value, exclusive: el.hasAttribute("data-exclusive") }));
+      const now = marked.filter((el) => el.getAttribute("aria-checked") === "true").map((el) => el.dataset.value);
+      const next = toggleChecked(type, rules, now, item.dataset.value);
+      for (const el of marked) el.setAttribute("aria-checked", String(next.includes(el.dataset.value)));
+      checked = next.includes(item.dataset.value);
     }
     /* Form support: a checked item's hidden input is enabled, so it submits. */
     for (const field of menu.querySelectorAll("input[type=hidden]")) {

@@ -15,13 +15,13 @@ export interface MenuButtonCase {
 }
 
 export const cases = {
-  /** The Condition filter, for the search results toolbar. */
+  /** The Condition filter, for the search results toolbar. "Any Condition" is exclusive. */
   Condition: {
     id: "condition",
     label: "Condition",
     type: "checkbox",
     items: [
-      { value: "any", label: "Any Condition", checked: true },
+      { value: "any", label: "Any Condition", checked: true, exclusive: true },
       { value: "new", label: "New" },
       { value: "used", label: "Used" },
       { value: "recon", label: "Recon" },
@@ -137,6 +137,6 @@ export const markoArgTypes = {
   name: { control: "text", description: "A form field name. Each checked item submits under it." },
   items: {
     control: "object",
-    description: "The entries: `label`, and optionally `value`, `checked`, `disabled`, `href`, `badge`, `badgeLabel`, `prefix`, `prefixLabel`.",
+    description: "The entries: `label`, and optionally `value`, `checked`, `exclusive`, `disabled`, `href`, `badge`, `badgeLabel`, `prefix`, `prefixLabel`.",
   },
 } as const;

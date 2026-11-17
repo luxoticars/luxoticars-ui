@@ -78,6 +78,12 @@ export interface MenuButtonItem {
   value?: string;
   /** Whether the item is checked. Only in a `checkbox` or `radio` menu. */
   checked?: boolean;
+  /**
+   * For the "Any" item of a filter, in a `checkbox` menu. Choosing it unchecks every other item, and it
+   * cannot be unchecked directly. Choosing any other item unchecks it, and unchecking the last other
+   * item checks it again, so the filter is never empty. At most one item.
+   */
+  exclusive?: boolean;
   disabled?: boolean;
   /** Makes the item a link. Only in a plain menu. */
   href?: string;

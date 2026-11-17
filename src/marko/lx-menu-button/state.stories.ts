@@ -29,7 +29,7 @@ export const ParentDrivenState: StoryObj = {
     await frame();
     canvasElement.querySelectorAll<HTMLElement>(`.${BLOCK}__item`)[2].click();
     await frame();
-    expect(["Any Condition", "Used"], "the user checks Used");
+    expect(["Used"], "the user checks Used, which unchecks the exclusive Any");
     await press(".parent-only-used");
     expect(["Used"], "the parent replaces the choice");
     await press(".parent-back-to-any");

@@ -61,6 +61,8 @@ export function resolveMenuButton({ label, items, type, name, align, id, classNa
 
   const seen = new Set();
   let checkedCount = 0;
+  let exclusiveCount = 0;
+  let exclusiveChecked = false;
 
   const resolved = items.map((item, index) => {
     if (item == null || typeof item !== "object") fail(`item ${index} must be an object.`);
@@ -77,9 +79,14 @@ export function resolveMenuButton({ label, items, type, name, align, id, classNa
     const href = isUnset(item.href) || item.href === "" ? undefined : String(item.href);
     if (href && kind) fail(`item "${itemLabel}" has an \`href\`, but a ${kind} item toggles a value; it cannot also be a link.`);
 
+    const exclusive = Boolean(item.exclusive);
+    if (exclusive && kind !== "checkbox") fail(`item "${itemLabel}" is \`exclusive\`, which only applies to a \`checkbox\` menu.`);
+    if (exclusive) exclusiveCount += 1;
+
     const checked = kind ? Boolean(item.checked) : false;
     if (item.checked && !kind) fail(`item "${itemLabel}" is \`checked\`, but the menu has no \`type\`. Set type="checkbox" or type="radio".`);
     if (checked) checkedCount += 1;
+    if (checked && exclusive) exclusiveChecked = true;
 
     const badgeText = isUnset(item.badge) ? "" : text(item.badge);
     const prefixText = isUnset(item.prefix) ? "" : text(item.prefix);
@@ -93,6 +100,7 @@ export function resolveMenuButton({ label, items, type, name, align, id, classNa
       checked: kind ? (checked ? "true" : "false") : undefined,
       disabled: item.disabled ? "true" : undefined,
       value,
+      exclusive,
       label: itemLabel,
       href: item.disabled ? undefined : href,
       isLink: Boolean(href),
@@ -104,6 +112,8 @@ export function resolveMenuButton({ label, items, type, name, align, id, classNa
     };
   });
 
+  if (exclusiveCount > 1) fail("only one item can be `exclusive`.");
+  if (exclusiveChecked && checkedCount > 1) fail("an `exclusive` item cannot be checked together with other items.");
   if (kind === "radio" && checkedCount > 1) fail("a radio menu can have only one checked item.");
 
   return {
@@ -116,6 +126,24 @@ export function resolveMenuButton({ label, items, type, name, align, id, classNa
     name: inputName || undefined,
     items: resolved,
   };
+}
+
+/* ---- checked state ----------------------------------------------------- */
+
+/**
+ * What is checked after the user chooses `value`. `items` are `{ value, exclusive }` and `checked` the
+ * values checked now. A radio menu checks just the chosen one. In a checkbox menu the chosen item
+ * toggles, with one rule for an `exclusive` item (the "Any" of a filter): choosing it unchecks every other
+ * item and it cannot be unchecked directly; choosing any other item unchecks it; and unchecking the last
+ * other item brings it back, so a filter is never left with nothing. Pure, so the Astro script and the
+ * Marko tag apply the same rule.
+ */
+export function toggleChecked(type, items, checked, value) {
+  if (type === "radio") return [value];
+  const exclusive = items.find((item) => item.exclusive)?.value;
+  if (value === exclusive) return [value];
+  const next = checked.includes(value) ? checked.filter((v) => v !== value) : [...checked.filter((v) => v !== exclusive), value];
+  return next.length === 0 && exclusive !== undefined ? [exclusive] : next;
 }
 
 /* ---- keyboard rules ---------------------------------------------------- */

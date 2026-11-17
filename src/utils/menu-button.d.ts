@@ -32,6 +32,8 @@ export interface ResolvedMenuItem {
   /** `aria-disabled`, as the string ARIA expects. */
   disabled: "true" | undefined;
   value: string | undefined;
+  /** Choosing it unchecks the rest, and choosing another item unchecks it. */
+  exclusive: boolean;
   label: string;
   /** Only an enabled link item has one. */
   href: string | undefined;
@@ -59,6 +61,18 @@ export interface ResolvedMenuButton {
  * radio items.
  */
 export declare function resolveMenuButton(options?: MenuButtonOptions): ResolvedMenuButton;
+
+/**
+ * What is checked after the user chooses `value`. A radio menu checks just that one. A checkbox menu
+ * toggles it, except that an `exclusive` item unchecks the others, cannot be unchecked directly, and
+ * comes back when the last other item is unchecked.
+ */
+export declare function toggleChecked(
+  type: MenuButtonType,
+  items: readonly { value: string | undefined; exclusive?: boolean }[],
+  checked: readonly string[],
+  value: string,
+): string[];
 
 /** Where focus goes on ArrowDown, ArrowUp, Home or End; `undefined` for any other key, `-1` when no item can take it. */
 export declare function navigate(key: string, current: number, enabled: readonly boolean[]): number | undefined;

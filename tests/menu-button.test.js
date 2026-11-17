@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { extendQuery, isTypeaheadKey, navigate, resolveMenuButton, typeahead } from "../src/utils/menu-button.js";
+import { extendQuery, isTypeaheadKey, navigate, resolveMenuButton, toggleChecked, typeahead } from "../src/utils/menu-button.js";
 import { cases } from "../stories/menu-button-cases.ts";
 
 /* The resolver decides everything a menu button renders, so the Astro component and
@@ -128,4 +128,37 @@ test("only a plain character is typeahead; Space and shortcuts are not", () => {
   assert.equal(isTypeaheadKey({ key: " " }), false);
   assert.equal(isTypeaheadKey({ key: "Enter" }), false);
   assert.equal(isTypeaheadKey({ key: "a", ctrlKey: true }), false);
+});
+
+const filter = [{ value: "any", exclusive: true }, { value: "new" }, { value: "used" }, { value: "recon" }];
+
+test("toggleChecked: a checkbox toggles; a radio checks only the chosen item", () => {
+  const plain = [{ value: "a" }, { value: "b" }];
+  assert.deepEqual(toggleChecked("checkbox", plain, [], "a"), ["a"]);
+  assert.deepEqual(toggleChecked("checkbox", plain, ["a"], "b"), ["a", "b"]);
+  assert.deepEqual(toggleChecked("checkbox", plain, ["a", "b"], "a"), ["b"]);
+  assert.deepEqual(toggleChecked("checkbox", plain, ["a"], "a"), [], "with no exclusive item, nothing is a valid state");
+  assert.deepEqual(toggleChecked("radio", plain, ["a"], "b"), ["b"]);
+});
+
+test("toggleChecked: an exclusive item clears the rest and is not cleared by a click", () => {
+  assert.deepEqual(toggleChecked("checkbox", filter, ["new", "used"], "any"), ["any"]);
+  assert.deepEqual(toggleChecked("checkbox", filter, ["any"], "any"), ["any"]);
+});
+
+test("toggleChecked: another item unchecks the exclusive one, and the last one out brings it back", () => {
+  assert.deepEqual(toggleChecked("checkbox", filter, ["any"], "used"), ["used"]);
+  assert.deepEqual(toggleChecked("checkbox", filter, ["used"], "new"), ["used", "new"]);
+  assert.deepEqual(toggleChecked("checkbox", filter, ["used", "new"], "used"), ["new"]);
+  assert.deepEqual(toggleChecked("checkbox", filter, ["new"], "new"), ["any"]);
+});
+
+test("exclusive: at most one, checkbox menus only, and never checked with others", () => {
+  const v = (extra) => [{ label: "Any", value: "any", exclusive: true, ...extra }, { label: "New", value: "new" }];
+  assert.equal(make({ type: "checkbox", items: v() }).items[0].exclusive, true);
+  assert.equal(make({ type: "checkbox", items: v() }).items[1].exclusive, false);
+  assert.throws(() => make({ type: "radio", items: v() }), /only applies to a `checkbox` menu/);
+  assert.throws(() => make({ items: [{ label: "Any", exclusive: true }] }), /only applies to a `checkbox` menu/);
+  assert.throws(() => make({ type: "checkbox", items: [...v(), { label: "Two", value: "two", exclusive: true }] }), /only one item can be `exclusive`/);
+  assert.throws(() => make({ type: "checkbox", items: [{ label: "Any", value: "any", exclusive: true, checked: true }, { label: "New", value: "new", checked: true }] }), /cannot be checked together/);
 });

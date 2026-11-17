@@ -3,6 +3,7 @@ import { cases } from "../menu-button-cases";
 import {
   checkBadges,
   checkCheckboxes,
+  checkExclusive,
   checkFocusLeaves,
   checkNavigation,
   checkOutsideFocusAfterPress,
@@ -57,10 +58,10 @@ Measured on the built component: minified with esbuild, compressed at gzip level
 
 | What you pay | Raw | gzip | brotli |
 | --- | --- | --- | --- |
-| CSS, once per page (\`menu-button.css\`) | 4,772 B | 1,435 B | 1,188 B |
-| JS, once per page (\`scripts/menu-button.js\`, no dependencies) | 2,993 B | 1,308 B | 1,150 B |
+| CSS, once per page (\`menu-button.css\`) | 4,772 B | 1,421 B | 1,188 B |
+| JS, once per page (\`scripts/menu-button.js\`, no dependencies) | 3,385 B | 1,460 B | 1,293 B |
 | HTML per instance, the 4-item Condition filter | about 2.2 kB | about 540 B | |
-| Marko tag, client code (\`<lx-menu-button>\`, besides the Marko runtime) | 12,484 B | 4,850 B | 4,343 B |
+| Marko tag, client code (\`<lx-menu-button>\`, besides the Marko runtime) | 13,083 B | 5,066 B | 4,542 B |
 
 The Astro component ships the CSS and JS above and no framework. The Marko tag has its own stylesheet (4,543 B raw, 1,306 B gzip) and keeps its state in the tag, so its client code is larger; it resolves on the client, which is why it uses \`clsx\` and not \`cn()\`: \`cn()\` would add 8.5 kB gzip of \`tailwind-merge\`.
 
@@ -78,6 +79,7 @@ export const Condition = {
     await checkOpenAndClose(canvasElement, BLOCK);
     await checkNavigation(canvasElement, BLOCK);
     await checkCheckboxes(canvasElement, BLOCK);
+    await checkExclusive(canvasElement, BLOCK);
     await checkFocusLeaves(canvasElement, BLOCK);
     await checkOutsideFocusAfterPress(canvasElement, BLOCK);
   },

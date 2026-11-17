@@ -100,6 +100,36 @@ export async function checkCheckboxes(canvasElement: HTMLElement, block: string)
   await press("Escape");
 }
 
+/** An exclusive "Any" item: it clears the others, and comes back when they are all cleared. */
+export async function checkExclusive(canvasElement: HTMLElement, block: string) {
+  const { button, items } = parts(canvasElement, block);
+  const label = (el: HTMLElement) => (el.querySelector(`.${block}__text`)?.textContent ?? "").trim();
+  const checked = () => items.filter((i) => i.getAttribute("aria-checked") === "true").map(label);
+  const [any, fresh, used] = items;
+  assert(checked().join() === label(any), "starts on the exclusive item");
+  button.focus();
+  button.click();
+  await frame();
+  fresh.click();
+  await frame();
+  assert(checked().join() === label(fresh), "choosing another item unchecks the exclusive one");
+  used.click();
+  await frame();
+  assert(checked().join() === `${label(fresh)},${label(used)}`, "other items can be checked together");
+  any.click();
+  await frame();
+  assert(checked().join() === label(any), "choosing the exclusive item unchecks the rest");
+  any.click();
+  await frame();
+  assert(checked().join() === label(any), "the exclusive item cannot be unchecked directly");
+  used.click();
+  await frame();
+  used.click();
+  await frame();
+  assert(checked().join() === label(any), "unchecking the last other item brings the exclusive one back");
+  await press("Escape");
+}
+
 /** Choosing a radio item unchecks the others. */
 export async function checkRadios(canvasElement: HTMLElement, block: string) {
   const { button, items } = parts(canvasElement, block);
