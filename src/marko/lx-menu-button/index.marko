@@ -63,6 +63,9 @@ id/uid
 const/fromParent=(type ? items.filter((item) => item.checked).map((item) => String(item.value)) : [])
 const/base=fromParent.join("\u0000")
 const/checkedValues=(draft && draft.base === base ? draft.values : fromParent)
+// Once the parent has answered differently the choice is spent. Without this, the parent
+// going back to what it said before would match the choice's base again and bring it back.
+script -- if (draft && draft.base !== base) draft = null
 
 const/model=resolveMenuButton({
   label,
