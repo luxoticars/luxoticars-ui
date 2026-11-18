@@ -73,6 +73,35 @@ export async function checkChevron(canvasElement: HTMLElement, block: string) {
   assert(down(rotation()), "closed again: points down");
 }
 
+/**
+ * The waiting state: `aria-busy` on the button, a bright arc running around its edge (drawn on the
+ * button's `::after`), and the words in a status region. `label` is what the status should say; `null`
+ * means not waiting, and everything is back.
+ */
+export async function checkBusyState(canvasElement: HTMLElement, block: string, label: string | null) {
+  const { root, button } = parts(canvasElement, block);
+  const status = root.querySelector<HTMLElement>(`.${block}__sr[role="status"]`);
+  assert(status, "the component has a status region");
+  const ring = () => getComputedStyle(button, "::after");
+  await frame();
+  if (label === null) {
+    assert(!button.hasAttribute("aria-busy"), "not waiting: no aria-busy");
+    assert(ring().content === "none" || ring().content === "normal", `not waiting: no ring, content is ${ring().content}`);
+    assert(button.querySelector(`.${block}__chevron`), "the chevron is always there");
+    assert((status!.textContent ?? "") === "", "not waiting: the status is empty");
+    return;
+  }
+  assert(button.getAttribute("aria-busy") === "true", "waiting: aria-busy is true");
+  assert(ring().content === '""', `waiting: the ring is drawn, content is ${ring().content}`);
+  assert(ring().position === "absolute" && ring().pointerEvents === "none", "the ring sits over the edge and takes no clicks");
+  assert(status!.textContent === label, `waiting: the status says "${label}", got "${status!.textContent}"`);
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  assert(reduced || ring().animationName.includes("orbit"), "waiting: the arc moves");
+  assert(button.disabled === false, "waiting does not disable the button");
+  const before = button.getBoundingClientRect().width;
+  assert(before > 0, "the button keeps its size");
+}
+
 /** ArrowDown / ArrowUp wrap, Home / End jump, a disabled item is skipped, a letter jumps. */
 export async function checkNavigation(canvasElement: HTMLElement, block: string) {
   const { button, menu, items } = parts(canvasElement, block);

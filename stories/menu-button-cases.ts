@@ -7,6 +7,8 @@ import type { MenuButtonAlign, MenuButtonItem, MenuButtonType } from "../src/typ
 
 export interface MenuButtonCase {
   label: string;
+  busy?: boolean;
+  busyLabel?: string;
   items: MenuButtonItem[];
   type?: MenuButtonType;
   name?: string;
@@ -103,6 +105,19 @@ export const cases = {
       { value: "recon", label: "Recon" },
     ],
   },
+  /** Waiting for the page a choice loads: a bright arc runs around the button and a screen reader hears the label. */
+  Busy: {
+    id: "busy",
+    label: "Condition",
+    type: "checkbox",
+    busy: true,
+    busyLabel: "Updating results…",
+    items: [
+      { value: "any", label: "Any Condition", exclusive: true },
+      { value: "new", label: "New" },
+      { value: "used", label: "Used", checked: true },
+    ],
+  },
   AlignEnd: {
     id: "align-end",
     label: "Condition",
@@ -135,6 +150,8 @@ export const markoArgTypes = {
     table: { defaultValue: { summary: "start" } },
   },
   name: { control: "text", description: "A form field name. Each checked item submits under it." },
+  busy: { control: "boolean", description: "Waiting for something the menu started: `aria-busy`, a bright arc running around the button, and a status for screen readers." },
+  busyLabel: { control: "text", description: "What screen readers hear while `busy`.", table: { defaultValue: { summary: "Loading" } } },
   items: {
     control: "object",
     description: "The entries: `label`, and optionally `value`, `checked`, `exclusive`, `disabled`, `href`, `badge`, `badgeLabel`, `prefix`, `prefixLabel`.",

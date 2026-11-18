@@ -1,0 +1,16 @@
+/*
+  A parent that turns the menu's waiting state on and off, as a page does around a request. Story-only; not shipped.
+*/
+import MenuButton from "../src/marko/lx-menu-button/index.marko"
+
+<let/busy=false>
+
+div style="padding: 1rem 1rem 16rem"
+  button.start type="button" onClick() { busy = true } -- Start waiting
+  button.stop type="button" onClick() { busy = false } -- Stop waiting
+  ${MenuButton}
+    ,label="Condition"
+    ,type="checkbox"
+    ,busy=busy
+    ,busyLabel="Updating results…"
+    ,items=[{ value: "any", label: "Any Condition", exclusive: true, checked: true }, { value: "used", label: "Used" }]

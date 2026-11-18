@@ -153,3 +153,16 @@ export function initMenuButton(root) {
 export function initMenuButtons(scope = document) {
   for (const root of scope.querySelectorAll(".menu-button")) initMenuButton(root);
 }
+
+/**
+ * Marks a menu button as waiting, or not: `aria-busy` on the button (the Skin runs an arc around the button for it) and
+ * `label` in the status region, which a screen reader reads out. Safe to call as often as you like.
+ */
+export function setMenuButtonBusy(root, busy, label = "Loading") {
+  const button = root.querySelector(".menu-button__button");
+  const status = root.querySelector('.menu-button__sr[role="status"]');
+  if (!button) return;
+  if (busy) button.setAttribute("aria-busy", "true");
+  else button.removeAttribute("aria-busy");
+  if (status) status.textContent = busy ? label : "";
+}

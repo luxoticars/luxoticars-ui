@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/skin/menu-button.css [source-hash: e4139db24302]
+  Forked from src/styles/skin/menu-button.css [source-hash: daecccde17e8]
   Marko-only: the Astro renderer keeps the shared stylesheet. Block is
   `lx-menu-button`, the tag's own name. Reads --lux-* tokens only (no fallbacks),
   so it needs styles/tokens.css. Elements: `__button`, `__label`, `__chevron`,
@@ -27,6 +27,7 @@
 /* ---- the button -------------------------------------------------------- */
 
 .lx-menu-button__button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -64,6 +65,43 @@
 
 .lx-menu-button__button[aria-expanded="true"] .lx-menu-button__chevron {
   rotate: 180deg;
+}
+
+/* ---- waiting ------------------------------------------------------------ */
+
+/* While the button is `aria-busy` a bright arc travels around its edge, a ring drawn over the border
+   so nothing moves or resizes. The words are in a status region (`__sr`), so the arc is only for the
+   eye and motion is never the only cue. The angle is a registered property so it can be animated. */
+@property --mb-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.lx-menu-button__button[aria-busy="true"] {
+  cursor: progress;
+}
+
+.lx-menu-button__button[aria-busy="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  padding: 2px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--mb-angle), transparent 0 45%, var(--mb-focus));
+  /* Keep only the 2px ring: the content box punched out of the whole box. */
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+  animation: lx-menu-button-orbit 1.2s linear infinite;
+}
+
+@keyframes lx-menu-button-orbit {
+  to {
+    --mb-angle: 360deg;
+  }
 }
 
 /* ---- the menu ---------------------------------------------------------- */
@@ -236,6 +274,10 @@
 /* ---- preferences ------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
+  .lx-menu-button__button[aria-busy="true"]::after {
+    animation: none;
+  }
+
   .lx-menu-button__button,
   .lx-menu-button__menu,
   .lx-menu-button__item {
@@ -269,6 +311,11 @@
   .lx-menu-button__item[aria-checked="true"] > .lx-menu-button__control {
     background: CanvasText;
     color: Canvas;
+    forced-color-adjust: none;
+  }
+
+  .lx-menu-button__button[aria-busy="true"]::after {
+    background: Highlight;
     forced-color-adjust: none;
   }
 

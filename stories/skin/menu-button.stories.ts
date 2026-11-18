@@ -5,8 +5,8 @@
   and the play functions below run it, so the markup shown here is known to work with it.
 */
 import "../../src/styles/skin/menu-button.css";
-import { initMenuButton } from "../../src/scripts/menu-button.js";
-import { checkChevron, checkExclusive, checkNavigation, checkRadios, checkSemantics, checkCheckboxes, checkBadges, parts } from "../menu-button-play";
+import { initMenuButton, setMenuButtonBusy } from "../../src/scripts/menu-button.js";
+import { checkBusyState, checkChevron, checkExclusive, checkNavigation, checkRadios, checkSemantics, checkCheckboxes, checkBadges, parts } from "../menu-button-play";
 
 const CHEVRON = `<svg class="menu-button__chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M3.5 6.5 8 11l4.5-4.5"/></svg>`;
 const CHECK = `<svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>`;
@@ -26,7 +26,7 @@ interface Item {
  * The markup a consumer writes; `render` and Show code both use it, so they cannot drift. `open` is
  * only for showing the menu in Storybook: shipped, the menu is `hidden` and `aria-expanded` is "false".
  */
-const menuMarkup = (id: string, label: string, type: "checkbox" | "radio" | undefined, items: Item[], open: boolean) => {
+const menuMarkup = (id: string, label: string, type: "checkbox" | "radio" | undefined, items: Item[], open: boolean, busy = false) => {
   const role = type === "checkbox" ? "menuitemcheckbox" : type === "radio" ? "menuitemradio" : "menuitem";
   const rows = items
     .map((item) => {
@@ -51,10 +51,11 @@ const menuMarkup = (id: string, label: string, type: "checkbox" | "radio" | unde
     })
     .join("\n");
   return `<div class="menu-button">
-  <button type="button" class="menu-button__button" id="${id}-button" aria-haspopup="menu" aria-expanded="${open}" aria-controls="${id}-menu">
+  <button type="button" class="menu-button__button" id="${id}-button" aria-haspopup="menu" aria-expanded="${open}" aria-controls="${id}-menu"${busy ? ' aria-busy="true"' : ""}>
     <span class="menu-button__label">${label}</span>
     ${CHEVRON}
   </button>
+  <span class="menu-button__sr" role="status">${busy ? "Updating results…" : ""}</span>
   <div class="menu-button__menu" id="${id}-menu" role="menu" aria-labelledby="${id}-button"${open ? "" : " hidden"}>
 ${rows}
   </div>
@@ -102,6 +103,12 @@ const hostFor = (markup: string) => {
 type Ctx = { canvasElement: HTMLElement };
 const BLOCK = "menu-button";
 
+const waiting: Item[] = [
+  { value: "any", label: "Any Condition", exclusive: true },
+  { value: "new", label: "New" },
+  { value: "used", label: "Used", checked: true },
+];
+
 /** Wires the story's own menu, then closes it (it is drawn open) so the checks start from a shipped state. */
 const wire = async (canvasElement: HTMLElement) => {
   const { root, button } = parts(canvasElement, BLOCK);
@@ -118,7 +125,8 @@ const wire = async (canvasElement: HTMLElement) => {
  * markup: call `initMenuButtons()` once.
  *
  * You must provide: unique ids that `aria-controls` and `aria-labelledby` point at; the `hidden`
- * attribute on the menu, and `aria-expanded="false"` on the button; `tabindex="-1"` on every item;
+ * attribute on the menu, and `aria-expanded="false"` on the button; the `role="status"` `span` after the button
+ * (empty until the button waits); `tabindex="-1"` on every item;
  * `aria-checked` on checkbox and radio items; and `data-value` and `data-label` on items, which the
  * script reports. Mark the one "Any" item of a checkbox filter with `data-exclusive`.
  *
@@ -174,4 +182,24 @@ export const Prefix = {
     await checkRadios(canvasElement, BLOCK);
   },
   parameters: { docs: { source: { language: "html", code: source(menuMarkup("budget", "Budget", "radio", budget, false)) } } },
+};
+
+/**
+ * Waiting for something the menu started, such as the page a choice loads. `setMenuButtonBusy(root, true,
+ * "Updating results…")` puts `aria-busy` on the button, which has a bright arc run around its edge,
+ * and fills the status region so a screen reader says the label. `setMenuButtonBusy(root, false)` puts it all back.
+ * The menu stays usable while it waits. The arc stops moving for `prefers-reduced-motion` (it stays as a ring).
+ */
+export const Busy = {
+  render: () => hostFor(menuMarkup("busy", "Condition", "checkbox", waiting, false, true)),
+  play: async ({ canvasElement }: Ctx) => {
+    const { root } = parts(canvasElement, BLOCK);
+    initMenuButton(root);
+    await checkBusyState(canvasElement, BLOCK, "Updating results…");
+    setMenuButtonBusy(root, false);
+    await checkBusyState(canvasElement, BLOCK, null);
+    setMenuButtonBusy(root, true, "Updating results…");
+    await checkBusyState(canvasElement, BLOCK, "Updating results…");
+  },
+  parameters: { docs: { source: { language: "html", code: `${source(menuMarkup("busy", "Condition", "checkbox", waiting, false, true))}\n<!-- then, from your script:\n     setMenuButtonBusy(root, true, "Updating results…");  // and false when it is done -->` } } },
 };

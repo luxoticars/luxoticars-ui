@@ -2,6 +2,7 @@ import MenuButtonDemo from "./MenuButtonDemo.astro";
 import { cases } from "../menu-button-cases";
 import {
   checkBadges,
+  checkBusyState,
   checkCheckboxes,
   checkChevron,
   checkExclusive,
@@ -13,7 +14,7 @@ import {
   checkSemantics,
   parts,
 } from "../menu-button-play";
-import { initMenuButton } from "../../src/scripts/menu-button.js";
+import { initMenuButton, setMenuButtonBusy } from "../../src/scripts/menu-button.js";
 /*
   Astro components are prerendered to markup by the Storybook framework, so
   the stylesheet reaches the story as a module here, as it does for ProgramBadge.
@@ -59,12 +60,14 @@ Measured on the built component: minified with esbuild, compressed at gzip level
 
 | What you pay | Raw | gzip | brotli |
 | --- | --- | --- | --- |
-| CSS, once per page (\`menu-button.css\`) | 4,772 B | 1,421 B | 1,188 B |
-| JS, once per page (\`scripts/menu-button.js\`, no dependencies) | 3,385 B | 1,460 B | 1,293 B |
+| CSS, once per page (\`menu-button.css\`) | 5,588 B | 1,662 B | 1,420 B |
+| JS, once per page (\`scripts/menu-button.js\`, no dependencies) | 3,385 B | 1,461 B | 1,293 B |
 | HTML per instance, the 4-item Condition filter | about 2.2 kB | about 540 B | |
-| Marko tag, client code (\`<lx-menu-button>\`, besides the Marko runtime) | 13,083 B | 5,066 B | 4,542 B |
+| Marko tag, client code (\`<lx-menu-button>\`, besides the Marko runtime) | 13,490 B | 5,216 B | 4,677 B |
 
-The Astro component ships the CSS and JS above and no framework. The Marko tag has its own stylesheet (4,543 B raw, 1,306 B gzip) and keeps its state in the tag, so its client code is larger; it resolves on the client, which is why it uses \`clsx\` and not \`cn()\`: \`cn()\` would add 8.5 kB gzip of \`tailwind-merge\`.
+The Astro component ships the CSS and JS above and no framework. The Marko tag has its own stylesheet (5,377 B raw, 1,546 B gzip) and keeps its state in the tag, so its client code is larger; it resolves on the client, which is why it uses \`clsx\` and not \`cn()\`: \`cn()\` would add 8.5 kB gzip of \`tailwind-merge\`.
+
+The waiting state adds about 240 B gzip of CSS, one small element per instance (about 60 B of HTML), and, only if you import \`setMenuButtonBusy\`, about 93 B gzip of JS (1,554 B gzip in all).
 
 Each extra item costs about 200 B of HTML (about 40 B gzipped); a badge adds about 70 B; a prefix about 70 B. No images, no icon font: the chevron and check are inline SVG paths.`,
       },
@@ -152,6 +155,25 @@ export const InAForm = {
     button.click();
     items[0].click();
     if (fields().join() !== "new,used") throw new Error(`a newly checked item submits too, got ${fields().join()}`);
+  },
+};
+
+/**
+ * Waiting for something the menu started. `busy` is the prop; from a script, `setMenuButtonBusy(root, true,
+ * "Updating results…")` does the same to a menu that is already on the page.
+ */
+export const Busy = {
+  args: cases.Busy,
+  play: async ({ canvasElement }: Ctx) => {
+    await wired(canvasElement);
+    const { root } = parts(canvasElement, BLOCK);
+    await checkBusyState(canvasElement, BLOCK, "Updating results…");
+    setMenuButtonBusy(root, false);
+    await checkBusyState(canvasElement, BLOCK, null);
+    setMenuButtonBusy(root, true);
+    await checkBusyState(canvasElement, BLOCK, "Loading");
+    setMenuButtonBusy(root, true, "Updating results…");
+    await checkBusyState(canvasElement, BLOCK, "Updating results…");
   },
 };
 
