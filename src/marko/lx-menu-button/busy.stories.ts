@@ -5,8 +5,8 @@ import { checkBusyState } from "../../../stories/menu-button-play";
 type Ctx = { canvasElement: HTMLElement };
 
 /**
- * A parent that turns `busy` on and off. The waiting state follows the prop: the chevron becomes a
- * spinner and a status region says `busyLabel`, then everything goes back.
+ * A parent that turns `busy` on and off. The waiting state follows the prop: a bright arc runs around the button, and a
+ * border animates and a status region says `busyLabel`, then everything goes back.
  */
 export default { title: "Components/lx-menu-button-busy", component: BusyDemo } satisfies Meta;
 

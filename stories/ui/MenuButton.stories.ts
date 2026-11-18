@@ -60,14 +60,14 @@ Measured on the built component: minified with esbuild, compressed at gzip level
 
 | What you pay | Raw | gzip | brotli |
 | --- | --- | --- | --- |
-| CSS, once per page (\`menu-button.css\`) | 5,476 B | 1,556 B | 1,308 B |
+| CSS, once per page (\`menu-button.css\`) | 5,588 B | 1,662 B | 1,420 B |
 | JS, once per page (\`scripts/menu-button.js\`, no dependencies) | 3,385 B | 1,461 B | 1,293 B |
 | HTML per instance, the 4-item Condition filter | about 2.2 kB | about 540 B | |
-| Marko tag, client code (\`<lx-menu-button>\`, besides the Marko runtime) | 13,550 B | 5,228 B | 4,698 B |
+| Marko tag, client code (\`<lx-menu-button>\`, besides the Marko runtime) | 13,490 B | 5,216 B | 4,677 B |
 
-The Astro component ships the CSS and JS above and no framework. The Marko tag has its own stylesheet (5,280 B raw, 1,440 B gzip) and keeps its state in the tag, so its client code is larger; it resolves on the client, which is why it uses \`clsx\` and not \`cn()\`: \`cn()\` would add 8.5 kB gzip of \`tailwind-merge\`.
+The Astro component ships the CSS and JS above and no framework. The Marko tag has its own stylesheet (5,377 B raw, 1,546 B gzip) and keeps its state in the tag, so its client code is larger; it resolves on the client, which is why it uses \`clsx\` and not \`cn()\`: \`cn()\` would add 8.5 kB gzip of \`tailwind-merge\`.
 
-The waiting state adds about 135 B gzip of CSS, two small elements per instance (about 110 B of HTML), and, only if you import \`setMenuButtonBusy\`, about 93 B gzip of JS (1,554 B gzip in all).
+The waiting state adds about 240 B gzip of CSS, one small element per instance (about 60 B of HTML), and, only if you import \`setMenuButtonBusy\`, about 93 B gzip of JS (1,554 B gzip in all).
 
 Each extra item costs about 200 B of HTML (about 40 B gzipped); a badge adds about 70 B; a prefix about 70 B. No images, no icon font: the chevron and check are inline SVG paths.`,
       },

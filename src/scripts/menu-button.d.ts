@@ -27,8 +27,8 @@ export declare function initMenuButton(root: Element): void;
 export declare function initMenuButtons(scope?: ParentNode): void;
 
 /**
- * Marks a menu button as waiting, or not: `aria-busy` on the button (the Skin draws a spinner in place of
- * the chevron) and `label` in its status region, which screen readers read out. For the Skin's markup;
+ * Marks a menu button as waiting, or not: `aria-busy` on the button (the Skin runs a bright arc around the
+ * button's edge) and `label` in its status region, which screen readers read out. For the Skin's markup;
  * `astro/ui/MenuButton` and `<lx-menu-button>` take a `busy` prop instead.
  *
  * ```js

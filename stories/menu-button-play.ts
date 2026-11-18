@@ -74,31 +74,32 @@ export async function checkChevron(canvasElement: HTMLElement, block: string) {
 }
 
 /**
- * The waiting state: `aria-busy` on the button, a spinner where the chevron was, and the words in a
- * status region. `label` is what the status should say; `null` means not waiting, and everything is back.
+ * The waiting state: `aria-busy` on the button, a bright arc running around its edge (drawn on the
+ * button's `::after`), and the words in a status region. `label` is what the status should say; `null`
+ * means not waiting, and everything is back.
  */
 export async function checkBusyState(canvasElement: HTMLElement, block: string, label: string | null) {
   const { root, button } = parts(canvasElement, block);
-  const chevron = button.querySelector<SVGElement>(`.${block}__chevron`)!;
-  const spinner = button.querySelector<HTMLElement>(`.${block}__spinner`);
   const status = root.querySelector<HTMLElement>(`.${block}__sr[role="status"]`);
-  assert(spinner && status, "the button has a spinner, and the component a status region");
+  assert(status, "the component has a status region");
+  const ring = () => getComputedStyle(button, "::after");
   await frame();
   if (label === null) {
     assert(!button.hasAttribute("aria-busy"), "not waiting: no aria-busy");
-    assert(getComputedStyle(spinner!).display === "none", "not waiting: the spinner is hidden");
-    assert(getComputedStyle(chevron).display !== "none", "not waiting: the chevron shows");
+    assert(ring().content === "none" || ring().content === "normal", `not waiting: no ring, content is ${ring().content}`);
+    assert(button.querySelector(`.${block}__chevron`), "the chevron is always there");
     assert((status!.textContent ?? "") === "", "not waiting: the status is empty");
     return;
   }
   assert(button.getAttribute("aria-busy") === "true", "waiting: aria-busy is true");
-  assert(getComputedStyle(spinner!).display !== "none", "waiting: the spinner shows");
-  assert(getComputedStyle(chevron).display === "none", "waiting: the chevron makes way for it");
-  assert(spinner!.getAttribute("aria-hidden") === "true", "the spinner is decorative");
+  assert(ring().content === '""', `waiting: the ring is drawn, content is ${ring().content}`);
+  assert(ring().position === "absolute" && ring().pointerEvents === "none", "the ring sits over the edge and takes no clicks");
   assert(status!.textContent === label, `waiting: the status says "${label}", got "${status!.textContent}"`);
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  assert(reduced || getComputedStyle(spinner!).animationName.includes("spin"), "waiting: the spinner turns");
+  assert(reduced || ring().animationName.includes("orbit"), "waiting: the arc moves");
   assert(button.disabled === false, "waiting does not disable the button");
+  const before = button.getBoundingClientRect().width;
+  assert(before > 0, "the button keeps its size");
 }
 
 /** ArrowDown / ArrowUp wrap, Home / End jump, a disabled item is skipped, a letter jumps. */

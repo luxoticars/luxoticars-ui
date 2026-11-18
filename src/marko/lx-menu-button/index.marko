@@ -44,7 +44,7 @@ export interface Input extends Omit<Marko.HTML.Div, "content" | "onSelect" | "id
   id?: string
   /**
    * Waiting for something the menu started, such as the page a choice loads. The button gets `aria-busy`,
-   * its chevron becomes a spinner, and a status region says `busyLabel` aloud.
+   * a bright arc runs around its edge, and a status region says `busyLabel` aloud.
    */
   busy?: boolean
   /** What screen readers hear while `busy`. @default "Loading" */
@@ -150,7 +150,6 @@ div/root ...attrs class=model.className
       ,aria-hidden="true"
       ,...{ focusable: "false" }
       path d="M3.5 6.5 8 11l4.5-4.5"
-    span.lx-menu-button__spinner aria-hidden="true"
   span.lx-menu-button__sr role="status" -- ${model.status}
   div.lx-menu-button__menu/menu
     ,id=model.menuId

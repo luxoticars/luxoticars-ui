@@ -105,7 +105,7 @@ export const cases = {
       { value: "recon", label: "Recon" },
     ],
   },
-  /** Waiting for the page a choice loads: the chevron is a spinner and a screen reader hears the label. */
+  /** Waiting for the page a choice loads: a bright arc runs around the button and a screen reader hears the label. */
   Busy: {
     id: "busy",
     label: "Condition",
@@ -150,7 +150,7 @@ export const markoArgTypes = {
     table: { defaultValue: { summary: "start" } },
   },
   name: { control: "text", description: "A form field name. Each checked item submits under it." },
-  busy: { control: "boolean", description: "Waiting for something the menu started: `aria-busy`, a spinner in place of the chevron, and a status for screen readers." },
+  busy: { control: "boolean", description: "Waiting for something the menu started: `aria-busy`, a bright arc running around the button, and a status for screen readers." },
   busyLabel: { control: "text", description: "What screen readers hear while `busy`.", table: { defaultValue: { summary: "Loading" } } },
   items: {
     control: "object",

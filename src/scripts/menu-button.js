@@ -155,7 +155,7 @@ export function initMenuButtons(scope = document) {
 }
 
 /**
- * Marks a menu button as waiting, or not: `aria-busy` on the button (the Skin draws a spinner for it) and
+ * Marks a menu button as waiting, or not: `aria-busy` on the button (the Skin runs an arc around the button for it) and
  * `label` in the status region, which a screen reader reads out. Safe to call as often as you like.
  */
 export function setMenuButtonBusy(root, busy, label = "Loading") {

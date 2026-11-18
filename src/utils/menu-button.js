@@ -53,7 +53,7 @@ export function resolveMenuButton({ label, items, type, name, align, id, classNa
 
   if (!Array.isArray(items) || items.length === 0) fail("`items` needs at least one item.");
 
-  /* Waiting: the button says so with `aria-busy`, draws a spinner where its chevron was, and a status
+  /* Waiting: the button says so with `aria-busy`, has a bright arc run around it, and a status
      region says `busyLabel` aloud, since aria-busy on a button is not announced by itself. */
   const waiting = Boolean(busy);
   const status = isUnset(busyLabel) || text(busyLabel) === "" ? "Loading" : text(busyLabel);

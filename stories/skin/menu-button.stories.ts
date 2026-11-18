@@ -54,7 +54,6 @@ const menuMarkup = (id: string, label: string, type: "checkbox" | "radio" | unde
   <button type="button" class="menu-button__button" id="${id}-button" aria-haspopup="menu" aria-expanded="${open}" aria-controls="${id}-menu"${busy ? ' aria-busy="true"' : ""}>
     <span class="menu-button__label">${label}</span>
     ${CHEVRON}
-    <span class="menu-button__spinner" aria-hidden="true"></span>
   </button>
   <span class="menu-button__sr" role="status">${busy ? "Updating results…" : ""}</span>
   <div class="menu-button__menu" id="${id}-menu" role="menu" aria-labelledby="${id}-button"${open ? "" : " hidden"}>
@@ -126,8 +125,8 @@ const wire = async (canvasElement: HTMLElement) => {
  * markup: call `initMenuButtons()` once.
  *
  * You must provide: unique ids that `aria-controls` and `aria-labelledby` point at; the `hidden`
- * attribute on the menu, and `aria-expanded="false"` on the button; the spinner `span` in the button and the
- * `role="status"` `span` after it (both empty and idle until the button waits); `tabindex="-1"` on every item;
+ * attribute on the menu, and `aria-expanded="false"` on the button; the `role="status"` `span` after the button
+ * (empty until the button waits); `tabindex="-1"` on every item;
  * `aria-checked` on checkbox and radio items; and `data-value` and `data-label` on items, which the
  * script reports. Mark the one "Any" item of a checkbox filter with `data-exclusive`.
  *
@@ -187,9 +186,9 @@ export const Prefix = {
 
 /**
  * Waiting for something the menu started, such as the page a choice loads. `setMenuButtonBusy(root, true,
- * "Updating results…")` puts `aria-busy` on the button, which swaps the chevron for the `menu-button__spinner`,
+ * "Updating results…")` puts `aria-busy` on the button, which has a bright arc run around its edge,
  * and fills the status region so a screen reader says the label. `setMenuButtonBusy(root, false)` puts it all back.
- * The menu stays usable while it waits. The spinner stops turning for `prefers-reduced-motion`.
+ * The menu stays usable while it waits. The arc stops moving for `prefers-reduced-motion` (it stays as a ring).
  */
 export const Busy = {
   render: () => hostFor(menuMarkup("busy", "Condition", "checkbox", waiting, false, true)),
