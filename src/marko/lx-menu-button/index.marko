@@ -42,6 +42,13 @@ export interface Input extends Omit<Marko.HTML.Div, "content" | "onSelect" | "id
   align?: MenuButtonAlign
   /** Base for the ids the tag generates. A unique one is supplied when unset. */
   id?: string
+  /**
+   * Waiting for something the menu started, such as the page a choice loads. The button gets `aria-busy`,
+   * its chevron becomes a spinner, and a status region says `busyLabel` aloud.
+   */
+  busy?: boolean
+  /** What screen readers hear while `busy`. @default "Loading" */
+  busyLabel?: string
   /** Fires when the user chooses an item. */
   onSelect?: (event: SelectEvent) => void
   /** Not supported: the menu is built from `items`. */
@@ -50,7 +57,7 @@ export interface Input extends Omit<Marko.HTML.Div, "content" | "onSelect" | "id
 
 static type Draft = { base: string; values: string[] }
 
-const/{ label, items, type, name, align, id: idProp, onSelect, class: className, content: _content, ...attrs }=input
+const/{ label, items, type, name, align, id: idProp, busy, busyLabel, onSelect, class: className, content: _content, ...attrs }=input
 id/uid
 <let/open=false>
 // Set when opening, read once the menu is visible: a hidden element cannot take focus.
@@ -73,6 +80,8 @@ const/model=resolveMenuButton({
   name,
   align,
   id: idProp || uid,
+  busy,
+  busyLabel,
   className,
   block: "lx-menu-button",
   items: items.map((item) => ({ ...item, checked: type ? checkedValues.includes(String(item.value)) : item.checked })),
@@ -120,6 +129,7 @@ div/root ...attrs class=model.className
     ,aria-haspopup="menu"
     ,aria-expanded=(open ? "true" : "false")
     ,aria-controls=model.menuId
+    ,aria-busy=model.busy
     ,onClick() {
       if (open) close(true)
       else { open = true; focusAt = "first" }
@@ -140,6 +150,8 @@ div/root ...attrs class=model.className
       ,aria-hidden="true"
       ,...{ focusable: "false" }
       path d="M3.5 6.5 8 11l4.5-4.5"
+    span.lx-menu-button__spinner aria-hidden="true"
+  span.lx-menu-button__sr role="status" -- ${model.status}
   div.lx-menu-button__menu/menu
     ,id=model.menuId
     ,role="menu"

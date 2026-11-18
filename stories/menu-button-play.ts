@@ -73,6 +73,34 @@ export async function checkChevron(canvasElement: HTMLElement, block: string) {
   assert(down(rotation()), "closed again: points down");
 }
 
+/**
+ * The waiting state: `aria-busy` on the button, a spinner where the chevron was, and the words in a
+ * status region. `label` is what the status should say; `null` means not waiting, and everything is back.
+ */
+export async function checkBusyState(canvasElement: HTMLElement, block: string, label: string | null) {
+  const { root, button } = parts(canvasElement, block);
+  const chevron = button.querySelector<SVGElement>(`.${block}__chevron`)!;
+  const spinner = button.querySelector<HTMLElement>(`.${block}__spinner`);
+  const status = root.querySelector<HTMLElement>(`.${block}__sr[role="status"]`);
+  assert(spinner && status, "the button has a spinner, and the component a status region");
+  await frame();
+  if (label === null) {
+    assert(!button.hasAttribute("aria-busy"), "not waiting: no aria-busy");
+    assert(getComputedStyle(spinner!).display === "none", "not waiting: the spinner is hidden");
+    assert(getComputedStyle(chevron).display !== "none", "not waiting: the chevron shows");
+    assert((status!.textContent ?? "") === "", "not waiting: the status is empty");
+    return;
+  }
+  assert(button.getAttribute("aria-busy") === "true", "waiting: aria-busy is true");
+  assert(getComputedStyle(spinner!).display !== "none", "waiting: the spinner shows");
+  assert(getComputedStyle(chevron).display === "none", "waiting: the chevron makes way for it");
+  assert(spinner!.getAttribute("aria-hidden") === "true", "the spinner is decorative");
+  assert(status!.textContent === label, `waiting: the status says "${label}", got "${status!.textContent}"`);
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  assert(reduced || getComputedStyle(spinner!).animationName.includes("spin"), "waiting: the spinner turns");
+  assert(button.disabled === false, "waiting does not disable the button");
+}
+
 /** ArrowDown / ArrowUp wrap, Home / End jump, a disabled item is skipped, a letter jumps. */
 export async function checkNavigation(canvasElement: HTMLElement, block: string) {
   const { button, menu, items } = parts(canvasElement, block);

@@ -3,6 +3,7 @@ import MenuButton, { type Input } from "./index.marko";
 import { cases, markoArgTypes } from "../../../stories/menu-button-cases";
 import {
   checkBadges,
+  checkBusyState,
   checkCheckboxes,
   checkChevron,
   checkExclusive,
@@ -85,4 +86,9 @@ export const WithDisabledItem: Story = {
   play: async ({ canvasElement }: Ctx) => checkNavigation(canvasElement, BLOCK),
 };
 export const InAForm: Story = { args: cases.InAForm };
+/** Waiting for the page a choice loads: `busy` and `busyLabel`. */
+export const Busy: Story = {
+  args: cases.Busy,
+  play: async ({ canvasElement }: Ctx) => checkBusyState(canvasElement, BLOCK, "Updating results…"),
+};
 export const AlignEnd: Story = { args: cases.AlignEnd };

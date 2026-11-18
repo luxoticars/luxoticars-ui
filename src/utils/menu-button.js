@@ -41,7 +41,7 @@ let counter = 0;
  * the default; the Marko tag passes its own (`lx-menu-button`), which has its own
  * stylesheet.
  */
-export function resolveMenuButton({ label, items, type, name, align, id, className, block = "menu-button" } = {}) {
+export function resolveMenuButton({ label, items, type, name, align, id, className, busy, busyLabel, block = "menu-button" } = {}) {
   const buttonText = isUnset(label) ? "" : text(label);
   if (!buttonText) fail("`label` is required: it is the button's visible text and its accessible name.");
 
@@ -52,6 +52,11 @@ export function resolveMenuButton({ label, items, type, name, align, id, classNa
   if (!ALIGNS.includes(side)) fail(`unknown align "${align}". Use one of: ${ALIGNS.join(", ")}.`);
 
   if (!Array.isArray(items) || items.length === 0) fail("`items` needs at least one item.");
+
+  /* Waiting: the button says so with `aria-busy`, draws a spinner where its chevron was, and a status
+     region says `busyLabel` aloud, since aria-busy on a button is not announced by itself. */
+  const waiting = Boolean(busy);
+  const status = isUnset(busyLabel) || text(busyLabel) === "" ? "Loading" : text(busyLabel);
 
   const inputName = isUnset(name) ? "" : text(name);
   if (inputName && !kind) fail("`name` only applies to a `checkbox` or `radio` menu: a plain menu holds actions, not values.");
@@ -124,6 +129,9 @@ export function resolveMenuButton({ label, items, type, name, align, id, classNa
     label: buttonText,
     type: kind,
     name: inputName || undefined,
+    /* `aria-busy` on the button, as the string ARIA expects, and the text of the status region ("" when not waiting). */
+    busy: waiting ? "true" : undefined,
+    status: waiting ? status : "",
     items: resolved,
   };
 }

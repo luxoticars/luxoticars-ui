@@ -16,6 +16,10 @@ export interface MenuButtonOptions {
   align?: MenuButtonAlign | false | null;
   /** Base for every generated id. A counter supplies one when unset. */
   id?: string | false | null;
+  /** Waiting for something the menu started, such as a page that is loading. `false` and `null` mean not waiting. */
+  busy?: boolean | null;
+  /** What screen readers hear while `busy`. @default "Loading" */
+  busyLabel?: string | false | null;
   /** The caller's classes, in any form `cn()` accepts. */
   className?: ClassValue;
   /** The BEM block the classes are built on. @default "menu-button" */
@@ -51,6 +55,10 @@ export interface ResolvedMenuButton {
   label: string;
   type: MenuButtonType | undefined;
   name: string | undefined;
+  /** `aria-busy` for the button, as the string ARIA expects. `undefined` when not waiting. */
+  busy: "true" | undefined;
+  /** The status region's text: `busyLabel` while waiting, empty otherwise. */
+  status: string;
   items: ResolvedMenuItem[];
 }
 

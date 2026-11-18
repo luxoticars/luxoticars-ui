@@ -162,3 +162,16 @@ test("exclusive: at most one, checkbox menus only, and never checked with others
   assert.throws(() => make({ type: "checkbox", items: [...v(), { label: "Two", value: "two", exclusive: true }] }), /only one item can be `exclusive`/);
   assert.throws(() => make({ type: "checkbox", items: [{ label: "Any", value: "any", exclusive: true, checked: true }, { label: "New", value: "new", checked: true }] }), /cannot be checked together/);
 });
+
+test("waiting: aria-busy as the string ARIA expects, and a status that says the label aloud", () => {
+  const waiting = make({ busy: true, busyLabel: "Updating results…" });
+  assert.equal(waiting.busy, "true");
+  assert.equal(waiting.status, "Updating results…");
+  assert.equal(make({ busy: true }).status, "Loading", "the label defaults");
+  assert.equal(make({ busy: true, busyLabel: "   " }).status, "Loading", "a blank label counts as unset");
+  const idle = make({ busyLabel: "Updating results…" });
+  assert.equal(idle.busy, undefined, "not waiting: no aria-busy");
+  assert.equal(idle.status, "", "not waiting: the status stays empty");
+  assert.equal(make({ busy: false }).busy, undefined);
+  assert.equal(make({ busy: null }).busy, undefined);
+});

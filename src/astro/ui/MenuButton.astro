@@ -35,6 +35,9 @@ import { resolveMenuButton } from "../../utils/menu-button.js";
  * menu is positioned under the button, so an ancestor with `overflow: hidden`
  * would clip it.
  *
+ * It can wait: `busy` marks the button `aria-busy`, swaps its chevron for a spinner and has a screen
+ * reader say `busyLabel`. Nothing else changes, so choices stay possible while it waits.
+ *
  * Other attributes (`data-*`, …) go on the outer `<div>`.
  */
 export type Props = Omit<HTMLAttributes<"div">, "id"> & {
@@ -53,13 +56,21 @@ export type Props = Omit<HTMLAttributes<"div">, "id"> & {
   align?: MenuButtonAlign;
   /** Base for the ids the component generates. A counter supplies one when unset. */
   id?: string;
+  /**
+   * Waiting for something the menu started, such as the page a choice loads. The button gets `aria-busy`,
+   * its chevron becomes a spinner, and a status region says `busyLabel` aloud. To turn it on from a script,
+   * call `setMenuButtonBusy(root, true)` from `@luxoticars/ui/scripts/menu-button`.
+   */
+  busy?: boolean;
+  /** What screen readers hear while `busy`. @default "Loading" */
+  busyLabel?: string;
 };
 
 /* `class` comes out of the spread for the same reason as in ProgramBadge.astro:
    an explicit `class` after a spread is emitted as a second attribute and the
    parser keeps the first, so the resolver's merged class would be lost. */
-const { label, items, type, name, align, id, class: className, "class:list": classList, ...attrs } = Astro.props;
-const menu = resolveMenuButton({ label, items, type, name, align, id, className: [className, classList] });
+const { label, items, type, name, align, id, busy, busyLabel, class: className, "class:list": classList, ...attrs } = Astro.props;
+const menu = resolveMenuButton({ label, items, type, name, align, id, busy, busyLabel, className: [className, classList] });
 ---
 
 <div {...attrs} class={menu.className}>
@@ -70,12 +81,15 @@ const menu = resolveMenuButton({ label, items, type, name, align, id, className:
     aria-haspopup="menu"
     aria-expanded="false"
     aria-controls={menu.menuId}
+    aria-busy={menu.busy}
   >
     <span class="menu-button__label">{menu.label}</span>
     <svg class="menu-button__chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true">
       <path d="M3.5 6.5 8 11l4.5-4.5"></path>
     </svg>
+    <span class="menu-button__spinner" aria-hidden="true"></span>
   </button>
+  <span class="menu-button__sr" role="status">{menu.status}</span>
   <div id={menu.menuId} class="menu-button__menu" role="menu" aria-labelledby={menu.buttonId} hidden>
     {
       menu.items.map((item) => {
