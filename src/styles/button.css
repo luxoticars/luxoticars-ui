@@ -21,7 +21,7 @@
   --_base-200: var(--color-base-200, var(--lux-base-200, oklch(93% 0.005 264.7)));
   --_base-300: var(--color-base-300, var(--lux-base-300, oklch(80% 0.008 264.7)));
   --_ink: var(--color-base-content, var(--lux-base-content, oklch(20% 0.018 264)));
-  --_primary: var(--color-primary, var(--lux-primary, oklch(86% 0.127 207.078)));
+  --_primary: var(--color-primary, var(--lux-primary, oklch(77.8% 0.12 231.7)));
   --_primary-content: var(--color-primary-content, var(--lux-primary-content, oklch(25% 0.09 281.288)));
   --_secondary: var(--color-secondary, var(--lux-secondary, oklch(45% 0.02 286)));
   --_secondary-content: var(--color-secondary-content, var(--lux-secondary-content, oklch(100% 0 0)));
