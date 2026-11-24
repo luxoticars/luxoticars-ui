@@ -38,7 +38,16 @@ export const Info = { args: { variant: "info", slots: { default: "Under review" 
 
 export const Large = { args: { size: "xl" } };
 export const Small = { args: { size: "xs" } };
-export const Pill = { args: { pill: true, slots: { default: "Featured" } } };
+export const Pill = { args: { radius: "full", slots: { default: "Featured" } } };
+
+/** Square corners, for a button that sits flush against a hard edge. */
+export const SquareCorners = { args: { radius: "none" } };
+
+/** A fixed step of the radius scale, instead of the theme's control radius. */
+export const LargeRadius = { args: { radius: "xl" } };
+
+/** `pill` still works as shorthand for `radius="full"`; `radius` wins when both are set. */
+export const LegacyPill = { args: { pill: true, slots: { default: "Featured" } } };
 
 export const WithRightIcon = {
   args: { slots: { default: "Continue", "right-icon": ICON } },

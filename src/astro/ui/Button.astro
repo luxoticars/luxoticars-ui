@@ -15,6 +15,12 @@ export type ButtonVariant =
 
 export type ButtonSize = "xs" | "sm" | "default" | "lg" | "xl";
 
+/**
+ * Corner radius. `field` follows the theme's `--radius-field` control radius;
+ * the rest are fixed steps of Tailwind's radius scale.
+ */
+export type ButtonRadius = "field" | "none" | "sm" | "md" | "lg" | "xl" | "2xl" | "full";
+
 interface Shared {
   /**
    * Visual treatment. `default` and `secondary` are solid fills; the four
@@ -33,7 +39,18 @@ interface Shared {
    * @default false
    */
   iconOnly?: boolean;
-  /** Fully rounded, overriding the theme's control radius. @default false */
+  /**
+   * Corner radius. `field` (the default) follows the theme's control radius, so
+   * buttons keep matching the other form controls; pick a fixed step to
+   * override it for this button. Wins over `pill` when both are set.
+   * @default "field"
+   */
+  radius?: ButtonRadius;
+  /**
+   * Shorthand for `radius="full"`.
+   * @deprecated Use `radius="full"`.
+   * @default false
+   */
   pill?: boolean;
   /**
    * On the `<a>` branch this drops `href` and sets `aria-disabled`, because an
@@ -67,6 +84,7 @@ const {
   size = "default",
   iconOnly = false,
   pill = false,
+  radius = pill ? "full" : "field",
   href,
   disabled = false,
   class: className,
@@ -92,6 +110,7 @@ function elementAttributes<T extends Props>(all: T) {
     size: _size,
     iconOnly: _iconOnly,
     pill: _pill,
+    radius: _radius,
     disabled: _disabled,
     href: _href,
     class: _class,
@@ -140,6 +159,21 @@ const iconOnlySizeStyles: Record<ButtonSize, string> = {
 };
 
 /*
+  Written out in full, never built from `rounded-${radius}`: Tailwind only
+  generates the classes it can find as literal strings in the source.
+*/
+const radiusStyles: Record<ButtonRadius, string> = {
+  field: "rounded-[var(--radius-field)]",
+  none: "rounded-none",
+  sm: "rounded-sm",
+  md: "rounded-md",
+  lg: "rounded-lg",
+  xl: "rounded-xl",
+  "2xl": "rounded-2xl",
+  full: "rounded-full",
+};
+
+/*
   An `<a>` cannot be disabled: the attribute is ignored, so `disabled:*`
   utilities never fire and the link stays clickable. A disabled link is
   therefore rendered with the dimming applied unconditionally, pointer events
@@ -182,7 +216,7 @@ const classes = cn(
   baseStyles,
   variantStyles[variant],
   iconOnly ? iconOnlySizeStyles[size] : sizeStyles[size],
-  pill ? "rounded-full" : "rounded-[var(--radius-field)]",
+  radiusStyles[radius],
   isDisabledLink && "pointer-events-none opacity-50",
   className,
 );
