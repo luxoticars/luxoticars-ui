@@ -1,5 +1,25 @@
 # @luxoticars/ui
 
+## 0.26.0
+
+### Minor Changes
+
+- e728723: `Button` is now Tailwind-free and has a Marko twin, `<lx-button>`. Both print what one resolver (`utils/button`) decides; the Astro button reads `styles/button.css` (also exported as `@luxoticars/ui/styles/button.css`) and the Marko tag its own forked `style.css`.
+  
+  - **Radius:** a `radius` prop (`field` | `none` | `sm` | `md` | `lg` | `xl` | `2xl` | `full`). `field`, the default, still follows `--radius-field`. `pill` keeps working as shorthand for `radius="full"` and is deprecated; `radius` wins when both are set.
+  - **Accessibility:** `aria-expanded` (accordions and disclosures), `aria-haspopup` (menus and modals: `true`, `menu`, `listbox`, `tree`, `grid`, `dialog`) and `aria-controls` are validated and printed as the strings ARIA expects, so `aria-expanded={false}` still says `"false"`. An open button keeps its pressed look.
+  - **Restyling:** set `--button-radius`, `--button-bg`, `--button-bg-hover`, `--button-fg`, `--button-height`, `--button-padding-inline`, `--button-font-size` or `--button-ring` on a button.
+  - **Behaviour change:** Tailwind utilities passed as `class` no longer override the button's own styles (they sit in a lower layer than plain CSS). Use the props or the `--button-*` hooks instead.
+  - **Site header:** the call-to-action in both `SiteHeader` and `<lx-site-header>` is now this button, rendering as before.
+- b081407: `ProgressStepper` can now be composed. Each step has a slot for its own markup, named `content-<id>` (give the step an `id`) or `content-<index>` when it has none; the content sits under the step's label and description, in both orientations. New `labelPlacement="inline"` (horizontal) puts each step's text beside its marker, with the line running on after it, instead of under it. The Skin gains `.progress-stepper__body` and `.progress-stepper--labels-inline`. `.progress-stepper__content` is now a `<div>` rather than a `<span>` so it can hold block content; it is already `display: flex`, so nothing moves.
+
+### Patch Changes
+
+- c783b4a: `--lux-primary` and `--lux-marque-accent` now match the sky blue used on the Luxoticars steppers: `oklch(77.8% 0.12 231.7)` (about `#5BC4F6`) instead of the greener cyan `oklch(86% 0.127 207.078)`. `--lux-primary-content` still has 8.3:1 contrast on it. The logo accent line and the header and footer accents change colour with it.
+- 8f569e3: The progress stepper's markers are now filled with `--lux-primary` and carry `--lux-primary-content`, as in the Luxoticars design, instead of the darker `--lux-accent`. Complete and current markers (and the loading arc) are filled primary with a ring and rail pulled towards the text colour, which keeps 3:1 or better against the page in both themes. The footer's top seam is now a hairline in the brand primary instead of grey. `ProgressStepper` and `.footer__seam` / `.lx-site-footer__seam` change colour; no markup or props change.
+  
+  `ProgramBadge` (Astro and `<lx-program-badge>`) now paints every icon with `--lux-primary` when text names the badge, not only the blue tick and the verified tick. An icon-only badge still uses `--lux-accent`, since primary is about 1.95:1 on white and WCAG asks 3:1 for an icon that stands alone.
+
 ## 0.25.0
 
 ### Minor Changes
