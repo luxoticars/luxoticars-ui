@@ -1,6 +1,6 @@
 {
   "name": "@luxoticars/ui",
-  "version": "0.20.0",
+  "version": "0.24.0",
   "description": "Accessible components for HTML, Astro, Marko and Tailwind CSS.",
   "private": true,
   "repository": {
@@ -50,9 +50,14 @@
     "./styles/site-header-frosted-on-scroll.css": "./src/styles/site-header-frosted-on-scroll.css",
     "./styles/pill.css": "./src/styles/skin/pill.css",
     "./styles/skin/pill.css": "./src/styles/skin/pill.css",
+    "./styles/glass.css": "./src/styles/skin/glass.css",
     "./styles/skin/glass.css": "./src/styles/skin/glass.css",
+    "./styles/progress-stepper.css": "./src/styles/skin/progress-stepper.css",
+    "./styles/skin/progress-stepper.css": "./src/styles/skin/progress-stepper.css",
     "./styles/section-head.css": "./src/styles/section-head.css",
     "./styles/seller-summary.css": "./src/styles/seller-summary.css",
+    "./styles/menu-button.css": "./src/styles/skin/menu-button.css",
+    "./styles/skin/menu-button.css": "./src/styles/skin/menu-button.css",
     "./utils/listing-card": {
       "types": "./src/utils/listing-card.d.ts",
       "default": "./src/utils/listing-card.js"
@@ -73,6 +78,10 @@
     "./scripts/dialog": {
       "types": "./src/scripts/dialog.d.ts",
       "default": "./src/scripts/dialog.js"
+    },
+    "./scripts/menu-button": {
+      "types": "./src/scripts/menu-button.d.ts",
+      "default": "./src/scripts/menu-button.js"
     },
     "./scripts/scrolling-item-cards": {
       "types": "./src/scripts/scrolling-item-cards.d.ts",
@@ -123,11 +132,11 @@
   ],
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
-    "@storybook-astro/framework": "^1.13.0",
-    "@storybook/addon-a11y": "^10.6.5",
-    "@storybook/addon-docs": "^10.6.5",
-    "@storybook/addon-vitest": "^10.6.5",
-    "@storybook/builder-vite": "^10.6.5",
+    "@storybook-astro/framework": "^1.16.0",
+    "@storybook/addon-a11y": "^10.6.7",
+    "@storybook/addon-docs": "^10.6.7",
+    "@storybook/addon-vitest": "^10.6.7",
+    "@storybook/builder-vite": "^10.6.7",
     "@storybook/marko": "^10.1.0",
     "@storybook/marko-vite": "^5.0.0",
     "@tailwindcss/vite": "^4.1.18",
@@ -135,7 +144,7 @@
     "astro": "^7.3.2",
     "marko": "^6.4.5",
     "playwright": "^1.64.1",
-    "storybook": "^10.6.5",
+    "storybook": "^10.6.7",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
     "vite": "^8.3.0",

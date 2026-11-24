@@ -1,5 +1,35 @@
 # @luxoticars/ui
 
+## 0.24.0
+
+### Minor Changes
+
+- e4b100c: Add a progress stepper: `astro/ui/ProgressStepper` and the `progress-stepper` Skin (`@luxoticars/ui/styles/skin/progress-stepper.css`). Horizontal and vertical, complete / current / upcoming / loading / error states that never rely on colour alone, right-to-left through logical properties, and a horizontal row that stacks by itself in a container narrower than 40rem. A `<nav>` with an ordered list, `aria-current="step"` and hidden status text for screen readers; the arc stops under reduced motion.
+
+## 0.23.0
+
+### Minor Changes
+
+- 0fc45e8: Give the menu button a waiting state. `busy` (and `busyLabel`) on `MenuButton` and `<lx-menu-button>`, or `setMenuButtonBusy(root, busy, label)` from `@luxoticars/ui/scripts/menu-button` for the Skin, puts `aria-busy` on the button, runs a bright arc around its edge, and has a screen reader say the label. The arc stops moving for reduced motion.
+
+## 0.22.1
+
+### Patch Changes
+
+- 9cf5cb6: Fix the menu button's chevron, which pointed up when the menu was closed and down when it was open. It now points down when closed and up when open.
+
+## 0.22.0
+
+### Minor Changes
+
+- 205dc20: Make the menu button usable as a Skin (CSS only). The stylesheet moves to `src/styles/skin/menu-button.css` and is exported as `@luxoticars/ui/styles/skin/menu-button.css`; `@luxoticars/ui/styles/menu-button.css` keeps working as an alias. The behaviour script is now exported as `@luxoticars/ui/scripts/menu-button` (`initMenuButtons()`), so a page that writes the markup itself, shown in the new `Skin/menu-button` story, gets the same keyboard and ARIA behaviour as the Astro component.
+
+## 0.21.0
+
+### Minor Changes
+
+- cae73d8: Add `MenuButton` (Astro) and `<lx-menu-button>` (Marko): a button that opens an accessible menu, following the WAI-ARIA menu button pattern. Items can be plain actions or links, checkboxes or radios, and can carry a badge count and a prefix. Built for filters such as Condition. Styles are `@luxoticars/ui/styles/menu-button.css` (Astro imports them itself; the Marko tag has its own).
+
 ## 0.20.0
 
 ### Minor Changes

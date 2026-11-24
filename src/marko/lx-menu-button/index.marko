@@ -1,0 +1,213 @@
+/*
+  A button that opens a menu: the WAI-ARIA "menu button" pattern, twin of
+  `astro/ui/MenuButton.astro`. Both print what `resolveMenuButton()` decides and
+  share the keyboard rules in `utils/menu-button.js`, so a key does the same
+  thing in either. Only the stylesheet (`style.css`, found by Marko) is forked.
+
+  Checked state is kept here and also follows the parent: items start from
+  their `checked`, a choice updates the tag at once and is reported through
+  `onSelect`, and a different `checked` from the parent replaces what the user
+  chose. So it works with no handler at all, or driven by a URL or a store.
+
+  Focus stays on the items (roving, tabindex -1) and the menu closes when focus
+  leaves it, so a click elsewhere and Tab need no document listener.
+
+  Concise syntax, by repo convention.
+*/
+import { ENTRY, resolveMenuButton, navigate, extendQuery, isTypeaheadKey, toggleChecked, typeahead } from "../../utils/menu-button.js"
+import type { ResolvedMenuItem } from "../../utils/menu-button.js"
+import type { MenuButtonAlign, MenuButtonItem, MenuButtonType } from "../../types"
+
+export interface SelectEvent {
+  /** The item's `value`, when it has one. */
+  value?: string
+  label: string
+  /** Whether the item is checked now. Always false for a plain item. */
+  checked: boolean
+}
+
+export interface Input extends Omit<Marko.HTML.Div, "content" | "onSelect" | "id"> {
+  /** The button's visible text and accessible name, e.g. "Condition". */
+  label: string
+  /** The menu's entries, in order. */
+  items: MenuButtonItem[]
+  /**
+   * `checkbox`: each item toggles on its own. `radio`: choosing one unchecks the
+   * rest. Unset: items are plain actions or links, with no mark.
+   */
+  type?: MenuButtonType
+  /** A form field name. Each checked item submits under it, with its `value`. `checkbox` and `radio` only. */
+  name?: string
+  /** Which edge of the button the menu lines up with. @default "start" */
+  align?: MenuButtonAlign
+  /** Base for the ids the tag generates. A unique one is supplied when unset. */
+  id?: string
+  /**
+   * Waiting for something the menu started, such as the page a choice loads. The button gets `aria-busy`,
+   * a bright arc runs around its edge, and a status region says `busyLabel` aloud.
+   */
+  busy?: boolean
+  /** What screen readers hear while `busy`. @default "Loading" */
+  busyLabel?: string
+  /** Fires when the user chooses an item. */
+  onSelect?: (event: SelectEvent) => void
+  /** Not supported: the menu is built from `items`. */
+  content?: never
+}
+
+static type Draft = { base: string; values: string[] }
+
+const/{ label, items, type, name, align, id: idProp, busy, busyLabel, onSelect, class: className, content: _content, ...attrs }=input
+id/uid
+<let/open=false>
+// Set when opening, read once the menu is visible: a hidden element cannot take focus.
+<let/focusAt=(null as "first" | "last" | null)>
+<let/draft=(null as Draft | null)>
+<let/typed=({ query: "", at: 0 })>
+
+// What the parent says is checked, and what the user has chosen since. A choice holds
+// only while the parent's answer is unchanged.
+const/fromParent=(type ? items.filter((item) => item.checked).map((item) => String(item.value)) : [])
+const/base=fromParent.join("\u0000")
+const/checkedValues=(draft && draft.base === base ? draft.values : fromParent)
+// Once the parent has answered differently the choice is spent. Without this, the parent
+// going back to what it said before would match the choice's base again and bring it back.
+script -- if (draft && draft.base !== base) draft = null
+
+const/model=resolveMenuButton({
+  label,
+  type,
+  name,
+  align,
+  id: idProp || uid,
+  busy,
+  busyLabel,
+  className,
+  block: "lx-menu-button",
+  items: items.map((item) => ({ ...item, checked: type ? checkedValues.includes(String(item.value)) : item.checked })),
+})
+
+const/entries=() => [...menu().querySelectorAll<HTMLElement>(ENTRY)]
+const/enabled=(list: HTMLElement[]) => list.map((el) => el.getAttribute("aria-disabled") !== "true")
+const/close=(returnFocus: boolean) => {
+  open = false
+  typed = { query: "", at: 0 }
+  if (returnFocus) trigger().focus()
+}
+const/choose=(item: ResolvedMenuItem) => {
+  if (item.disabled) return
+  const value = item.value as string
+  if (!type) {
+    onSelect?.({ value: item.value, label: item.label, checked: false })
+    // A link still navigates: only the menu closes.
+    close(true)
+    return
+  }
+  const next = toggleChecked(type, model.items, checkedValues, value)
+  draft = { base, values: next }
+  onSelect?.({ value, label: item.label, checked: next.includes(value) })
+}
+
+div/root ...attrs class=model.className
+  ,onPointerDown() { root().dataset.pressedAt = String(performance.now()) }
+  ,onFocusOut(event: FocusEvent) {
+    if (!open) return
+    // Focus going to a known element is never ambiguous: outside closes, inside stays.
+    const next = event.relatedTarget as Node | null
+    if (next) {
+      if (!root().contains(next)) close(false)
+      return
+    }
+    // No target: a press inside (Safari does not focus a button on click) or focus leaving the page.
+    // Only the first is ignored; the focus change follows the press within a few ms.
+    const pressedAt = Number(root().dataset.pressedAt ?? -Infinity)
+    if (performance.now() - pressedAt >= 300) close(false)
+  }
+  button.lx-menu-button__button/trigger
+    ,type="button"
+    ,id=model.buttonId
+    ,aria-haspopup="menu"
+    ,aria-expanded=(open ? "true" : "false")
+    ,aria-controls=model.menuId
+    ,aria-busy=model.busy
+    ,onClick() {
+      if (open) close(true)
+      else { open = true; focusAt = "first" }
+    }
+    ,onKeyDown(event: KeyboardEvent) {
+      if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return
+      event.preventDefault()
+      if (!open) { open = true; focusAt = event.key === "ArrowUp" ? "last" : "first" }
+    }
+    span.lx-menu-button__label -- ${model.label}
+    svg.lx-menu-button__chevron
+      ,viewBox="0 0 16 16"
+      ,fill="none"
+      ,stroke="currentColor"
+      ,stroke-width="1.5"
+      ,stroke-linecap="round"
+      ,stroke-linejoin="round"
+      ,aria-hidden="true"
+      ,...{ focusable: "false" }
+      path d="M3.5 6.5 8 11l4.5-4.5"
+  span.lx-menu-button__sr role="status" -- ${model.status}
+  div.lx-menu-button__menu/menu
+    ,id=model.menuId
+    ,role="menu"
+    ,aria-labelledby=model.buttonId
+    ,hidden=!open
+    ,onKeyDown(event: KeyboardEvent) {
+      const list = entries()
+      const current = list.indexOf((event.target as Element).closest(ENTRY) as HTMLElement)
+      const to = navigate(event.key, current, enabled(list))
+      if (to !== undefined) {
+        event.preventDefault()
+        if (to >= 0) list[to].focus()
+        return
+      }
+      if (event.key === "Escape") {
+        event.preventDefault()
+        close(true)
+      } else if (event.key === "Tab") {
+        // Focus goes to the button first, so Tab moves on from there, in either direction.
+        trigger().focus()
+        close(false)
+      } else if (event.key === "Enter" || event.key === " ") {
+        if (current < 0) return
+        event.preventDefault()
+        // A click, so a link follows its href and everything goes through one path.
+        list[current].click()
+      } else if (isTypeaheadKey(event)) {
+        typed = extendQuery(typed, event.key, performance.now())
+        const match = typeahead(typed.query, current, model.items.map((item) => item.label), enabled(list))
+        if (match >= 0) list[match].focus()
+      }
+    }
+    for|item| of=model.items by="key"
+      const/Item=(item.isLink ? "a" : "div")
+      ${Item}
+        ,id=item.id
+        ,class="lx-menu-button__item"
+        ,role=item.role
+        ,tabindex="-1"
+        ,href=item.href
+        ,aria-checked=item.checked
+        ,aria-disabled=item.disabled
+        ,onClick() { choose(item) }
+        if=item.checked
+          span.lx-menu-button__control aria-hidden="true"
+            if=(item.role === "menuitemcheckbox")
+              svg viewBox="0 0 24 24" fill="currentColor" ,...{ focusable: "false" }
+                path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"
+        if=item.prefix
+          span.lx-menu-button__prefix aria-hidden="true" -- ${item.prefix.text}
+          if=item.prefix.label
+            span.lx-menu-button__sr -- ${item.prefix.label}
+        span.lx-menu-button__text -- ${item.label}
+        if=item.badge
+          span.lx-menu-button__badge aria-hidden="true" -- ${item.badge.text}
+          span.lx-menu-button__sr -- ${item.badge.label}
+        if=(model.name && item.value !== undefined)
+          input type="hidden" name=model.name value=item.value disabled=(item.checked !== "true")
+
+script -- if (open && focusAt) { const list = entries(); const to = navigate(focusAt === "last" ? "End" : "Home", focusAt === "last" ? 0 : -1, enabled(list)); if (to !== undefined && to >= 0) list[to].focus(); focusAt = null }

@@ -1,0 +1,19 @@
+/*
+  A parent that owns `checked`, as a page driven by the URL or a store does: it never listens to
+  `onSelect`, and moves the menu's state itself with the two buttons. Story-only; not shipped.
+*/
+import MenuButton from "../src/marko/lx-menu-button/index.marko"
+
+const/all=[
+  { value: "any", label: "Any Condition", exclusive: true },
+  { value: "new", label: "New" },
+  { value: "used", label: "Used" },
+  { value: "recon", label: "Recon" },
+]
+<let/checked=["any"]>
+const/items=all.map((item) => ({ ...item, checked: checked.includes(item.value) }))
+
+div style="padding: 1rem 1rem 16rem"
+  button.parent-only-used type="button" onClick() { checked = ["used"] } -- Only Used
+  button.parent-back-to-any type="button" onClick() { checked = ["any"] } -- Back to Any
+  ${MenuButton} label="Condition" type="checkbox" items=items

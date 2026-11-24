@@ -1,0 +1,90 @@
+---
+/*
+  Prints what `resolveProgressStepper()` decides, and nothing else: every class,
+  `aria-current` and the hidden status text below that varies with the input
+  comes from the resolver. The fixed parts (`progress-stepper__marker`,
+  `__content`, `__label`, the icon's `viewBox`) are the markup contract the Skin
+  stylesheet styles.
+
+  The stylesheet is imported here, as MenuButton.astro does, so importing the
+  component is the whole setup. It has no script: the stepper shows progress,
+  it does not move it.
+*/
+import "../../styles/skin/progress-stepper.css";
+import type { HTMLAttributes } from "astro/types";
+import type { ProgressStepperOrientation, ProgressStepperState, ProgressStepperStep } from "../../types";
+import { resolveProgressStepper } from "../../utils/progress-stepper.js";
+
+/**
+ * A progress stepper: the steps of a task in order, with the finished ones
+ * behind, the current one marked and the rest ahead. A `<nav>` holding an
+ * ordered list, so a screen reader hears "Progress, navigation, list of 4
+ * items" and, for each step, its label and state ("Details, Completed").
+ * The current step carries `aria-current="step"`.
+ *
+ * `current` says where the person is (counting from 0), and every step before
+ * it is complete. For a step that is waiting or has failed, set its `state` to
+ * `loading` or `error`; an error step's `description` is the place to say why.
+ * Nothing relies on colour alone: complete shows a tick, error an exclamation
+ * mark, loading a turning arc (still under reduced motion), upcoming a dashed line.
+ *
+ * `orientation="horizontal"` is a row only where its own container is 40rem or
+ * wider; narrower, it stacks, so it reflows on a phone without a breakpoint
+ * from the page. `"vertical"` is always stacked. Direction follows the page:
+ * put `dir="rtl"` on the stepper or an ancestor and it mirrors.
+ *
+ * Other attributes (`id`, `dir`, `data-*`, …) go on the outer `<nav>`.
+ */
+export type Props = Omit<HTMLAttributes<"nav">, "aria-label"> & {
+  /** The steps, in order. At least one; each needs a `label`. */
+  steps: ProgressStepperStep[];
+  /** The current step, counting from 0. Earlier steps are complete, later ones upcoming. `steps.length` completes them all. @default 0 */
+  current?: number | false;
+  /** `horizontal` becomes a stack in a container narrower than 40rem. @default "horizontal" */
+  orientation?: ProgressStepperOrientation | false;
+  /** The navigation landmark's accessible name. Translate it. @default "Progress" */
+  label?: string | false;
+  /** What screen readers hear for each state, e.g. in Malay or Arabic. @default {"complete":"Completed","current":"Current step","upcoming":"Upcoming","loading":"Loading","error":"Error"} */
+  statusLabels?: Partial<Record<ProgressStepperState, string>>;
+};
+
+/* `class` comes out of the spread for the same reason as in ProgramBadge.astro:
+   an explicit `class` after a spread is emitted as a second attribute and the
+   parser keeps the first, so the resolver's merged class would be lost. */
+const { steps, current, orientation, label, statusLabels, class: className, "class:list": classList, ...attrs } = Astro.props;
+const stepper = resolveProgressStepper({ steps, current, orientation, label, statusLabels, className: [className, classList] });
+---
+
+<nav {...attrs} class={stepper.className} aria-label={stepper.label}>
+  <ol class="progress-stepper__list" aria-busy={stepper.busy ? "true" : undefined}>
+    {
+      stepper.items.map((item) => (
+        <li class={item.className} aria-current={item.ariaCurrent}>
+          <span class="progress-stepper__marker" aria-hidden="true">
+            {item.icon ? (
+              <svg
+                class="progress-stepper__icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                focusable="false"
+              >
+                <path d={item.icon} />
+              </svg>
+            ) : (
+              item.number
+            )}
+          </span>
+          <span class="progress-stepper__content">
+            <span class="progress-stepper__label">{item.label}</span>
+            <span class="progress-stepper__status">{item.status}</span>
+            {item.description && <span class="progress-stepper__description">{item.description}</span>}
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+</nav>
