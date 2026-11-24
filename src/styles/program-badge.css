@@ -71,5 +71,5 @@
    primary. --lux-primary is too light for an icon that stands alone (about
    1.95:1 on white, WCAG asks 3:1), so an icon-only badge keeps the accent. */
 .program-badge:has(.program-badge__text) .program-badge__icon {
-  color: var(--lux-primary, var(--color-primary, oklch(78% 0.12 232)));
+  color: var(--lux-primary, var(--color-primary, oklch(77.8% 0.12 231.7)));
 }

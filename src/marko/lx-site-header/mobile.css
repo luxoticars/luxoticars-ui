@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/site-header.css [source-hash: 4ef6cdaa9d8a]
+  Forked from src/styles/site-header.css [source-hash: e42ac9d25e0a]
   The phone bar: the menu button alone, at every width, no links in the bar.
   No media queries: the sizes scale with the bar's width (cqi). Unlike the
   desktop bar, the call-to-action always shows its first word only.

@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/program-badge.css [source-hash: 914e2f09e581]
+  Forked from src/styles/program-badge.css [source-hash: 58f9ab81fd09]
   Marko-only: the Astro renderer keeps the shared stylesheet.
   Needs styles/tokens.css. Block is `lx-program-badge`, the tag's own name;
   `__icon` and `__text` are its elements and `--24` the large size.
