@@ -49,10 +49,12 @@ header/bar class=["lx-site-header", `lx-site-header--${variant}`, search && "lx-
         ${search.content}
 
     if=model.cta
-      a href=model.ctaHref class="lx-site-header__cta" aria-label=model.cta.label
-        -- ${model.cta.first}
-        if=model.cta.rest
-          span.lx-site-header__cta-more -- ${model.cta.rest}
+      lx-button href=model.ctaHref size="lg" radius="full" class="lx-site-header__cta" aria-label=model.cta.label
+        // One element, not two: the button lays its children out with a gap, which would split the label.
+        span
+          -- ${model.cta.first}
+          if=model.cta.rest
+            span.lx-site-header__cta-more -- ${model.cta.rest}
 
     details/menu class="lx-site-header__menu" data-site-menu
       summary class="lx-site-header__menu-button" aria-label="Menu"

@@ -97,8 +97,7 @@
   scale: 1 1;
 }
 
-.site-header__link:focus-visible,
-.site-header__cta:focus-visible {
+.site-header__link:focus-visible {
   outline: 2px solid var(--_primary);
   outline-offset: 3px;
 }
@@ -116,30 +115,36 @@
   display: none;
 }
 
-.site-header__cta {
+/* The call-to-action is `astro/ui/Button` (fully rounded), which supplies the
+   box, the focus ring and the link reset. These are the header's own touches:
+   the colour and size go through the button's `--button-*` hooks, and the
+   selector is scoped to `.site-header` so it wins whatever order the
+   stylesheets load in. 2.875rem is the height this button has always had; it
+   sets how tall the bar is, so it is kept. */
+.site-header .site-header__cta {
+  --button-height: 2.875rem;
+  --button-bg: var(--_primary);
+  --button-bg-hover: var(--_primary);
+  --button-fg: var(--_primary-content);
+  --button-ring: var(--_primary);
+  --button-padding-inline: 1.4rem;
+  --button-font-size: 0.75rem;
+
   margin-left: auto;
-  /* Match search autocomplete control height (~2.5rem total with font). */
-  padding: 0.875rem 1.4rem;
-  border-radius: 9999px;
-  background-color: var(--_primary);
-  color: var(--_primary-content);
   font-family: var(--font-futura-bold, var(--font-futura, inherit));
   font-weight: 700;
-  font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  text-decoration: none;
-  white-space: nowrap;
   transition:
     scale 150ms ease-out,
     box-shadow 300ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-.site-header__cta:hover {
+.site-header .site-header__cta:hover {
   box-shadow: 0 0 1.25rem -0.25rem var(--_primary);
 }
 
-.site-header__cta:active {
+.site-header .site-header__cta:active {
   scale: 0.96;
 }
 
@@ -275,9 +280,9 @@
     font-size: clamp(0.75rem, 5cqi, 1.25rem);
   }
 
-  .site-header__cta {
-    padding-inline: clamp(0.5rem, 4cqi, 1.4rem);
-    font-size: clamp(0.625rem, 3.2cqi, 0.75rem);
+  .site-header .site-header__cta {
+    --button-padding-inline: clamp(0.5rem, 4cqi, 1.4rem);
+    --button-font-size: clamp(0.625rem, 3.2cqi, 0.75rem);
   }
 
   .site-header__nav {
@@ -332,7 +337,7 @@
 @media (prefers-reduced-motion: reduce) {
   .site-header__link,
   .site-header__link::after,
-  .site-header__cta {
+  .site-header .site-header__cta {
     transition: none;
   }
 }

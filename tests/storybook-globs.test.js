@@ -110,6 +110,7 @@ test("the sidebar titles are the spec's", () => {
   ]);
   assert.deepEqual(titles(ASTRO_STORY_GLOBS), [
     "Components/Button",
+    "Components/ButtonGallery",
     "Components/Dialog",
     "Components/Footer",
     "Components/ListingCard",

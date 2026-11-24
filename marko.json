@@ -1,6 +1,7 @@
 {
   "exports": "./src/marko",
   "script-lang": "ts",
+  "<lx-button>": { "template": "./src/marko/lx-button/index.marko" },
   "<lx-listing-card>": { "template": "./src/marko/lx-listing-card/index.marko" },
   "<lx-logo>": { "template": "./src/marko/lx-logo/index.marko" },
   "<lx-menu-button>": { "template": "./src/marko/lx-menu-button/index.marko" },

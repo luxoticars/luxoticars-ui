@@ -1,0 +1,208 @@
+/*
+  Forked from src/styles/button.css [source-hash: bc20d04ffa2d]
+  Marko-only: the Astro button keeps the shared stylesheet. Block is `lx-button`,
+  the tag's own name. Reads --lux-* tokens only (no fallbacks), so it needs
+  styles/tokens.css; the one exception is `--radius-field`, which tokens.css
+  defines without a `--lux-` alias. Modifiers: `--{variant}`, `--xs|sm|lg|xl`,
+  `--radius-{none|sm|md|lg|xl|2xl|full}`, `--icon`. State is read from ARIA and
+  `disabled`. Restyle one button with --button-radius, --button-bg,
+  --button-bg-hover, --button-fg, --button-height, --button-padding-inline,
+  --button-font-size and --button-ring.
+*/
+.lx-button {
+  --_base-100: var(--lux-base-100);
+  --_base-200: var(--lux-base-200);
+  --_base-300: var(--lux-base-300);
+  --_ink: var(--lux-base-content);
+  --_primary: var(--lux-primary);
+  --_primary-content: var(--lux-primary-content);
+  --_secondary: var(--lux-secondary);
+  --_secondary-content: var(--lux-secondary-content);
+  /* Accent, not primary, for focus and links: primary is a fill colour and reads
+     1.35:1 as text on the light canvas. */
+  --_accent: var(--lux-accent);
+  --_error: var(--lux-error);
+  --_success: var(--lux-success);
+  --_warning: var(--lux-warning);
+  --_info: var(--lux-info);
+
+  /* The default size and radius; the modifiers below replace them. */
+  --_height: 2.25rem;
+  --_px: 1rem;
+  --_gap: 0.5rem;
+  --_fs: 0.875rem;
+  --_icon: 1rem;
+  --_radius: var(--radius-field);
+  --_ring: var(--_accent);
+
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--_gap);
+  block-size: var(--button-height, var(--_height));
+  /* The border is on every variant, so an outline button is the size of a solid
+     one; the padding gives up its width, so the gap from edge to content is the
+     size's own either way. */
+  padding: 0 calc(var(--button-padding-inline, var(--_px)) - 1px);
+  border: 1px solid var(--_border, transparent);
+  border-radius: var(--button-radius, var(--_radius));
+  background-color: var(--button-bg, var(--_bg, transparent));
+  color: var(--button-fg, var(--_fg, inherit));
+  font-family: inherit;
+  font-size: var(--button-font-size, var(--_fs));
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out,
+    box-shadow 150ms ease-out,
+    scale 150ms ease-out;
+}
+
+.lx-button svg {
+  inline-size: var(--_icon);
+  block-size: var(--_icon);
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.lx-button:hover,
+/* An open disclosure or menu keeps the pressed look while it is open. */
+.lx-button[aria-expanded="true"] {
+  background-color: var(--button-bg-hover, var(--_bg-hover, transparent));
+}
+
+.lx-button:focus-visible {
+  outline: 2px solid var(--button-ring, var(--_ring));
+  outline-offset: 2px;
+}
+
+/* An <a> ignores `disabled`, so a disabled link is marked with aria-disabled (and has no href). */
+.lx-button:disabled,
+.lx-button[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* ---- variants ---------------------------------------------------------- */
+
+/* Solid variants pair a fill with its `-content` colour. Status variants are
+   tinted instead and use the status colour as TEXT: `-content` colours are
+   calibrated against the solid fill and would be invisible on a 10% tint. */
+.lx-button--default {
+  --_bg: var(--_primary);
+  --_fg: var(--_primary-content);
+  --_bg-hover: color-mix(in oklab, var(--_primary) 90%, transparent);
+}
+
+.lx-button--secondary {
+  --_bg: var(--_secondary);
+  --_fg: var(--_secondary-content);
+  --_bg-hover: color-mix(in oklab, var(--_secondary) 80%, transparent);
+}
+
+.lx-button--outline {
+  --_bg: var(--_base-100);
+  --_fg: var(--_ink);
+  --_border: var(--_base-300);
+  --_bg-hover: var(--_base-200);
+}
+
+.lx-button--ghost {
+  --_fg: var(--_ink);
+  --_bg-hover: var(--_base-200);
+}
+
+.lx-button--link {
+  --_fg: var(--_accent);
+  --_bg-hover: transparent;
+}
+
+.lx-button--link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.lx-button--destructive {
+  --_bg: color-mix(in oklab, var(--_error) 10%, transparent);
+  --_fg: color-mix(in oklab, var(--_error), var(--_ink) 30%);
+  --_bg-hover: color-mix(in oklab, var(--_error) 20%, transparent);
+}
+
+.lx-button--success {
+  --_bg: color-mix(in oklab, var(--_success) 10%, transparent);
+  --_fg: color-mix(in oklab, var(--_success), var(--_ink) 30%);
+  --_bg-hover: color-mix(in oklab, var(--_success) 20%, transparent);
+}
+
+.lx-button--warning {
+  --_bg: color-mix(in oklab, var(--_warning) 10%, transparent);
+  --_fg: color-mix(in oklab, var(--_warning), var(--_ink) 30%);
+  --_bg-hover: color-mix(in oklab, var(--_warning) 20%, transparent);
+}
+
+.lx-button--info {
+  --_bg: color-mix(in oklab, var(--_info) 10%, transparent);
+  --_fg: var(--_info);
+  --_bg-hover: color-mix(in oklab, var(--_info) 20%, transparent);
+}
+
+/* ---- sizes ------------------------------------------------------------- */
+
+.lx-button--xs {
+  --_height: 1.75rem;
+  --_px: 0.625rem;
+  --_gap: 0.375rem;
+  --_fs: 0.75rem;
+  --_icon: 0.75rem;
+}
+
+.lx-button--sm {
+  --_height: 2rem;
+  --_px: 0.75rem;
+  --_gap: 0.375rem;
+  --_fs: 0.75rem;
+  --_icon: 0.875rem;
+}
+
+.lx-button--lg {
+  --_height: 2.5rem;
+  --_px: 1.5rem;
+  --_gap: 0.625rem;
+  --_fs: 1rem;
+  --_icon: 1.25rem;
+}
+
+.lx-button--xl {
+  --_height: 2.75rem;
+  --_px: 2rem;
+  --_gap: 0.75rem;
+  --_fs: 1.125rem;
+  --_icon: 1.25rem;
+}
+
+/* A square the size of the button's height, for one icon. */
+.lx-button--icon {
+  inline-size: var(--button-height, var(--_height));
+  padding: 0;
+}
+
+/* ---- radius ------------------------------------------------------------ */
+
+.lx-button--radius-none { --_radius: 0; }
+.lx-button--radius-sm { --_radius: 0.25rem; }
+.lx-button--radius-md { --_radius: 0.375rem; }
+.lx-button--radius-lg { --_radius: 0.5rem; }
+.lx-button--radius-xl { --_radius: 0.75rem; }
+.lx-button--radius-2xl { --_radius: 1rem; }
+.lx-button--radius-full { --_radius: 9999px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lx-button {
+    transition: none;
+  }
+}

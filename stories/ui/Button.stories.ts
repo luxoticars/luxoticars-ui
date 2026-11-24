@@ -62,6 +62,46 @@ export const IconOnly = {
   },
 };
 
+const CHEVRON =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+
+/**
+ * The trigger of an accordion or disclosure. `aria-expanded` is printed as the
+ * string `"false"`, so a closed one still says so (Astro would leave out a
+ * plain `false` attribute); `aria-controls` names the panel it shows and hides.
+ * The component does not keep the state: flip `aria-expanded` when the panel
+ * opens or closes.
+ */
+export const AccordionTrigger = {
+  args: {
+    variant: "outline",
+    "aria-expanded": false,
+    "aria-controls": "faq-answer-1",
+    slots: { default: "What does the inspection cover?", "right-icon": CHEVRON },
+  },
+};
+
+/** The same trigger while open: `aria-expanded="true"` also keeps the pressed look. */
+export const AccordionTriggerOpen = {
+  args: { ...AccordionTrigger.args, "aria-expanded": true },
+};
+
+/** A button that opens a menu: `aria-haspopup="menu"`, closed, and the id of the menu it opens. */
+export const MenuTrigger = {
+  args: {
+    variant: "outline",
+    "aria-haspopup": "menu",
+    "aria-expanded": false,
+    "aria-controls": "actions-menu",
+    slots: { default: "Actions", "right-icon": CHEVRON },
+  },
+};
+
+/** A button that opens a modal: `aria-haspopup="dialog"` and the id of the dialog. */
+export const DialogTrigger = {
+  args: { "aria-haspopup": "dialog", "aria-controls": "filters-dialog", slots: { default: "Filters" } },
+};
+
 /** Renders an `<a>`, not a `<button>`. */
 export const AsLink = {
   args: { href: "/inventory", variant: "outline", slots: { default: "Browse inventory" } },

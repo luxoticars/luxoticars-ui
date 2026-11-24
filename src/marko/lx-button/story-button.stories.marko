@@ -1,0 +1,24 @@
+/*
+  Story-only. Storybook args cannot pass a tag body, and a string in `content` is
+  read as a tag name. This template turns a `label` into the body, and `chevron`
+  into a `@right-icon`. The `.stories.` name keeps it out of the package.
+
+  Concise syntax, by repo convention.
+*/
+import type { Input as ButtonInput } from "./index.marko"
+
+export interface Input extends Omit<ButtonInput, "content" | "leftIcon" | "rightIcon"> {
+  /** The button's text. */
+  label: string
+  /** A chevron after the label, as `@right-icon`. */
+  chevron?: boolean
+}
+
+const/{ label, chevron, ...rest }=input
+
+lx-button ...rest
+  -- ${label}
+  if=chevron
+    @right-icon
+      svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        path d="m6 9 6 6 6-6"
