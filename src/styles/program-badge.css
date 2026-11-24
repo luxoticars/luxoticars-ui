@@ -73,5 +73,5 @@
    icon-only badge keeps the accent. */
 .program-badge:has(.program-badge__text) .program-badge__icon--blue-tick,
 .program-badge:has(.program-badge__text) .program-badge__icon--verified {
-  color: var(--lux-primary, var(--color-primary, oklch(86% 0.127 207.078)));
+  color: var(--lux-primary, var(--color-primary, oklch(78% 0.12 232)));
 }
