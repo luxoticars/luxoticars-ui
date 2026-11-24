@@ -12,9 +12,11 @@ export interface Input extends Omit<ButtonInput, "content" | "leftIcon" | "right
   label: string
   /** A chevron after the label, as `@right-icon`. */
   chevron?: boolean
+  /** Text of the panel the button controls, rendered after it with the `aria-controls` id. */
+  panel?: string
 }
 
-const/{ label, chevron, ...rest }=input
+const/{ label, chevron, panel, ...rest }=input
 
 lx-button ...rest
   -- ${label}
@@ -22,3 +24,6 @@ lx-button ...rest
     @right-icon
       svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
         path d="m6 9 6 6 6-6"
+// While a button is expanded its aria-controls must name an element in the page, so a story that sets both renders the panel.
+if=(panel && rest["aria-controls"])
+  p id=rest["aria-controls"] style="margin:0.75rem 0 0" -- ${panel}

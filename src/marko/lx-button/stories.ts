@@ -66,7 +66,14 @@ export const AccordionTrigger: Story = {
 /** The same trigger while open: `aria-expanded="true"` also keeps the pressed look. */
 export const AccordionTriggerOpen: Story = {
   render,
-  args: { variant: "outline", "aria-expanded": true, "aria-controls": "faq-answer-1", label: "What does the inspection cover?", chevron: true },
+  args: {
+    variant: "outline",
+    "aria-expanded": true,
+    "aria-controls": "faq-answer-1",
+    label: "What does the inspection cover?",
+    chevron: true,
+    panel: "Bodywork, mechanicals and paperwork, each checked and written up on the listing.",
+  },
 };
 
 /** A button that opens a menu. */

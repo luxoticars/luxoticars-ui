@@ -81,9 +81,15 @@ export const AccordionTrigger = {
   },
 };
 
-/** The same trigger while open: `aria-expanded="true"` also keeps the pressed look. */
+/**
+ * The same trigger while open: `aria-expanded="true"` also keeps the pressed
+ * look. It has no `aria-controls` here on purpose: while a button is expanded
+ * its `aria-controls` must name an element that is in the page (axe fails the
+ * story otherwise), and a story of one button has no panel to point at. The
+ * gallery shows the pair.
+ */
 export const AccordionTriggerOpen = {
-  args: { ...AccordionTrigger.args, "aria-expanded": true },
+  args: { ...AccordionTrigger.args, "aria-expanded": true, "aria-controls": undefined },
 };
 
 /** A button that opens a menu: `aria-haspopup="menu"`, closed, and the id of the menu it opens. */
