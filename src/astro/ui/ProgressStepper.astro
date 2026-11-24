@@ -3,7 +3,7 @@
   Prints what `resolveProgressStepper()` decides, and nothing else: every class,
   `aria-current` and the hidden status text below that varies with the input
   comes from the resolver. The fixed parts (`progress-stepper__marker`,
-  `__content`, `__label`, the icon's `viewBox`) are the markup contract the Skin
+  `__content`, `__label`, `__body`, the icon's `viewBox`) are the markup contract the Skin
   stylesheet styles.
 
   The stylesheet is imported here, as MenuButton.astro does, so importing the
@@ -12,7 +12,7 @@
 */
 import "../../styles/skin/progress-stepper.css";
 import type { HTMLAttributes } from "astro/types";
-import type { ProgressStepperOrientation, ProgressStepperState, ProgressStepperStep } from "../../types";
+import type { ProgressStepperLabelPlacement, ProgressStepperOrientation, ProgressStepperState, ProgressStepperStep } from "../../types";
 import { resolveProgressStepper } from "../../utils/progress-stepper.js";
 
 /**
@@ -33,6 +33,25 @@ import { resolveProgressStepper } from "../../utils/progress-stepper.js";
  * from the page. `"vertical"` is always stacked. Direction follows the page:
  * put `dir="rtl"` on the stepper or an ancestor and it mirrors.
  *
+ * `labelPlacement="inline"` (horizontal only) puts each step's text beside its
+ * marker, with the line running on after it, instead of under it.
+ *
+ * Slots: each step has one for its own content, in either orientation. Astro
+ * has no context to share between components, so the steps stay data and the
+ * slots carry what you compose. A step's slot is `content-<id>`, or
+ * `content-<index>` (counting from 0) when it has no `id`:
+ *
+ * ```astro
+ * <ProgressStepper steps={[{ id: "details", label: "Details" }, { label: "Payment" }]} current={0}>
+ *   <Fragment slot="content-details"><p>Name and phone number.</p><a href="/edit">Edit</a></Fragment>
+ *   <Fragment slot="content-1">Deposit and financing.</Fragment>
+ * </ProgressStepper>
+ * ```
+ *
+ * The content sits under the step's label and description, inside its `<li>`,
+ * so a screen reader reads it with the step. Astro ignores a slot name no step
+ * has, so a typo drops the content silently: check the id.
+ *
  * Other attributes (`id`, `dir`, `data-*`, …) go on the outer `<nav>`.
  */
 export type Props = Omit<HTMLAttributes<"nav">, "aria-label"> & {
@@ -42,6 +61,8 @@ export type Props = Omit<HTMLAttributes<"nav">, "aria-label"> & {
   current?: number | false;
   /** `horizontal` becomes a stack in a container narrower than 40rem. @default "horizontal" */
   orientation?: ProgressStepperOrientation | false;
+  /** Horizontal only: `inline` puts each step's text beside its marker. Only where the container is 40rem or wider; narrower it stacks. @default "below" */
+  labelPlacement?: ProgressStepperLabelPlacement | false;
   /** The navigation landmark's accessible name. Translate it. @default "Progress" */
   label?: string | false;
   /** What screen readers hear for each state, e.g. in Malay or Arabic. @default {"complete":"Completed","current":"Current step","upcoming":"Upcoming","loading":"Loading","error":"Error"} */
@@ -51,14 +72,23 @@ export type Props = Omit<HTMLAttributes<"nav">, "aria-label"> & {
 /* `class` comes out of the spread for the same reason as in ProgramBadge.astro:
    an explicit `class` after a spread is emitted as a second attribute and the
    parser keeps the first, so the resolver's merged class would be lost. */
-const { steps, current, orientation, label, statusLabels, class: className, "class:list": classList, ...attrs } = Astro.props;
-const stepper = resolveProgressStepper({ steps, current, orientation, label, statusLabels, className: [className, classList] });
+const { steps, current, orientation, labelPlacement, label, statusLabels, class: className, "class:list": classList, ...attrs } = Astro.props;
+const stepper = resolveProgressStepper({ steps, current, orientation, labelPlacement, label, statusLabels, className: [className, classList] });
+
+/* A slot that is present but renders nothing (an empty Fragment) must not
+   leave an empty box behind, so the test is on the rendered text. */
+const bodies = await Promise.all(
+  stepper.items.map(async (item) => {
+    const html = Astro.slots.has(item.contentSlot) ? await Astro.slots.render(item.contentSlot) : "";
+    return html.trim() ? html : "";
+  }),
+);
 ---
 
 <nav {...attrs} class={stepper.className} aria-label={stepper.label}>
   <ol class="progress-stepper__list" aria-busy={stepper.busy ? "true" : undefined}>
     {
-      stepper.items.map((item) => (
+      stepper.items.map((item, index) => (
         <li class={item.className} aria-current={item.ariaCurrent}>
           <span class="progress-stepper__marker" aria-hidden="true">
             {item.icon ? (
@@ -78,11 +108,12 @@ const stepper = resolveProgressStepper({ steps, current, orientation, label, sta
               item.number
             )}
           </span>
-          <span class="progress-stepper__content">
+          <div class="progress-stepper__content">
             <span class="progress-stepper__label">{item.label}</span>
             <span class="progress-stepper__status">{item.status}</span>
             {item.description && <span class="progress-stepper__description">{item.description}</span>}
-          </span>
+            {bodies[index] && <div class="progress-stepper__body" set:html={bodies[index]} />}
+          </div>
         </li>
       ))
     }

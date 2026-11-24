@@ -9,7 +9,8 @@
   holding an <ol class="progress-stepper__list"> of
   <li class="progress-stepper__item progress-stepper__item--{state}">, each with a
   `__marker` (aria-hidden), and a `__content` of `__label`, a visually hidden
-  `__status` and an optional `__description`. `ProgressStepper.astro` prints it.
+  `__status`, an optional `__description` and an optional `__body` that holds
+  the step's own markup. `ProgressStepper.astro` prints it.
 
   - States: complete, current, upcoming, loading, error. Every state differs in
     more than colour: complete shows a tick, error an exclamation mark, loading
@@ -17,6 +18,8 @@
   - `--horizontal` is a row, but only where its own container is wide enough
     (40rem). Narrower, it stacks like `--vertical`, so it never scrolls
     sideways and needs no breakpoint from the page.
+  - `--labels-inline` (with `--horizontal`) puts each step's text beside its
+    marker instead of under it, with the line running on after the text.
   - Direction: everything is logical, so `dir="rtl"` on the stepper or any
     ancestor mirrors it with no extra rules.
 */
@@ -122,6 +125,16 @@
   color: var(--_muted);
   font-size: 0.875rem;
   line-height: 1.25rem;
+}
+
+/* The step's own content (the `content-*` slot): whatever the page composes,
+   under the label and description. It inherits the stepper's text colour. */
+.progress-stepper__body {
+  margin-block-start: 0.5rem;
+  min-inline-size: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  text-align: start;
 }
 
 /* Heard, not seen: the state in words, for whoever cannot see the marker. */
@@ -231,6 +244,42 @@
     align-items: center;
     padding-block-start: 0.5rem;
     text-wrap: balance;
+  }
+
+  /* Text beside the marker, the line running on after it. The step is a row of
+     marker, text and line; the line is a flex item here (not the absolute rail
+     above) so it fills whatever room the text leaves. */
+  .progress-stepper--horizontal.progress-stepper--labels-inline .progress-stepper__item {
+    flex: 1 1 auto;
+    flex-direction: row;
+    align-items: flex-start;
+    column-gap: 0.75rem;
+    padding-inline: 0;
+    text-align: start;
+  }
+
+  .progress-stepper--horizontal.progress-stepper--labels-inline .progress-stepper__item:last-child {
+    flex-grow: 0;
+  }
+
+  .progress-stepper--horizontal.progress-stepper--labels-inline .progress-stepper__marker {
+    flex: none;
+  }
+
+  .progress-stepper--horizontal.progress-stepper--labels-inline .progress-stepper__item::after {
+    position: static;
+    flex: 1 1 1.5rem;
+    align-self: flex-start;
+    min-inline-size: 1.5rem;
+    margin-block-start: calc((var(--_marker) - var(--_line)) / 2);
+    margin-inline-end: 0.25rem;
+  }
+
+  .progress-stepper--horizontal.progress-stepper--labels-inline .progress-stepper__content {
+    flex: 0 1 auto;
+    align-items: flex-start;
+    padding-block-start: calc((var(--_marker) - 1.5rem) / 2);
+    text-wrap: initial;
   }
 }
 

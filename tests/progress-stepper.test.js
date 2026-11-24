@@ -57,6 +57,23 @@ test("rejects bad input with a clear message", () => {
   assert.throws(() => resolveProgressStepper({ steps, statusLabels: { done: "x" } }), /status label/);
 });
 
+test("each step names a content slot: its id, or its index from 0", () => {
+  const slots = (o) => resolveProgressStepper(o).items.map((i) => i.contentSlot);
+  assert.deepEqual(slots({ steps }), ["content-0", "content-1", "content-2"]);
+  assert.deepEqual(slots({ steps: [{ id: "details", label: "A" }, { label: "B" }] }), ["content-details", "content-1"]);
+  assert.throws(() => resolveProgressStepper({ steps: [{ id: "x", label: "A" }, { id: "x", label: "B" }] }), /share the id "x"/);
+  assert.throws(() => resolveProgressStepper({ steps: [{ id: "1", label: "A" }, { label: "B" }] }), /share the id "1"/, "an id cannot collide with another step's index");
+  assert.throws(() => resolveProgressStepper({ steps: [{ id: "a b", label: "A" }] }), /\bid\b/);
+});
+
+test("labelPlacement=inline adds a modifier; anything else is rejected", () => {
+  assert.doesNotMatch(resolveProgressStepper({ steps }).className, /labels-inline/);
+  assert.doesNotMatch(resolveProgressStepper({ steps, labelPlacement: "below" }).className, /labels-inline/);
+  assert.doesNotMatch(resolveProgressStepper({ steps, labelPlacement: false }).className, /labels-inline/);
+  assert.equal(resolveProgressStepper({ steps, labelPlacement: "inline", className: "x" }).className, "progress-stepper progress-stepper--horizontal progress-stepper--labels-inline x");
+  assert.throws(() => resolveProgressStepper({ steps, labelPlacement: "above" }), /labelPlacement/);
+});
+
 test("Skin CSS: logical properties only, reflows by container, honours reduced motion", () => {
   const css = read("src/styles/skin/progress-stepper.css");
   assert.doesNotMatch(css, /\b(margin|padding|border)-(left|right)\b|\b(left|right)\s*:|text-align:\s*(left|right)/, "physical direction breaks RTL");

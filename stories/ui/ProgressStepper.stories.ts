@@ -1,5 +1,8 @@
 import ProgressStepper from "../../src/astro/ui/ProgressStepper.astro";
-import { cases } from "../progress-stepper-cases";
+import { cases, contentSlots, type ProgressStepperCase } from "../progress-stepper-cases";
+
+/* `content` is not a prop: the component takes it as slots. */
+const withSlots = ({ content, ...args }: ProgressStepperCase) => ({ args: { ...args, slots: contentSlots(content) } });
 
 /*
   Astro components are prerendered to markup by the Storybook framework, so
@@ -43,3 +46,16 @@ export const Complete = { args: cases.Complete };
 
 /** A 20rem-wide container, as on a phone: the row stacks by itself, with no breakpoint from the page. */
 export const SmallViewport = { args: cases.SmallViewport };
+
+/** `labelPlacement="inline"`: each step's text beside its marker, the line running on after it. Where the container is narrower than 40rem it stacks, as the default does. */
+export const HorizontalInline = { args: cases.HorizontalInline };
+
+/**
+ * Composable: each step has a slot for its own markup, named `content-<id>`
+ * (or `content-<index>` when the step has no `id`). Here "Vehicle" and "Your
+ * details" are filled, in a vertical stepper.
+ */
+export const VerticalContent = withSlots(cases.VerticalContent);
+
+/** The same slots with inline text: the content sits under the step's label. */
+export const HorizontalInlineContent = withSlots(cases.HorizontalInlineContent);

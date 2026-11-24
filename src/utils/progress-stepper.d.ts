@@ -1,5 +1,5 @@
 import type { ClassValue } from "clsx";
-import type { ProgressStepperOrientation, ProgressStepperState, ProgressStepperStep } from "../types";
+import type { ProgressStepperLabelPlacement, ProgressStepperOrientation, ProgressStepperState, ProgressStepperStep } from "../types";
 
 export interface ProgressStepperOptions {
   /** The steps, in order. At least one; each needs a `label`. */
@@ -8,6 +8,8 @@ export interface ProgressStepperOptions {
   current?: number | `${number}` | false | null;
   /** `false` counts as not set. @default "horizontal" */
   orientation?: ProgressStepperOrientation | false | null;
+  /** Horizontal only: `inline` puts each step's text beside its marker. `false` counts as not set. @default "below" */
+  labelPlacement?: ProgressStepperLabelPlacement | false | null;
   /** The accessible name of the navigation landmark. @default "Progress" */
   label?: string | false | null;
   /** Replaces what screen readers hear for a state, e.g. for another language. */
@@ -24,6 +26,8 @@ export interface ResolvedProgressStepperItem {
   className: string;
   /** The step's position from 1, as text, for the marker. */
   number: string;
+  /** The name of the slot that holds this step's own content: `content-<id>`, or `content-<index>` (from 0) when the step has no `id`. */
+  contentSlot: string;
   /** A stroked 24px path for the marker (a tick or an exclamation mark); `undefined` shows the number. */
   icon: string | undefined;
   /** `"step"` on the first step that is current, loading or in error. */
@@ -43,5 +47,5 @@ export interface ResolvedProgressStepper {
   items: ResolvedProgressStepperItem[];
 }
 
-/** Validates a progress stepper's options and decides its markup. Throws on a step with no label, an unknown state or orientation, or a `current` outside the steps. */
+/** Validates a progress stepper's options and decides its markup. Throws on a step with no label, an unknown state, orientation or label placement, a bad or repeated step `id`, or a `current` outside the steps. */
 export declare function resolveProgressStepper(options?: ProgressStepperOptions): ResolvedProgressStepper;
