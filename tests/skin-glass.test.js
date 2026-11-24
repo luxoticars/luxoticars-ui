@@ -20,9 +20,10 @@ const block = (selector) => {
 };
 const value = (body, name) => body.match(new RegExp(`${name}:\\s*([^;]+);`))?.[1].trim();
 
-test("package exports skin/glass.css", () => {
+test("package exports skin/glass.css and the short alias, as the other skins do", () => {
   const { exports } = JSON.parse(read("package.json"));
   assert.equal(exports["./styles/skin/glass.css"], "./src/styles/skin/glass.css");
+  assert.equal(exports["./styles/glass.css"], "./src/styles/skin/glass.css");
 });
 
 test(":root declares the theme-independent glass numbers", () => {
@@ -56,9 +57,25 @@ test("glass mixes its tint at the element, never a composed token", () => {
   assert.doesNotMatch(tokens, /--lux-glass-[a-z-]+:\s*color-mix/);
 });
 
-test("glass falls back to a solid surface", () => {
-  assert.match(glass, /@supports not \(\(-webkit-backdrop-filter: blur\(1px\)\) or \(backdrop-filter: blur\(1px\)\)\)/);
-  assert.match(glass, /@media \(prefers-reduced-transparency: reduce\)/);
+/* Solid outside the guard, frosted inside it. A browser with backdrop-filter
+   but no color-mix() drops the layered background whole, so the guard must
+   require both, or that browser gets a transparent glass (PR #128 review). */
+test("glass is solid by default and frosted only where backdrop-filter and color-mix() both work", () => {
+  const guard = glass.indexOf("@supports (");
+  assert.notEqual(guard, -1, "no @supports guard");
+  const head = glass.slice(guard, glass.indexOf("{", guard));
+  assert.match(head, /backdrop-filter: blur\(1px\)/);
+  assert.match(head, /color: color-mix\(/);
+  const start = glass.indexOf(".glass {");
+  const base = glass.slice(start, glass.indexOf("}", start));
+  assert.match(base, /background: var\(--_tint\);/);
+  assert.doesNotMatch(base, /color-mix|backdrop-filter/);
+  assert.ok(glass.slice(guard).includes("color-mix(in oklch, var(--_tint)"), "frosted tint must be inside the guard");
+});
+
+test("reduced transparency wins over the frosted surface", () => {
+  const reduced = glass.indexOf("@media (prefers-reduced-transparency: reduce)");
+  assert.ok(reduced > glass.indexOf("@supports ("), "the reduced-transparency rule must come after the guard to override it");
 });
 
 test("glass story lives under stories/skin/ with a Skin/ title", () => {

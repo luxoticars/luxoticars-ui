@@ -11,8 +11,8 @@
 
   Over a plain page there is little to blur, so the material carries itself:
   a sheen from the top edge, a slight tint off the page (base-200, not
-  base-100) and a faint grain. Solid where backdrop-filter is unsupported or
-  the reader asks for reduced transparency.
+  base-100) and a faint grain. Solid where backdrop-filter or color-mix() is
+  unsupported, or the reader asks for reduced transparency.
 
   Contrast: text on the glass sits on whatever scrolls behind it. The
   opacity token is set so base-content text keeps at least 6.5:1 in the worst
@@ -25,21 +25,27 @@
   --_line: var(--lux-glass-line, oklch(20% 0.018 264 / 0.12));
 
   position: relative;
-  background:
-    linear-gradient(to bottom, var(--_highlight), transparent 55%),
-    var(--lux-glass-grain, none),
-    color-mix(in oklch, var(--_tint) var(--_opacity), transparent);
-  -webkit-backdrop-filter: blur(var(--lux-glass-blur, 16px)) saturate(var(--lux-glass-saturate, 1.6));
-  backdrop-filter: blur(var(--lux-glass-blur, 16px)) saturate(var(--lux-glass-saturate, 1.6));
+  /* Solid by default: a browser that cannot run the whole recipe below keeps
+     a readable surface rather than a transparent one. */
+  background: var(--_tint);
   border: 1px solid var(--_line);
   box-shadow:
     inset 0 1px 0 var(--_highlight),
     var(--lux-glass-shadow, 0 8px 20px -6px oklch(12% 0.042 264.695 / 0.16));
 }
 
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+/* Frosted only where both halves work. A browser that cannot parse color-mix()
+   drops the whole layered `background` declaration, so guarding on
+   backdrop-filter alone left the glass transparent there, blur and no tint.
+   Same guard as site-header-frosted-on-scroll.css. */
+@supports (((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) and (color: color-mix(in oklch, #000 50%, transparent))) {
   .glass {
-    background: var(--_tint);
+    background:
+      linear-gradient(to bottom, var(--_highlight), transparent 55%),
+      var(--lux-glass-grain, none),
+      color-mix(in oklch, var(--_tint) var(--_opacity), transparent);
+    -webkit-backdrop-filter: blur(var(--lux-glass-blur, 16px)) saturate(var(--lux-glass-saturate, 1.6));
+    backdrop-filter: blur(var(--lux-glass-blur, 16px)) saturate(var(--lux-glass-saturate, 1.6));
   }
 }
 
