@@ -1,0 +1,75 @@
+---
+/*
+  Story-only: every variant, size and radius of Button side by side, and the
+  ARIA states it prints, so a change to the stylesheet can be judged at a glance.
+  Lives in stories/, so it never ships.
+*/
+import Button from "../../src/astro/ui/Button.astro";
+
+const variants = ["default", "secondary", "outline", "ghost", "link", "destructive", "success", "warning", "info"] as const;
+const sizes = ["xs", "sm", "default", "lg", "xl"] as const;
+const radii = ["field", "none", "sm", "md", "lg", "xl", "2xl", "full"] as const;
+
+const row = "display:flex;flex-wrap:wrap;align-items:center;gap:0.75rem";
+const heading = "margin:1.75rem 0 0.75rem;font:600 0.75rem/1 system-ui,sans-serif;letter-spacing:0.08em;text-transform:uppercase;opacity:0.6";
+---
+
+<h3 style={`${heading};margin-top:0`}>Variants</h3>
+<div style={row}>
+  {variants.map((variant) => <Button variant={variant}>{variant}</Button>)}
+</div>
+
+<h3 style={heading}>Sizes</h3>
+<div style={row}>
+  {sizes.map((size) => <Button size={size}>{size}</Button>)}
+  {sizes.map((size) => (
+    <Button size={size} iconOnly variant="outline" aria-label={`Add (${size})`}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
+    </Button>
+  ))}
+</div>
+
+<h3 style={heading}>Radius</h3>
+<div style={row}>
+  {radii.map((radius) => <Button radius={radius} variant="outline">{radius}</Button>)}
+</div>
+
+<h3 style={heading}>With icons</h3>
+<div style={row}>
+  <Button>
+    <svg slot="left-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
+    Add listing
+  </Button>
+  <Button variant="outline" radius="full">
+    Continue
+    <svg slot="right-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+  </Button>
+</div>
+
+<h3 style={heading}>States</h3>
+<div style={row}>
+  <Button disabled>Disabled button</Button>
+  <Button href="/inventory" variant="outline" disabled>Disabled link</Button>
+  <Button href="/inventory" variant="outline">Link</Button>
+</div>
+
+<h3 style={heading}>aria-expanded, aria-haspopup, aria-controls</h3>
+<div style={row}>
+  <Button variant="outline" aria-expanded={false} aria-controls="faq-answer">
+    Closed accordion
+    <svg slot="right-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+  </Button>
+  <Button variant="outline" aria-expanded={true} aria-controls="faq-answer">
+    Open accordion
+    <svg slot="right-icon" style="rotate:180deg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+  </Button>
+  <Button variant="outline" aria-haspopup="menu" aria-expanded={false} aria-controls="actions-menu">
+    Actions
+    <svg slot="right-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+  </Button>
+  <Button aria-haspopup="dialog" aria-controls="filters-dialog">Filters</Button>
+</div>
+{/* While a button is expanded its aria-controls must name an element in the page, so the panel is here. */}
+<p id="faq-answer" style="margin:0.75rem 0 0;font:0.875rem/1.4 system-ui,sans-serif;opacity:0.75">
+  The accordion's panel, which both accordion buttons above control by id.
+</p>

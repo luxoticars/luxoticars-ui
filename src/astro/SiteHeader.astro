@@ -8,6 +8,7 @@ import "../styles/site-header.css";
 import type { FooterLink } from "../types";
 import { resolveSiteHeader } from "../utils/site-header.js";
 import Logo from "./Logo.astro";
+import Button from "./ui/Button.astro";
 
 export type Props = {
   /** Menu links, in order. @default Buy, Services, Reviews, About, Merch */
@@ -85,9 +86,10 @@ const header = resolveSiteHeader({ links, ctaLabel });
     )}
 
     {header.cta && (
-      <a href={ctaHref} class="site-header__cta" aria-label={header.cta.label}>
-        {header.cta.first}{header.cta.rest && <span class="site-header__cta-more">{header.cta.rest}</span>}
-      </a>
+      <Button href={ctaHref} size="lg" radius="full" class="site-header__cta" aria-label={header.cta.label}>
+        {/* One element, not two: the button lays its children out with a gap, which would split the label. */}
+        <span>{header.cta.first}{header.cta.rest && <span class="site-header__cta-more">{header.cta.rest}</span>}</span>
+      </Button>
     )}
 
     <details class="site-header__menu" data-site-menu>

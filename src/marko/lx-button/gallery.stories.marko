@@ -1,0 +1,74 @@
+/*
+  Story-only: every variant, size and radius of <lx-button> side by side, and the
+  ARIA states it prints. Its `.stories.` name keeps it out of the package (see
+  `files` in package.json).
+
+  Concise syntax, by repo convention.
+*/
+export interface Input {}
+
+const/variants=["default", "secondary", "outline", "ghost", "link", "destructive", "success", "warning", "info"]
+const/sizes=["xs", "sm", "default", "lg", "xl"]
+const/radii=["field", "none", "sm", "md", "lg", "xl", "2xl", "full"]
+const/row="display:flex;flex-wrap:wrap;align-items:center;gap:0.75rem"
+const/heading="margin:1.75rem 0 0.75rem;font:600 0.75rem/1 system-ui,sans-serif;letter-spacing:0.08em;text-transform:uppercase;opacity:0.6"
+
+h3 style=`${heading};margin-top:0` -- Variants
+div style=row
+  for|variant| of=variants
+    lx-button variant=variant -- ${variant}
+
+h3 style=heading -- Sizes
+div style=row
+  for|size| of=sizes
+    lx-button size=size -- ${size}
+  for|size| of=sizes
+    lx-button size=size iconOnly variant="outline" aria-label=`Add (${size})`
+      @left-icon
+        svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          path d="M12 5v14M5 12h14"
+
+h3 style=heading -- Radius
+div style=row
+  for|radius| of=radii
+    lx-button radius=radius variant="outline" -- ${radius}
+
+h3 style=heading -- With icons
+div style=row
+  lx-button
+    @left-icon
+      svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        path d="M12 5v14M5 12h14"
+    -- Add listing
+  lx-button variant="outline" radius="full"
+    -- Continue
+    @right-icon
+      svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        path d="M5 12h14M12 5l7 7-7 7"
+
+h3 style=heading -- States
+div style=row
+  lx-button disabled -- Disabled button
+  lx-button href="/inventory" variant="outline" disabled -- Disabled link
+  lx-button href="/inventory" variant="outline" -- Link
+
+h3 style=heading -- aria-expanded, aria-haspopup, aria-controls
+div style=row
+  lx-button variant="outline" aria-expanded=false aria-controls="faq-answer"
+    -- Closed accordion
+    @right-icon
+      svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        path d="m6 9 6 6 6-6"
+  lx-button variant="outline" aria-expanded=true aria-controls="faq-answer"
+    -- Open accordion
+    @right-icon
+      svg style="rotate:180deg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        path d="m6 9 6 6 6-6"
+  lx-button variant="outline" aria-haspopup="menu" aria-expanded=false aria-controls="actions-menu"
+    -- Actions
+    @right-icon
+      svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        path d="m6 9 6 6 6-6"
+  lx-button aria-haspopup="dialog" aria-controls="filters-dialog" -- Filters
+// While a button is expanded its aria-controls must name an element in the page, so the panel is here.
+p#faq-answer style="margin:0.75rem 0 0;font:0.875rem/1.4 system-ui,sans-serif;opacity:0.75" -- The accordion's panel, which both accordion buttons above control by id.

@@ -1,0 +1,78 @@
+/*
+  A button, or a link that looks like one: the twin of `astro/ui/Button.astro`.
+  Both print what `resolveButton()` decides, so the element, the classes and the
+  ARIA states agree. Only the stylesheet (`style.css`, found by Marko) is forked.
+  No Tailwind.
+
+  With `href` this renders an `<a>`, without it a `<button>`. Any other attribute
+  and listener (`onClick`, `data-*`, `form`, `aria-label`) goes on that element.
+  The default body is the label; `@left-icon` and `@right-icon` sit before and
+  after it.
+
+  Concise syntax, by repo convention.
+*/
+import { resolveButton } from "../../utils/button.js"
+import type { ButtonPopup, ButtonRadius, ButtonSize, ButtonVariant } from "../../types"
+
+export interface Input extends Omit<Marko.HTML.Button, "type" | "disabled" | "aria-expanded" | "aria-haspopup" | "aria-controls"> {
+  /**
+   * Visual treatment. `default` and `secondary` are solid fills; the four status
+   * variants are tints that use the status colour as text. @default "default"
+   */
+  variant?: ButtonVariant
+  /** Height, padding, type scale and the size of any slotted SVG. @default "default" */
+  size?: ButtonSize
+  /**
+   * Corner radius. `field` (the default) follows the theme's control radius; pick a
+   * fixed step to override it for this button. Wins over `pill`. To set one button's
+   * radius from CSS instead, give it `--button-radius`. @default "field"
+   */
+  radius?: ButtonRadius
+  /** Shorthand for `radius="full"`. @deprecated Use `radius="full"`. @default false */
+  pill?: boolean
+  /** Square button sized for a single icon. Give it an `aria-label`: nothing infers one from an SVG. @default false */
+  iconOnly?: boolean
+  /** Makes it a link: an `<a>` instead of a `<button>`. */
+  href?: string
+  target?: string
+  rel?: string
+  download?: string | boolean
+  type?: "button" | "submit" | "reset"
+  /** On a link this drops `href` and sets `aria-disabled`, because an anchor ignores `disabled`. @default false */
+  disabled?: boolean
+  /**
+   * Whether the thing this button shows and hides is open: the trigger of an accordion, a
+   * disclosure or a filter panel. Printed as "true" or "false", so a closed one still says so.
+   * Leave it unset on a button that opens nothing. While true the button keeps its pressed
+   * look. The state is yours to keep: flip it when the panel opens or closes.
+   */
+  "aria-expanded"?: boolean | "true" | "false"
+  /**
+   * That the button opens a popup, and which kind: a `menu` (what `true` means), `listbox`,
+   * `tree`, `grid` or `dialog`. Leave it unset otherwise: `false` prints nothing.
+   */
+  "aria-haspopup"?: ButtonPopup
+  /** The `id` of the element this button controls, such as the accordion panel, menu or dialog it opens. Several, space-separated. */
+  "aria-controls"?: string
+  /** Before the label, as `@left-icon`. */
+  leftIcon?: Marko.AttrTag<{ content: Marko.Body }>
+  /** After the label, as `@right-icon`. */
+  rightIcon?: Marko.AttrTag<{ content: Marko.Body }>
+  /** Marko reads `@left-icon` as `leftIcon`; the type checker only knows the name as written. */
+  "left-icon"?: Marko.AttrTag<{ content: Marko.Body }>
+  "right-icon"?: Marko.AttrTag<{ content: Marko.Body }>
+}
+
+// `@left-icon` arrives under the name as written; the camelCase spelling is read too, so either works.
+const/{ variant, size, radius, pill, iconOnly, class: className, leftIcon, rightIcon, "left-icon": leftIconAsWritten, "right-icon": rightIconAsWritten, content, ...attrs }=input
+const/before=(leftIcon ?? leftIconAsWritten)
+const/after=(rightIcon ?? rightIconAsWritten)
+const/button=resolveButton({ variant, size, radius, pill, iconOnly, className, block: "lx-button", attrs })
+const/Tag=button.tag
+
+${Tag} ...button.attrs class=button.className
+  if=before
+    ${before.content}
+  ${content}
+  if=after
+    ${after.content}

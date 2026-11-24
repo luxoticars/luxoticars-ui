@@ -42,6 +42,7 @@
     "./fonts/*": "./src/fonts/*",
     "./styles/footer.css": "./src/styles/footer.css",
     "./styles/logo.css": "./src/styles/logo.css",
+    "./styles/button.css": "./src/styles/button.css",
     "./styles/listing-card.css": "./src/styles/listing-card.css",
     "./styles/scrolling-item-cards.css": "./src/styles/scrolling-item-cards.css",
     "./styles/dialog.css": "./src/styles/dialog.css",

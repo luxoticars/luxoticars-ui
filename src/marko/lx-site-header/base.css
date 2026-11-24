@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/site-header.css [source-hash: e42ac9d25e0a]
+  Forked from src/styles/site-header.css [source-hash: 5554f9f4cecc]
   Marko-only: the Astro header keeps the shared stylesheet. What both entries
   share; each entry's own stylesheet lays the bar out. Needs styles/tokens.css:
   --lux-* only. Block is `lx-site-header`, the tag's own name. The Astro-only
@@ -63,36 +63,37 @@
   margin-inline: auto;
 }
 
-.lx-site-header__cta {
+/* The call-to-action is `<lx-button>` (fully rounded), which supplies the box,
+   the focus ring and the link reset. These are the header's own touches: the
+   colour and size go through the button's `--button-*` hooks, and the selector
+   is scoped to `.lx-site-header` so it wins whatever order the stylesheets load
+   in. 2.875rem is the height this button has always had; it sets how tall the
+   bar is, so it is kept. */
+.lx-site-header .lx-site-header__cta {
+  --button-height: 2.875rem;
+  --button-bg: var(--_primary);
+  --button-bg-hover: var(--_primary);
+  --button-fg: var(--_primary-content);
+  --button-ring: var(--_primary);
+  --button-padding-inline: 1.4rem;
+  --button-font-size: 0.75rem;
+
   margin-left: auto;
-  /* Match search autocomplete control height (~2.5rem total with font). */
-  padding: 0.875rem 1.4rem;
-  border-radius: 9999px;
-  background-color: var(--_primary);
-  color: var(--_primary-content);
   font-family: var(--font-futura-bold, var(--font-futura, inherit));
   font-weight: 700;
-  font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  text-decoration: none;
-  white-space: nowrap;
   transition:
     scale 150ms ease-out,
     box-shadow 300ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-.lx-site-header__cta:hover {
+.lx-site-header .lx-site-header__cta:hover {
   box-shadow: 0 0 1.25rem -0.25rem var(--_primary);
 }
 
-.lx-site-header__cta:active {
+.lx-site-header .lx-site-header__cta:active {
   scale: 0.96;
-}
-
-.lx-site-header__cta:focus-visible {
-  outline: 2px solid var(--_primary);
-  outline-offset: 3px;
 }
 
 .lx-site-header--with-search .lx-site-header__cta {
@@ -189,7 +190,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lx-site-header__cta {
+  .lx-site-header .lx-site-header__cta {
     transition: none;
   }
 }

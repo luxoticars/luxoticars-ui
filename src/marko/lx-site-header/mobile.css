@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/site-header.css [source-hash: e42ac9d25e0a]
+  Forked from src/styles/site-header.css [source-hash: 5554f9f4cecc]
   The phone bar: the menu button alone, at every width, no links in the bar.
   No media queries: the sizes scale with the bar's width (cqi). Unlike the
   desktop bar, the call-to-action always shows its first word only.
@@ -20,10 +20,12 @@
   font-size: clamp(0.75rem, 5cqi, 1.25rem);
 }
 
-.lx-site-header--mobile .lx-site-header__cta {
+/* Doubled block class: it must beat base.css's `.lx-site-header .lx-site-header__cta`, which is
+   loaded from another file and so cannot be relied on to come first. */
+.lx-site-header.lx-site-header--mobile .lx-site-header__cta {
   margin-left: auto;
-  padding-inline: clamp(0.5rem, 4cqi, 1.4rem);
-  font-size: clamp(0.625rem, 3.2cqi, 0.75rem);
+  --button-padding-inline: clamp(0.5rem, 4cqi, 1.4rem);
+  --button-font-size: clamp(0.625rem, 3.2cqi, 0.75rem);
 }
 
 .lx-site-header--mobile.lx-site-header--with-search .lx-site-header__cta {

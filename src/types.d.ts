@@ -100,6 +100,33 @@ export interface MenuButtonItem {
   prefixLabel?: string;
 }
 
+/**
+ * A button's visual treatment. `default` and `secondary` are solid fills; the
+ * four status variants are tints that use the status colour as text.
+ */
+export type ButtonVariant =
+  | "default"
+  | "destructive"
+  | "outline"
+  | "secondary"
+  | "ghost"
+  | "link"
+  | "success"
+  | "warning"
+  | "info";
+
+/** A button's height, padding, type scale and icon size. */
+export type ButtonSize = "xs" | "sm" | "default" | "lg" | "xl";
+
+/**
+ * A button's corner radius. `field` follows the theme's `--radius-field`; the
+ * rest are fixed steps (0.25, 0.375, 0.5, 0.75 and 1rem; `full` is a pill).
+ */
+export type ButtonRadius = "field" | "none" | "sm" | "md" | "lg" | "xl" | "2xl" | "full";
+
+/** What a button opens, for `aria-haspopup`. `true` means `menu`. */
+export type ButtonPopup = boolean | "menu" | "listbox" | "tree" | "grid" | "dialog";
+
 /** How a progress stepper lays out: steps in a row, or stacked. A row stacks by itself in a narrow container. */
 export type ProgressStepperOrientation = "horizontal" | "vertical";
 
