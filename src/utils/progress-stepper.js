@@ -10,6 +10,7 @@ import { clsx } from "clsx";
 
 const STATES = ["complete", "current", "upcoming", "loading", "error"];
 const ORIENTATIONS = ["horizontal", "vertical"];
+const LABEL_PLACEMENTS = ["below", "inline"];
 
 /* What a screen reader hears after the step's label. Colour and the marker's
    shape carry the state for sighted people; this carries it for everyone else. */
@@ -38,11 +39,25 @@ const isUnset = (value) => value == null || value === false;
  * `block` is the BEM block the classes are built on. The Astro renderer and the
  * Skin use the default.
  */
-export function resolveProgressStepper({ steps, current, orientation, label, statusLabels, className, block = "progress-stepper" } = {}) {
+export function resolveProgressStepper({
+  steps,
+  current,
+  orientation,
+  labelPlacement,
+  label,
+  statusLabels,
+  className,
+  block = "progress-stepper",
+} = {}) {
   if (!Array.isArray(steps) || steps.length === 0) fail("`steps` needs at least one step.");
 
   const direction = isUnset(orientation) ? "horizontal" : orientation;
   if (!ORIENTATIONS.includes(direction)) fail(`unknown orientation "${orientation}". Use one of: ${ORIENTATIONS.join(", ")}.`);
+
+  const placement = isUnset(labelPlacement) ? "below" : labelPlacement;
+  if (!LABEL_PLACEMENTS.includes(placement)) {
+    fail(`unknown labelPlacement "${labelPlacement}". Use one of: ${LABEL_PLACEMENTS.join(", ")}.`);
+  }
 
   /* `current` counts from 0. `steps.length` is allowed: every step is complete. */
   const at = isUnset(current) ? 0 : Number(current);
@@ -57,6 +72,17 @@ export function resolveProgressStepper({ steps, current, orientation, label, sta
   }
 
   const name = isUnset(label) || !String(label).trim() ? "Progress" : String(label).trim();
+
+  /* A step's slot is `content-<id>`; with no `id` it is `content-<index>`, counting
+     from 0. Two steps cannot share one, or their content would land in both. */
+  const taken = new Map();
+  const slotFor = (step, index) => {
+    const id = isUnset(step?.id) ? String(index) : String(step.id).trim();
+    if (!id || /\s/.test(id)) fail(`step ${index + 1} has an \`id\` that is empty or has a space in it: "${step.id}".`);
+    if (taken.has(id)) fail(`steps ${taken.get(id) + 1} and ${index + 1} share the id "${id}". Each step's content slot needs its own.`);
+    taken.set(id, index);
+    return `content-${id}`;
+  };
 
   let marked = false;
   const items = steps.map((step, index) => {
@@ -78,6 +104,7 @@ export function resolveProgressStepper({ steps, current, orientation, label, sta
       state,
       className: clsx(`${block}__item`, `${block}__item--${state}`),
       number: String(index + 1),
+      contentSlot: slotFor(step, index),
       icon: state === "complete" || state === "error" ? ICONS[state] : undefined,
       ariaCurrent: isCurrent ? "step" : undefined,
       label: text,
@@ -87,7 +114,7 @@ export function resolveProgressStepper({ steps, current, orientation, label, sta
   });
 
   return {
-    className: clsx(block, `${block}--${direction}`, className),
+    className: clsx(block, `${block}--${direction}`, placement === "inline" && `${block}--labels-inline`, className),
     label: name,
     /* True while any step is loading, for `aria-busy` on the list. */
     busy: items.some((item) => item.state === "loading"),

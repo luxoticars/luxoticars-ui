@@ -130,11 +130,16 @@ export type ButtonPopup = boolean | "menu" | "listbox" | "tree" | "grid" | "dial
 /** How a progress stepper lays out: steps in a row, or stacked. A row stacks by itself in a narrow container. */
 export type ProgressStepperOrientation = "horizontal" | "vertical";
 
+/** Where a horizontal stepper puts each step's text: under its marker, or beside it with the line running on after. Vertical steps always sit beside the marker. */
+export type ProgressStepperLabelPlacement = "below" | "inline";
+
 /** Where a step stands. `loading` and `error` are the current step waiting, or failed. */
 export type ProgressStepperState = "complete" | "current" | "upcoming" | "loading" | "error";
 
 /** One step of a progress stepper. */
 export interface ProgressStepperStep {
+  /** Names this step's content slot: `id: "payment"` is filled with `slot="content-payment"`. Without it the slot is `content-<index>`, counting from 0. No spaces; unique across the steps. */
+  id?: string;
   /** The step's name, e.g. "Details". */
   label: string;
   /** A line under the label, e.g. what went wrong on an `error` step. */
