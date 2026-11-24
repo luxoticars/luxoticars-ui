@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.25.0
+
+### Minor Changes
+
+- 29fa222: Add glass tokens (`--lux-glass-*` in `tokens.css`) and a `glass` skin (`@luxoticars/ui/styles/skin/glass.css`): a frosted surface for floating UI, theme-aware inside nested `[data-theme]`, solid under reduced transparency or without `backdrop-filter`.
+
 ## 0.24.0
 
 ### Minor Changes
