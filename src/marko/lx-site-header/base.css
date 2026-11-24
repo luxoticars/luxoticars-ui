@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/site-header.css [source-hash: 83b289c20095]
+  Forked from src/styles/site-header.css [source-hash: e42ac9d25e0a]
   Marko-only: the Astro header keeps the shared stylesheet. What both entries
   share; each entry's own stylesheet lays the bar out. Needs styles/tokens.css:
   --lux-* only. Block is `lx-site-header`, the tag's own name. The Astro-only
