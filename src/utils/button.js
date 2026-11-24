@@ -107,8 +107,9 @@ export function resolveButton({ variant, size, radius, pill, iconOnly, className
     ),
     attrs: isLink
       ? deadLink
-        ? { ...shared, role: "link", tabindex: -1, "aria-disabled": "true" }
-        : { ...shared, href: String(href), role, tabindex, "aria-disabled": ariaDisabled }
+        ? { ...shared, type, role: "link", tabindex: -1, "aria-disabled": "true" }
+        : /* On a link `type` is the MIME type of the target (`application/pdf`), not a button type. */
+          { ...shared, href: String(href), type, role, tabindex, "aria-disabled": ariaDisabled }
       : /* `type` is defaulted here, not written next to the spread: a plain `type="button"`
            beside it would duplicate a caller's own `type="submit"` and the form never submits. */
         { ...shared, type: type ?? "button", disabled: off || undefined, role, tabindex, "aria-disabled": ariaDisabled },

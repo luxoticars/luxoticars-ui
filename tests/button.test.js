@@ -43,7 +43,14 @@ test("href makes an <a> and keeps the caller's role, tabindex and target", () =>
   const { tag, attrs } = resolveButton({ attrs: { href: "/inventory", target: "_blank", rel: "noopener", tabindex: 3 } });
   assert.equal(tag, "a");
   assert.deepEqual([attrs.href, attrs.target, attrs.rel, attrs.tabindex], ["/inventory", "_blank", "noopener", 3]);
-  assert.equal("type" in attrs, false);
+  assert.equal(attrs.type, undefined); // a link gets no default button type
+});
+
+test("a link keeps its own type, the MIME type of its target, and gets no default one", () => {
+  const pdf = resolveButton({ attrs: { href: "/brochure.pdf", type: "application/pdf" } }).attrs;
+  assert.equal(pdf.type, "application/pdf");
+  assert.equal(resolveButton({ attrs: { href: "/x" } }).attrs.type, undefined);
+  assert.equal(resolveButton({ attrs: { href: "/x", type: "application/pdf", disabled: true } }).attrs.type, "application/pdf");
 });
 
 test("a disabled link drops href and cannot be re-enabled by the caller's own attributes", () => {
