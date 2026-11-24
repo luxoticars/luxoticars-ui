@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/footer.css [source-hash: 59e0c1cdb4a7]
+  Forked from src/styles/footer.css [source-hash: 95ec97b905cd]
   Marko-only: the Astro and HTML footers keep the shared stylesheet. What both
   entries share, with the small-screen baseline: one column, a stacked masthead
   and a stacked bottom bar. The desktop entry adds its wider layouts in its own
@@ -57,7 +57,8 @@
   border: 0;
 }
 
-/* Top seam: hairline transition from the section above */
+/* Top seam: a hairline in the brand primary (the accent), fading out at both
+   ends, between the section above and the footer. */
 .lx-site-footer__seam {
   pointer-events: none;
   position: absolute;
@@ -67,7 +68,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    color-mix(in oklab, var(--_hairline) 70%, transparent) 50%,
+    color-mix(in oklab, var(--_accent) 70%, transparent) 50%,
     transparent 100%
   );
 }

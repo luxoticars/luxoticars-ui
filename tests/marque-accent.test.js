@@ -18,3 +18,9 @@ for (const name of ["logo.css", "footer.css", "site-header.css"]) {
     );
   });
 }
+
+test("marque accent: tokens.css keeps it equal to --lux-primary", () => {
+  const primary = read("tokens.css").match(/--lux-primary:\s*([^;]+);/)?.[1];
+  assert.ok(primary, "tokens.css should define --lux-primary");
+  assert.equal(token, primary);
+});

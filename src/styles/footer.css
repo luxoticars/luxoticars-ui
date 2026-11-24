@@ -69,7 +69,8 @@
   border: 0;
 }
 
-/* Top seam: hairline transition from the section above */
+/* Top seam: a hairline in the brand primary (the accent), fading out at both
+   ends, between the section above and the footer. */
 .footer__seam {
   pointer-events: none;
   position: absolute;
@@ -79,7 +80,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    color-mix(in oklab, var(--_hairline) 70%, transparent) 50%,
+    color-mix(in oklab, var(--_accent) 70%, transparent) 50%,
     transparent 100%
   );
 }

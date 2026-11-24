@@ -13,7 +13,7 @@
 
   - States: complete, current, upcoming, loading, error. Every state differs in
     more than colour: complete shows a tick, error an exclamation mark, loading
-    a turning arc, current a heavier ring; upcoming's connector is dashed.
+    a turning arc, current a halo; upcoming's connector is dashed.
   - `--horizontal` is a row, but only where its own container is wide enough
     (40rem). Narrower, it stacks like `--vertical`, so it never scrolls
     sideways and needs no breakpoint from the page.
@@ -23,14 +23,18 @@
 .progress-stepper {
   --_base: var(--color-base-100, var(--lux-base-100, oklch(100% 0 0)));
   --_text: var(--color-base-content, var(--lux-base-content, oklch(21% 0.006 285.885)));
-  --_accent: var(--color-accent, var(--lux-accent, oklch(52% 0.16 232.661)));
-  --_on-accent: var(--color-accent-content, var(--lux-accent-content, oklch(100% 0 0)));
+  --_primary: var(--color-primary, var(--lux-primary, oklch(78% 0.12 232)));
+  --_on-primary: var(--color-primary-content, var(--lux-primary-content, oklch(25% 0.09 281.288)));
   --_error: var(--color-error, var(--lux-error, oklch(57% 0.194 13.428)));
   --_on-error: var(--color-error-content, var(--lux-error-content, oklch(100% 0 0)));
   /* Quieter text and lines, still 4.5:1 and 3:1 against the page. */
   --_muted: color-mix(in oklab, var(--_text) 72%, var(--_base));
   --_idle: color-mix(in oklab, var(--_text) 55%, var(--_base));
   --_error-text: color-mix(in oklab, var(--_error) 75%, var(--_text));
+  /* Primary is a fill colour: on a light page it is only about 2:1, too faint
+     for a ring or a line. The edge is primary pulled towards the text colour,
+     so rings, rails and the turning arc keep 3:1 on either theme. */
+  --_edge: color-mix(in oklab, var(--_primary) 55%, var(--_text));
 
   --_marker: 2rem;
   --_line: 2px;
@@ -135,22 +139,24 @@
 
 /* complete: filled, with a tick, and the line behind it is solid. */
 .progress-stepper__item--complete {
-  --_rail-color: var(--_accent);
+  --_rail-color: var(--_edge);
   --_rail-style: solid;
 }
 
 .progress-stepper__item--complete .progress-stepper__marker {
-  border-color: var(--_accent);
-  background: var(--_accent);
-  color: var(--_on-accent);
+  border-color: var(--_edge);
+  background: var(--_primary);
+  color: var(--_on-primary);
 }
 
-/* current and loading: a ring, a halo, and a heavier label. */
+/* current and loading: filled like complete but with the number, not a tick,
+   plus a halo and a heavier label. */
 .progress-stepper__item--current .progress-stepper__marker,
 .progress-stepper__item--loading .progress-stepper__marker {
-  border-color: var(--_accent);
-  box-shadow: 0 0 0 4px color-mix(in oklab, var(--_accent) 20%, transparent);
-  color: var(--_accent);
+  border-color: var(--_edge);
+  background: var(--_primary);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--_primary) 35%, transparent);
+  color: var(--_on-primary);
 }
 
 .progress-stepper__item--current .progress-stepper__label,
@@ -159,16 +165,12 @@
 }
 
 /* loading: the same, with an arc turning round the ring. */
-.progress-stepper__item--loading .progress-stepper__marker {
-  border-color: color-mix(in oklab, var(--_accent) 30%, var(--_base));
-}
-
 .progress-stepper__item--loading .progress-stepper__marker::after {
   content: "";
   position: absolute;
   inset: -2px;
   border: 2px solid transparent;
-  border-block-start-color: var(--_accent);
+  border-block-start-color: var(--_edge);
   border-radius: 50%;
   animation: progress-stepper-turn 0.9s linear infinite;
 }
