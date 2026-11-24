@@ -64,6 +64,27 @@
      side padding, so their edges line up. The width includes the padding. */
   --page-gutter: clamp(1rem, 4vw, 3rem);
   --page-max: 80rem;
+
+  /* Glass (skin/glass.css). Numbers only: the tint is base-200, mixed at the
+     element that uses it, so a nested [data-theme] gets its own colour.
+     The opacity is a floor, not a style choice. Measured with base-content
+     text at 86%: 15:1 (light) and 9.9:1 (dark) over a plain canvas; with
+     solid base-content behind the glass, 11:1 (light) and 6.5:1 (dark).
+     Lowering it pulls the dark worst case toward AA's 4.5:1. */
+  --lux-glass-opacity: 86%;
+  --lux-glass-blur: 16px;
+  --lux-glass-saturate: 1.6;
+  /* Neutral is dark in both themes, so the shadow does not change. */
+  --lux-glass-shadow:
+    0 1px 2px oklch(12% 0.042 264.695 / 0.08),
+    0 8px 20px -6px oklch(12% 0.042 264.695 / 0.16),
+    0 24px 48px -16px oklch(12% 0.042 264.695 / 0.22);
+  /* Texture, not colour: monochrome noise at 5% alpha. */
+  --lux-glass-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* Glass, light: the sheen along the top edge and the hairline border. */
+  --lux-glass-highlight: oklch(97.2% 0.004 264.7 / 0.7);
+  --lux-glass-line: oklch(20% 0.018 264 / 0.12);
 }
 
 [data-theme="light"] {
@@ -92,6 +113,10 @@
   --lux-error-content: oklch(100% 0 0);
 
   --radius-field: 0.25rem;
+
+  /* Glass, light: the sheen along the top edge and the hairline border. */
+  --lux-glass-highlight: oklch(97.2% 0.004 264.7 / 0.7);
+  --lux-glass-line: oklch(20% 0.018 264 / 0.12);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -121,6 +146,10 @@
     --lux-error-content: oklch(27% 0.105 12.094);
 
     --radius-field: 0.5rem;
+
+    /* Glass, dark: base-content at low alpha, since base-100 is not a highlight here. */
+    --lux-glass-highlight: oklch(92% 0.005 264.5 / 0.1);
+    --lux-glass-line: oklch(92% 0.005 264.5 / 0.12);
   }
 }
 
@@ -149,6 +178,10 @@
   --lux-error: oklch(77% 0.194 13.428);
   --lux-error-content: oklch(27% 0.105 12.094);
   --radius-field: 0.5rem;
+
+  /* Glass, dark: base-content at low alpha, since base-100 is not a highlight here. */
+  --lux-glass-highlight: oklch(92% 0.005 264.5 / 0.1);
+  --lux-glass-line: oklch(92% 0.005 264.5 / 0.12);
 }
 
 /* @theme puts the --color-* aliases on :root only, so they resolve there once

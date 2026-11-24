@@ -103,6 +103,7 @@ test("the sidebar titles are the spec's", () => {
     "HTML/createFooter",
     "HTML/createListingCard",
     "HTML/createLogo",
+    "Skin/glass",
     "Skin/menu-button",
     "Skin/pill",
     "Skin/progress-stepper",

@@ -50,6 +50,8 @@
     "./styles/site-header-frosted-on-scroll.css": "./src/styles/site-header-frosted-on-scroll.css",
     "./styles/pill.css": "./src/styles/skin/pill.css",
     "./styles/skin/pill.css": "./src/styles/skin/pill.css",
+    "./styles/glass.css": "./src/styles/skin/glass.css",
+    "./styles/skin/glass.css": "./src/styles/skin/glass.css",
     "./styles/progress-stepper.css": "./src/styles/skin/progress-stepper.css",
     "./styles/skin/progress-stepper.css": "./src/styles/skin/progress-stepper.css",
     "./styles/section-head.css": "./src/styles/section-head.css",
