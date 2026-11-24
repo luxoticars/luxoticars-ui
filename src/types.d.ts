@@ -99,3 +99,19 @@ export interface MenuButtonItem {
   /** What screen readers hear for the prefix. */
   prefixLabel?: string;
 }
+
+/** How a progress stepper lays out: steps in a row, or stacked. A row stacks by itself in a narrow container. */
+export type ProgressStepperOrientation = "horizontal" | "vertical";
+
+/** Where a step stands. `loading` and `error` are the current step waiting, or failed. */
+export type ProgressStepperState = "complete" | "current" | "upcoming" | "loading" | "error";
+
+/** One step of a progress stepper. */
+export interface ProgressStepperStep {
+  /** The step's name, e.g. "Details". */
+  label: string;
+  /** A line under the label, e.g. what went wrong on an `error` step. */
+  description?: string;
+  /** Overrides the state worked out from `current`: `loading` while the step waits, `error` when it failed. */
+  state?: ProgressStepperState;
+}

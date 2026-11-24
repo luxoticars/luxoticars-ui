@@ -1,0 +1,271 @@
+/*
+  A progress stepper: the steps of a task in order, with the finished ones
+  behind the person, the current one marked, and the rest ahead. Global rules,
+  namespaced by the `progress-stepper` block. Tokens are read with the same
+  fallback chain as pill.css: the daisyUI/Tailwind name, then tokens.css's,
+  then a literal.
+
+  Markup: <nav class="progress-stepper progress-stepper--horizontal" aria-label="…">
+  holding an <ol class="progress-stepper__list"> of
+  <li class="progress-stepper__item progress-stepper__item--{state}">, each with a
+  `__marker` (aria-hidden), and a `__content` of `__label`, a visually hidden
+  `__status` and an optional `__description`. `ProgressStepper.astro` prints it.
+
+  - States: complete, current, upcoming, loading, error. Every state differs in
+    more than colour: complete shows a tick, error an exclamation mark, loading
+    a turning arc, current a heavier ring; upcoming's connector is dashed.
+  - `--horizontal` is a row, but only where its own container is wide enough
+    (40rem). Narrower, it stacks like `--vertical`, so it never scrolls
+    sideways and needs no breakpoint from the page.
+  - Direction: everything is logical, so `dir="rtl"` on the stepper or any
+    ancestor mirrors it with no extra rules.
+*/
+.progress-stepper {
+  --_base: var(--color-base-100, var(--lux-base-100, oklch(100% 0 0)));
+  --_text: var(--color-base-content, var(--lux-base-content, oklch(21% 0.006 285.885)));
+  --_accent: var(--color-accent, var(--lux-accent, oklch(52% 0.16 232.661)));
+  --_on-accent: var(--color-accent-content, var(--lux-accent-content, oklch(100% 0 0)));
+  --_error: var(--color-error, var(--lux-error, oklch(57% 0.194 13.428)));
+  --_on-error: var(--color-error-content, var(--lux-error-content, oklch(100% 0 0)));
+  /* Quieter text and lines, still 4.5:1 and 3:1 against the page. */
+  --_muted: color-mix(in oklab, var(--_text) 72%, var(--_base));
+  --_idle: color-mix(in oklab, var(--_text) 55%, var(--_base));
+  --_error-text: color-mix(in oklab, var(--_error) 75%, var(--_text));
+
+  --_marker: 2rem;
+  --_line: 2px;
+
+  container-type: inline-size;
+  color: var(--_text);
+  font: inherit;
+}
+
+.progress-stepper__list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Vertical is the base; the row below is what a wide container adds. */
+.progress-stepper__item {
+  --_rail-color: var(--_idle);
+  --_rail-style: dashed;
+
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--_marker) minmax(0, 1fr);
+  column-gap: 0.75rem;
+  padding-block-end: 1.5rem;
+}
+
+.progress-stepper__item:last-child {
+  padding-block-end: 0;
+}
+
+/* The line to the next step: it belongs to the step it leaves. */
+.progress-stepper__item::after {
+  content: "";
+  position: absolute;
+  inset-block: calc(var(--_marker) + 0.25rem) 0.25rem;
+  inset-inline-start: calc((var(--_marker) - var(--_line)) / 2);
+  border-inline-start: var(--_line) var(--_rail-style) var(--_rail-color);
+}
+
+.progress-stepper__item:last-child::after {
+  display: none;
+}
+
+.progress-stepper__marker {
+  position: relative;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  inline-size: var(--_marker);
+  block-size: var(--_marker);
+  border: 2px solid var(--_idle);
+  border-radius: 50%;
+  background: var(--_base);
+  color: var(--_muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-stepper__icon {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+
+.progress-stepper__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  /* Lines the first line of text up with the middle of the marker. */
+  padding-block-start: calc((var(--_marker) - 1.5rem) / 2);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.progress-stepper__label {
+  font-weight: 500;
+  line-height: 1.5rem;
+}
+
+.progress-stepper__description {
+  color: var(--_muted);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+/* Heard, not seen: the state in words, for whoever cannot see the marker. */
+.progress-stepper__status {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* complete: filled, with a tick, and the line behind it is solid. */
+.progress-stepper__item--complete {
+  --_rail-color: var(--_accent);
+  --_rail-style: solid;
+}
+
+.progress-stepper__item--complete .progress-stepper__marker {
+  border-color: var(--_accent);
+  background: var(--_accent);
+  color: var(--_on-accent);
+}
+
+/* current and loading: a ring, a halo, and a heavier label. */
+.progress-stepper__item--current .progress-stepper__marker,
+.progress-stepper__item--loading .progress-stepper__marker {
+  border-color: var(--_accent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--_accent) 20%, transparent);
+  color: var(--_accent);
+}
+
+.progress-stepper__item--current .progress-stepper__label,
+.progress-stepper__item--loading .progress-stepper__label {
+  font-weight: 700;
+}
+
+/* loading: the same, with an arc turning round the ring. */
+.progress-stepper__item--loading .progress-stepper__marker {
+  border-color: color-mix(in oklab, var(--_accent) 30%, var(--_base));
+}
+
+.progress-stepper__item--loading .progress-stepper__marker::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border: 2px solid transparent;
+  border-block-start-color: var(--_accent);
+  border-radius: 50%;
+  animation: progress-stepper-turn 0.9s linear infinite;
+}
+
+@keyframes progress-stepper-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* error: filled in the error colour, with an exclamation mark. */
+.progress-stepper__item--error .progress-stepper__marker {
+  border-color: var(--_error);
+  background: var(--_error);
+  color: var(--_on-error);
+}
+
+.progress-stepper__item--error .progress-stepper__label,
+.progress-stepper__item--error .progress-stepper__description {
+  color: var(--_error-text);
+}
+
+.progress-stepper__item--error .progress-stepper__label {
+  font-weight: 700;
+}
+
+/* upcoming: nothing is drawn but the outline, number and a dashed line. */
+.progress-stepper__item--upcoming .progress-stepper__label {
+  color: var(--_muted);
+}
+
+/* A row, where the container has room for one. */
+@container (min-width: 40rem) {
+  .progress-stepper--horizontal .progress-stepper__list {
+    flex-direction: row;
+  }
+
+  .progress-stepper--horizontal .progress-stepper__item {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    min-inline-size: 0;
+    padding-block-end: 0;
+    padding-inline: 0.5rem;
+    text-align: center;
+  }
+
+  .progress-stepper--horizontal .progress-stepper__item::after {
+    inset-block: calc((var(--_marker) - var(--_line)) / 2) auto;
+    /* From the edge of this marker to the edge of the next one. */
+    inset-inline: calc(50% + var(--_marker) / 2 + 0.5rem) calc(-50% + var(--_marker) / 2 + 0.5rem);
+    border-inline-start: 0;
+    border-block-start: var(--_line) var(--_rail-style) var(--_rail-color);
+  }
+
+  .progress-stepper--horizontal .progress-stepper__content {
+    align-items: center;
+    padding-block-start: 0.5rem;
+    text-wrap: balance;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The arc stays, still: the status text and the ring say it is waiting. */
+  .progress-stepper__item--loading .progress-stepper__marker::after {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .progress-stepper__marker {
+    border-color: ButtonText;
+  }
+
+  .progress-stepper__item--complete .progress-stepper__marker,
+  .progress-stepper__item--error .progress-stepper__marker {
+    border-color: Highlight;
+    background: Canvas;
+    color: Highlight;
+  }
+
+  .progress-stepper__item--current .progress-stepper__marker,
+  .progress-stepper__item--loading .progress-stepper__marker {
+    border-color: Highlight;
+    color: Highlight;
+  }
+
+  .progress-stepper__item--loading .progress-stepper__marker::after {
+    border-block-start-color: Highlight;
+  }
+
+  .progress-stepper__item {
+    --_rail-color: GrayText;
+  }
+
+  .progress-stepper__item--complete {
+    --_rail-color: Highlight;
+  }
+}
