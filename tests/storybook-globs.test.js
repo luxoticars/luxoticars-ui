@@ -103,6 +103,7 @@ test("the sidebar titles are the spec's", () => {
     "HTML/createFooter",
     "HTML/createListingCard",
     "HTML/createLogo",
+    "Skin/glass",
     "Skin/pill",
   ]);
   assert.deepEqual(titles(ASTRO_STORY_GLOBS), [

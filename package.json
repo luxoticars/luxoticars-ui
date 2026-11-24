@@ -50,6 +50,7 @@
     "./styles/site-header-frosted-on-scroll.css": "./src/styles/site-header-frosted-on-scroll.css",
     "./styles/pill.css": "./src/styles/skin/pill.css",
     "./styles/skin/pill.css": "./src/styles/skin/pill.css",
+    "./styles/skin/glass.css": "./src/styles/skin/glass.css",
     "./styles/section-head.css": "./src/styles/section-head.css",
     "./styles/seller-summary.css": "./src/styles/seller-summary.css",
     "./utils/listing-card": {
