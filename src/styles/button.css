@@ -21,12 +21,11 @@
   --_base-200: var(--color-base-200, var(--lux-base-200, oklch(93% 0.005 264.7)));
   --_base-300: var(--color-base-300, var(--lux-base-300, oklch(80% 0.008 264.7)));
   --_ink: var(--color-base-content, var(--lux-base-content, oklch(20% 0.018 264)));
-  --_primary: var(--color-primary, var(--lux-primary, oklch(77.8% 0.12 231.7)));
+  --_primary: var(--color-primary, var(--lux-primary, oklch(87.57775% 0.146116 191.56738)));
   --_primary-content: var(--color-primary-content, var(--lux-primary-content, oklch(25% 0.09 281.288)));
   --_secondary: var(--color-secondary, var(--lux-secondary, oklch(45% 0.02 286)));
   --_secondary-content: var(--color-secondary-content, var(--lux-secondary-content, oklch(100% 0 0)));
-  /* Accent, not primary, for focus and links: primary is a fill colour and reads
-     1.35:1 as text on the light canvas. */
+  /* Accent provides contrast for focus and links on the light canvas. */
   --_accent: var(--color-accent, var(--lux-accent, oklch(52% 0.16 232.661)));
   --_error: var(--color-error, var(--lux-error, oklch(57% 0.194 13.428)));
   --_success: var(--color-success, var(--lux-success, oklch(50% 0.177 163.223)));

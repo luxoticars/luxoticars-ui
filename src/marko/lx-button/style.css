@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/button.css [source-hash: 207a658611b8]
+  Forked from src/styles/button.css [source-hash: 2f9f5de13d8c]
   Marko-only: the Astro button keeps the shared stylesheet. Block is `lx-button`,
   the tag's own name. Reads --lux-* tokens only (no fallbacks), so it needs
   styles/tokens.css; the one exception is `--radius-field`, which tokens.css
@@ -18,8 +18,7 @@
   --_primary-content: var(--lux-primary-content);
   --_secondary: var(--lux-secondary);
   --_secondary-content: var(--lux-secondary-content);
-  /* Accent, not primary, for focus and links: primary is a fill colour and reads
-     1.35:1 as text on the light canvas. */
+  /* Accent provides contrast for focus and links on the light canvas. */
   --_accent: var(--lux-accent);
   --_error: var(--lux-error);
   --_success: var(--lux-success);

@@ -1,5 +1,5 @@
 /*
-  Forked from src/styles/program-badge.css [source-hash: 58f9ab81fd09]
+  Forked from src/styles/program-badge.css [source-hash: 3944f85ae155]
   Marko-only: the Astro renderer keeps the shared stylesheet.
   Needs styles/tokens.css. Block is `lx-program-badge`, the tag's own name;
   `__icon` and `__text` are its elements and `--24` the large size.
@@ -56,8 +56,7 @@
 }
 
 /* Beside text the icon is decorative, so every icon is painted with the brand
-   primary. --lux-primary is too light for an icon that stands alone (about
-   1.95:1 on white, WCAG asks 3:1), so an icon-only badge keeps the accent. */
+   primary. An icon-only badge uses accent for contrast on light surfaces. */
 .lx-program-badge:has(.lx-program-badge__text) .lx-program-badge__icon {
   color: var(--lux-primary);
 }
