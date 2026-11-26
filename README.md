@@ -185,14 +185,14 @@ purged, and components render as unstyled text.
 `tokens.css` — daisyUI already emits the same token names and the two definitions
 would fight. Keep the `@source` line.
 
-Light is the base theme. Dark applies under `prefers-color-scheme: dark`, and
-`data-theme="light"` / `data-theme="dark"` on `<html>` pins either one explicitly.
+Light is the base theme. Dark uses a deep charcoal canvas (`#1a1a1a`) and
+applies under `prefers-color-scheme: dark`. Set `data-theme="light"` or
+`data-theme="dark"` on `<html>` to pin a theme.
 
 Two rules the values encode, worth knowing before you reach for a token:
 
-- `primary` is the brand cyan and it is a **fill** colour. On a button it reads
-  11.14:1 against `primary-content`; as text on the light canvas it reads 1.35:1.
-  Use `accent` when you need the brand colour as text.
+- `primary` is the canonical brand cyan (`#25f4ee`). Use it for fills paired
+  with `primary-content`, and use `accent` for text on the canvas.
 - `-content` colours are calibrated against their solid fill. On a tinted background
   (`bg-error/10`) use the status colour itself as text, not `error-content`.
 - Components may only use tokens **daisyUI also defines**, because the dash gets its

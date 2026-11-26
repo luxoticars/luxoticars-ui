@@ -61,7 +61,7 @@
   bottom: -0.375rem;
   width: 2.05em;
   height: 2px;
-  background-color: var(--color-marque-accent, var(--lux-marque-accent, oklch(77.8% 0.12 231.7)));
+  background-color: var(--color-marque-accent, var(--lux-marque-accent, oklch(87.57775% 0.146116 191.56738)));
   transition: width 300ms cubic-bezier(0.2, 0, 0, 1);
 }
 

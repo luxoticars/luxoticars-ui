@@ -188,7 +188,7 @@ custom properties with literal fallbacks:
 
 ```css
 .thing {
-  --_accent: var(--color-marque-accent, var(--lux-marque-accent, oklch(77.8% 0.12 231.7)));
+  --_accent: var(--color-marque-accent, var(--lux-marque-accent, oklch(87.57775% 0.146116 191.56738)));
 }
 ```
 
