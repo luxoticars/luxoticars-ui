@@ -1,5 +1,11 @@
 # @luxoticars/ui
 
+## 0.26.1
+
+### Patch Changes
+
+- 3ea3086: Set the primary and marque accent to canonical Luxoticars cyan (`#25f4ee`) in OKLCH. Use neutral charcoal surfaces in the dark theme, with `#1a1a1a` as the canvas.
+
 ## 0.26.0
 
 ### Minor Changes
