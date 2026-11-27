@@ -27,6 +27,7 @@ export const companyLinks = [
 export const legalLinks = [
   { label: "Privacy Policy", href: "/a/privacy-policy/" },
   { label: "Terms of Service", href: "/a/terms-of-service/" },
+  { label: "Business Conduct", href: "/a/business-conduct/" },
 ];
 
 export const socials = [
