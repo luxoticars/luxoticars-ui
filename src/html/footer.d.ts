@@ -41,7 +41,7 @@ export interface FooterOptions {
   socials?: FooterSocial[];
   /** The legal bar is omitted entirely when this is empty. */
   legalLinks?: FooterLink[];
-  /** Overrides the whole copyright line. Defaults to "© <year> <siteTitle>. All rights reserved." */
+  /** Overrides the whole copyright line. Defaults to "© <year> <siteTitle> Sdn. Bhd. (202001029355 (1385675-U))." */
   copyright?: string;
   /** Year in the built-in copyright line. @default the current year */
   year?: number;
