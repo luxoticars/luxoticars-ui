@@ -122,7 +122,7 @@ export const createFooter = ({
 } = {}) => {
   const brandsHeadingId = `${idPrefix}-heading-brands`;
   const companyHeadingId = `${idPrefix}-heading-company`;
-  const copyrightLine = copyright ?? `© ${year} ${siteTitle}. All rights reserved.`;
+  const copyrightLine = copyright ?? `© ${year} ${siteTitle} Sdn. Bhd. (202001029355 (1385675-U)).`;
 
   /* `logo` is the string-builder stand-in for the component's `logo` slot, so it
      is written out as markup rather than escaped. Pass markup you control.

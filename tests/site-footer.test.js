@@ -38,5 +38,5 @@ test("buildModel: the defaults pass through unchanged", () => {
   assert.equal(model.brandLinks[0].href, "/search?q=Ferrari");
   assert.ok(model.contacts.every((contact) => /^(mailto:|https:)/.test(contact.href)));
   assert.ok(model.socials.every((social) => social.href.startsWith("https://")));
-  assert.equal(model.copyright, "© 2026 Luxoticars. All rights reserved.");
+  assert.equal(model.copyright, "© 2026 Luxoticars Sdn. Bhd. (202001029355 (1385675-U)).");
 });

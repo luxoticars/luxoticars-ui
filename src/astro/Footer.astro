@@ -23,7 +23,7 @@ interface Props {
   contacts?: FooterContact[];
   socials?: FooterSocial[];
   legalLinks?: FooterLink[];
-  /** Overrides the whole copyright line. Defaults to "© <year> <siteTitle>. All rights reserved." */
+  /** Overrides the whole copyright line. Defaults to "© <year> <siteTitle> Sdn. Bhd. (202001029355 (1385675-U))." */
   copyright?: string;
   year?: number;
   class?: string;
@@ -50,7 +50,7 @@ const {
 
 const brandsHeadingId = `${idPrefix}-heading-brands`;
 const companyHeadingId = `${idPrefix}-heading-company`;
-const copyrightLine = copyright ?? `© ${year} ${siteTitle}. All rights reserved.`;
+const copyrightLine = copyright ?? `© ${year} ${siteTitle} Sdn. Bhd. (202001029355 (1385675-U)).`;
 
 // Kept out of the markup so a caller-supplied contact list can reference an icon
 // by name rather than pasting path data. The email mark is stroked, the WhatsApp

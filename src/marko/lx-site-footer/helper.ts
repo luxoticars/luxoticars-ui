@@ -71,7 +71,7 @@ export interface ModelInput {
   contacts?: FooterContact[]
   socials?: FooterSocial[]
   legalLinks?: FooterLink[]
-  /** Overrides the whole copyright line. @default "© <year> <siteTitle>. All rights reserved." */
+  /** Overrides the whole copyright line. @default "© <year> <siteTitle> Sdn. Bhd. (202001029355 (1385675-U))." */
   copyright?: string
   year?: number
 }
@@ -120,6 +120,6 @@ export function buildModel(input: ModelInput): Model {
     })),
     socials: (input.socials ?? defaults.socials).map((social) => ({ ...social, href: safeHref(social.href) })),
     legalLinks: resolveLinks(input.legalLinks ?? defaults.legalLinks),
-    copyright: input.copyright ?? `© ${year} ${siteTitle}. All rights reserved.`,
+    copyright: input.copyright ?? `© ${year} ${siteTitle} Sdn. Bhd. (202001029355 (1385675-U)).`,
   }
 }
