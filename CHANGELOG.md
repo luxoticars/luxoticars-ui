@@ -1,5 +1,12 @@
 # @luxoticars/ui
 
+## 0.26.2
+
+### Patch Changes
+
+- 8fb45b7: Default footer legal links now include "Business Conduct" (`/a/business-conduct/`), after Privacy Policy and Terms of Service.
+- e3c545b: Footer copyright line now names the legal entity: "© <year> <siteTitle> Sdn. Bhd. (202001029355 (1385675-U))." Applies to the Astro, Marko and HTML footers.
+
 ## 0.26.1
 
 ### Patch Changes
